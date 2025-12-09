@@ -11,10 +11,10 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `nhsn` |
 | **Data Source** | [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) |
-| **Geographic Coverage** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Weekly (Sunday to Saturday) (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Weekly |
-| **Earliest Date** | 2020-08-08 |
+| **Geographic Levels** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Weekly (Sunday to Saturday) (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Weekly |
+| **Temporal Scope Start** | 2020-08-08 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview

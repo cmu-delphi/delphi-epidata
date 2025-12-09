@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `hhs` |
 | **Data Source** | U.S. Department of Health & Human Services |
-| **Geographic Coverage** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - no longer updated since 2024-04-30 |
-| **Earliest Date** | 2019-12-31 |
+| **Geographic Levels** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - no longer updated since 2024-04-30 |
+| **Temporal Scope Start** | 2019-12-31 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 The U.S. Department of Health & Human Services (HHS) publishes several

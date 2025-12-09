@@ -11,10 +11,10 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `nssp` |
 | **Data Source** | [The National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) |
-| **Geographic Coverage** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Weekly (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Weekly |
-| **Earliest Date** | 2022-10-01 |
+| **Geographic Levels** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Weekly (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Weekly |
+| **Temporal Scope Start** | 2022-10-01 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview

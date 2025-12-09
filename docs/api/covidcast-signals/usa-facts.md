@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `usa-facts` |
 | **Data Source** | [USAFacts](https://usafacts.org/)	 |
-| **Geographic Coverage** | National, U.S. HHS Region, State/ADM 1, County/ADM 2, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated since 2023-01-02 |
-| **Earliest Date** | 2020-01-25 |
+| **Geographic Levels** | National, U.S. HHS Region, State/ADM 1, County/ADM 2, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2023-01-02 |
+| **Temporal Scope Start** | 2020-01-25 |
 | **License** | [CC BY](#source-and-licensing) |
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made

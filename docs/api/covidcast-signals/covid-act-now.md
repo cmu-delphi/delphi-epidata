@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `covid-act-now` |
 | **Data Source** | COVID Act Now |
-| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated since 2021-12-02 |
-| **Earliest Date** | 2020-03-01 |
+| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2021-12-02 |
+| **Temporal Scope Start** | 2020-03-01 |
 | **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
 
 The [COVID Act Now (CAN)](https://covidactnow.org/) data source provides COVID-19 testing statistics, such as positivity rates and total tests performed.

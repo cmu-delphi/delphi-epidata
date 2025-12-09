@@ -12,10 +12,10 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `nchs-mortality` |
 | **Data Source** | [National Center for Health Statistics (NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) |
-| **Geographic Coverage** | State (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Weekly (see [date format docs](../covidcast_times.md))|
-| **Update Frequency** | Weekly |
-| **Earliest Date** | 2020w05 with some variation by geography |
+| **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Weekly (see [date format docs](../covidcast_times.md))|
+| **Reporting Cadence** | Weekly |
+| **Temporal Scope Start** | 2020w05 with some variation by geography |
 | **License** | [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) |
 
 This data source of national provisional death counts is based on death

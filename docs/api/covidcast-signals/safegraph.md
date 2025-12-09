@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `safegraph` |
 | **Data Source** | SafeGraph |
-| **Geographic Coverage** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md))|
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive |
-| **Earliest Date** | 2019-01-01 |
+| **Geographic Levels** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md))|
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive |
+| **Temporal Scope Start** | 2019-01-01 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)

@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `indicator-combination` |
 | **Data Source** | Delphi |
-| **Geographic Coverage** | State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - no longer updated since 2021-03-16 |
-| **Earliest Date** | 2020-04-06 |
+| **Geographic Levels** | State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - no longer updated since 2021-03-16 |
+| **Temporal Scope Start** | 2020-04-06 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Overview

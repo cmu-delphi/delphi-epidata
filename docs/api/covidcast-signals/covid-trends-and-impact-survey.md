@@ -13,10 +13,10 @@ permalink: api/covidcast-signals/fb-survey.html
 | :--- | :--- |
 | **Source Name** | `fb-survey` |
 | **Data Source** | [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/) |
-| **Geographic Coverage** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated since 2022-06-25 |
-| **Earliest Date** | Varies by indicator - 2020-2021 |
+| **Geographic Levels** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2022-06-25 |
+| **Temporal Scope Start** | Varies by indicator - 2020-2021 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Overview

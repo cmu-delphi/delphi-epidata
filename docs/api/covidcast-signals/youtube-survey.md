@@ -14,12 +14,12 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `youtube-survey` |
 | **Data Source** | Google/Delphi |
-| **Geographic Coverage** | State (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated | <!-- TODO: Last date not available on epiportal. -->
+| **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated | <!-- TODO: Last date not available on epiportal. -->
 | **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
 
-<!-- TODO: | **Earliest Date** | 2020-04-21 | -->
+<!-- TODO: | **Temporal Scope Start** | 2020-04-21 | -->
 
 ## Overview
 

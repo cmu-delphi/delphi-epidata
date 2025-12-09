@@ -12,12 +12,12 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `google-symptoms` |
 | **Data Source** | Google |
-| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Earliest Date** | 2020-02-13, with some variation depending on geographic area|
+| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Temporal Scope Start** | 2020-02-13, with some variation depending on geographic area|
 | **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
-<!--| **Update Frequency** | TODO: verify information since epiportal shows it is Ongoing | -->
+<!--| **Reporting Cadence** | TODO: verify information since epiportal shows it is Ongoing | -->
 
 ## Overview
 {: .no_toc}

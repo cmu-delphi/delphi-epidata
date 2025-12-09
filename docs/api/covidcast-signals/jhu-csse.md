@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `jhu-csse` |
 | **Data Source** | JHU CSSE |
-| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated since 2023-03-09 |
-| **Earliest Date** | 2020-01-22, with some variation by geographic area |
+| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2023-03-09 |
+| **Temporal Scope Start** | 2020-01-22, with some variation by geographic area |
 | **License** | [CC BY](#source-and-licensing) |
 
 ## Overview

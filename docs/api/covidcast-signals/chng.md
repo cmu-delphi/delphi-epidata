@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `chng` |
 | **Data Source** | Change Healthcare |
-| **Geographic Coverage** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated since 2024-02-19 |
-| **Earliest Date** | 2020-02-01 |
+| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2024-02-19 |
+| **Temporal Scope Start** | 2020-02-01 |
 | **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
 
 ## Overview

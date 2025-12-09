@@ -12,10 +12,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `ght` |
 | **Data Source** | Google Health Trends |
-| **Geographic Coverage** | State, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA), Designated Marketing Area (DMA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Temporal Resolution** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Update Frequency** | Inactive - No longer updated since 2021-03-04 |
-| **Earliest Date** | 2020-02-01 |
+| **Geographic Levels** | State, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA), Designated Marketing Area (DMA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2021-03-04 |
+| **Temporal Scope Start** | 2020-02-01 |
 | **License** | [Google Terms of Service](https://policies.google.com/terms)|
 
 ## Overview
