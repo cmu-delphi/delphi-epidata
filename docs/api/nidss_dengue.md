@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `nidss_dengue` |
 | **Data Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)|
-| **Geographic Coverage** | Taiwan regions and cities/counties (see [Geographic Codes](geographic_codes.html#nidss)) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2018w10 |
-| **Earliest Date** | 2003w01 |
+| **Geographic Levels** | Taiwan regions and cities/counties (see [Geographic Codes](geographic_codes.html#nidss)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
+| **Temporal Scope Start** | 2003w01 |
 | **License** | [Open Access](https://data.gov.tw/license) |
 
 ## Overview
@@ -41,7 +41,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_dengue/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -49,7 +48,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `locations` | locations | `list` of Taiwan region and/or location labels (see [Geographic Codes](geographic_codes.html#nidss)) |
 
 ## Response

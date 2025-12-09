@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `cdc` |
 | **Data Source** | CDC influenza surveillance data |
-| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2020w03 (2020-01-12) |
-| **Earliest Date** | 2013w02 (2013-01-06) |
+| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020w03 (2020-01-12) |
+| **Temporal Scope Start** | 2013w02 (2013-01-06) |
 
 <!-- | **License** | Permission by CDC flu division | -->
 
@@ -41,7 +41,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -50,7 +49,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `locations` | locations | `list` of location codes: `nat` (national), HHS regions (`hhs1`-`hhs10`), Census divisions (`cen1`-`cen9`), or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ## Response

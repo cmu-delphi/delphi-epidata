@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `nidss_flu` |
 | **Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh) |
-| **Geographic Coverage** | Taiwan regions (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2018w10 |
-| **Earliest Date** | 2008w14 |
+| **Geographic Levels** | Taiwan regions (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
+| **Temporal Scope Start** | 2008w14 |
 | **License** | [Open Access](https://data.gov.tw/license) |
 
 ## Overview
@@ -42,7 +42,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_flu/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -50,14 +49,14 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `regions` | regions | `list` of Taiwan region labels (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
 
 ### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
-| `issues`  | issues                                     | `list` of epiweeks |
+| `issues`  | issues (see [Date Formats](date_formats.html))                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
 Notes:

@@ -15,10 +15,10 @@ permalink: api/nowcast.html
 | **Source Name** | `nowcast` |
 | **Data Source** | [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/) |
 | **Dataset Type** | Predictive (Leading Indicator) |
-| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2022w36 |
-| **Earliest Date** | 2010w45 |
+| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
+| **Temporal Scope Start** | 2010w45 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 ## Overview
@@ -46,7 +46,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -54,7 +53,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ## Response

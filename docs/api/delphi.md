@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `delphi` |
 | **Data Source** | [Delphi](https://delphi.cmu.edu/) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Systems available** | `af`, `eb`, `ec`, `sp`, `st` |
-| **Update Frequency** | Inactive - No longer updated since 2020w19 |
-| **Earliest Date** | 2014w41 |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Systems available** | `af`, `eb`, `ec`, `sp`, `st` (see [details below](#forecasting-systems)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020w19 |
+| **Temporal Scope Start** | Varies by system (earliest 2014w41) |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 ## Overview
@@ -29,6 +29,19 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+### Forecasting Systems
+
+The following systems are available, representing different forecasting models for ILINet % weighted ILI:
+
+| Code | Name | 
+| :--- | :--- | 
+| `af` | [Archefilter](http://reports-archive.adm.cs.cmu.edu/anon/cbd/CMU-CB-16-101.pdf#Appendix.1.B) | 
+| `eb` | [Empirical Bayes](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004382) | 
+| `ec` | [Epicast](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005248) | 
+| `sp` | [Pinned Spline](http://reports-archive.adm.cs.cmu.edu/anon/cbd/CMU-CB-16-101.pdf#Appendix.1.A) | 
+| `st` | [Delphi-Stat](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006134) 
+
+
 ## Table of contents
 {: .no_toc .text-delta}
 
@@ -39,7 +52,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/delphi/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -48,7 +60,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type                                 |
 |-----------|-------------|--------------------------------------|
 | `system`  | system      | system name (`af`, `eb`, `ec`, `sp`, `st`) |
-| `epiweek` | epiweek     | epiweek when forecast was made       |
+| `epiweek` | epiweek (see [Date Formats](date_formats.html))     | epiweek when forecast was made       |
 
 ## Response
 

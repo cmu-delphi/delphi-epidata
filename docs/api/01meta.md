@@ -18,13 +18,13 @@ General topics not specific to any particular endpoint are discussed in the
 
 ## API Metadata
 
-... <!-- TODO -->
+Overview of the current state of the database, including the latest update times and data volume for specific endpoints.
 
 # The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/meta/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
+See [this documentation](date_formats.html) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -36,7 +36,10 @@ None.
 |-----------|-----------------------------------------------------------------|------------------|
 | `result`  | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata` | list of results                                                 | array of objects |
-| ...       | ...                                                             | ...              | <!-- TODO -->
+| `epidata[].fluview` | Metadata for [FluView](fluview.md)                                  | array of objects |
+| `epidata[].twitter` | Metadata for [Twitter](twitter.md)                                  | array of objects |
+| `epidata[].wiki`    | Metadata for [Wikipedia](wiki.md)                                   | array of objects |
+| `epidata[].delphi`  | Metadata for [Delphi Forecasts](delphi.md)                          | array of objects |
 | `message` | `success` or error message                                      | string           |
 
 # Example URLs

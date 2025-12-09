@@ -13,11 +13,11 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `wiki` |
 | **Data Source** | [Wikimedia pageviews](https://dumps.wikimedia.org/other/pagecounts-raw/) for health-related Wikipedia articles |
-| **Geographic Coverage** | Not applicable (article-based) |
-| **Temporal Resolution** | Hourly, Daily, and Weekly (Epiweek) |
+| **Geographic Levels** | Not applicable (article-based) |
+| **Temporal Granularity** | Hourly, Daily, and Weekly (Epiweek) |
 | **Available Articles** | [54 health-related articles](wiki_articles.html) |
-| **Update Frequency** | Inactive - No longer updated since 2021w11|
-| **Earliest Date** | 2007w50 (2007-12-09) |
+| **Reporting Cadence** | Inactive - No longer updated since 2021w11|
+| **Temporal Scope Start** | 2007w50 (2007-12-09) |
 | **License** | [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/) |
 
 
@@ -41,7 +41,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/wiki/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -51,8 +50,8 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `articles` | articles | list of [articles](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/articles.md) |
 | `language` | language (currently `en`, `es`, and `pt` supported) | string |
-| `dates` | dates | `list` of dates |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `dates` | dates (see [Date Formats](date_formats.html)) | `list` of dates |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 
 
 ### Optional

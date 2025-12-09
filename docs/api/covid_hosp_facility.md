@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `covid_hosp_facility` |
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
-| **Geographic Coverage** | Healthcare facility |
-| **Temporal Resolution** | Weekly (Friday -- Thursday) |
-| **Update Frequency** | Inactive - No longer updated since 2024w08 |
-| **Earliest Date** | 2020-07-31 |
+| **Geographic Levels** | Healthcare facility |
+| **Temporal Granularity** | Weekly (Friday -- Thursday) |
+| **Reporting Cadence** | Inactive - No longer updated since 2024w08 |
+| **Temporal Scope Start** | 2020-07-31 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview

@@ -12,7 +12,6 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `fluview_meta` |
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
-| **Update Frequency** | Weekly (typically Fridays) | <!-- TODO: Assuming it has the same update frequency as FluView. -->
 | **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview
@@ -41,7 +40,6 @@ Returns information about the [`fluview` endpoint](fluview.md).
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_meta/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 

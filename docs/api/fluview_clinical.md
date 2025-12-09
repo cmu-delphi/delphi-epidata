@@ -13,10 +13,10 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `fluview_clinical` |
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
-| **Geographic Coverage** | National, HHS regions, states, and Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Weekly (typically Fridays) | <!-- TODO: Assuming it has the same update frequency as FluView. -->
-| **Earliest Date** | 2016w40 |
+| **Geographic Levels** | National, HHS regions, states, and Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Weekly (typically Fridays) | <!-- TODO: Assuming it has the same update frequency as FluView. -->
+| **Temporal Scope Start** | 2016w40 |
 | **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 
@@ -41,7 +41,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_clinical/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -49,14 +48,14 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 
 ### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
-| `issues`  | issues                                     | `list` of epiweeks |
+| `issues`  | issues (see [Date Formats](date_formats.html))                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
 {: .note}

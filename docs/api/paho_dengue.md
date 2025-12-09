@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `paho_dengue` |
 | **Data Source** | [Pan American Health Organization (PAHO) Dengue surveillance](https://www.paho.org/en/arbo-portal/dengue-data-and-analysis) |
-| **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2020w31 |
-| **Earliest Date** | 2014w01 |
+| **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020w31 |
+| **Temporal Scope Start** | 2014w01 |
 | **License** | This was scraped from a publicly-accessible website, but no explicit license terms were found. |
 
 ## Overview
@@ -41,7 +41,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/paho_dengue/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -49,7 +48,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `regions` | regions | `list` of region labels (see [Geographic Codes](geographic_codes.html#paho-dengue)) |
 
 ## Response

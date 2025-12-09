@@ -39,7 +39,7 @@ The available time types include:
 * `week`: A weekly observation, recording events over 7 days. The `time_value`
   and `issue` are reported with a year and a week number ranging from 1 to 53,
   in `YYYYWW` format. These weeks are [MMWR
-  weeks](https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as defined
+  weeks](https://ndc.services.cdc.gov/wp-content/uploads/MMWR_week_overview.pdf) as defined
   by the National Notifiable Diseases Surveillance System, also known as
   "epiweeks". (The [API clients](covidcast_clients.md) convert these into date
   objects representing the first day of the MMWR week, and for those not using

@@ -14,10 +14,10 @@ permalink: api/dengue_sensors.html
 | :--- | :--- |
 | **Source Name** | `dengue_sensors` |
 | **Data Source** | Various digital data streams |
-| **Geographic Coverage** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2020w32|
-| **Earliest Date** | 2014w04 |
+| **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020w32|
+| **Temporal Scope Start** | 2014w04 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 
@@ -31,6 +31,22 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+### Available Signals
+
+The following signals are available:
+
+| Name | Description |
+| :--- | :--- |
+| `gft` | Google Flu Trends |
+| `ght` | Google Health Trends |
+| `twtr` | HealthTweets |
+| `wiki` | Wikipedia access |
+| `cdc` | CDC Page Hits |
+| `epic` | Epicast 1-week-ahead point prediction |
+| `quid` | Flu lab test data |
+| `sar3` | Seasonal Autoregression (order 3) |
+| `arch` | Best-fit Archetype at 1-week-ahead |
+
 ## Table of contents
 {: .no_toc .text-delta}
 
@@ -41,7 +57,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_sensors/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -50,8 +65,8 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `name` | name | `list` of names (`ght`)<!--- TODO: (`ght`, ....)---> | 
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
+| `name` | name | `list` of names (see [Available Signals](#available-signals)) | 
 | `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) |
 
 

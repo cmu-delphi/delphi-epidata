@@ -14,10 +14,10 @@ nav_order: 2
 | **Source Name** | `norostat` |
 | **Data Source** | [CDC NoroSTAT](https://www.cdc.gov/norovirus/php/reporting/norostat-data.html) metadata endpoint (requires authentication) |
 | **Dataset Type** | Surveillance (Inactive) |
-| **Geographic Coverage** | Only a specific list of full state names are permitted. See the `locations` output of the [meta_norostat](meta_norostat.html#norostat-metadata-1) endpoint for the allowed values. |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2020w30. |
-| **Earliest Date** | 2012w31 |
+| **Geographic Levels** | Only a specific list of full state names are permitted. See the `locations` output of the [meta_norostat](meta_norostat.html#norostat-metadata-1) endpoint for the allowed values. |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020w30. |
+| **Temporal Scope Start** | 2012w31 |
 | **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview
@@ -41,7 +41,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/norostat/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -50,7 +49,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `locations` | locations | `string` with specific list of full state names |
 
 ## Response

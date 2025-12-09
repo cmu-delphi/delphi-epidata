@@ -13,12 +13,12 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `covid_hosp_facility_lookup` |
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
-| **Geographic Coverage** | Healthcare facility ([state](geographic_codes.html#us-states-and-territories), ccn city, zip, fips) |
-| **Update Frequency** | Inactive - No longer updated since 2024w08 |
+| **Geographic Levels** | Healthcare facility ([state](geographic_codes.html#us-states-and-territories), ccn city, zip, fips) |
+| **Reporting Cadence** | Inactive - No longer updated since 2024w08 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
-<!-- | **Earliest Date** | N/A |
-| **Temporal Resolution** | N/A -->
+<!-- | **Temporal Scope Start** | N/A |
+| **Temporal Granularity** | N/A -->
 
 ## Overview
 {: .no_toc}

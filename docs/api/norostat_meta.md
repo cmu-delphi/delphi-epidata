@@ -14,7 +14,7 @@ permalink: api/meta_norostat.html
 | :--- | :--- |
 | **Source Name** | `meta_norostat` |
 | **Data Source** | [CDC NoroSTAT](https://www.cdc.gov/norovirus/php/reporting/norostat-data.html) |
-| **Update Frequency** | Inactive - Delphi stopped stopped acquiring data from this data source in November 2020. |
+| **Reporting Cadence** | Inactive - Delphi stopped stopped acquiring data from this data source in November 2020. |
 
 <!-- | **License** | Open Access | -->
 
@@ -36,7 +36,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/meta_norostat/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 

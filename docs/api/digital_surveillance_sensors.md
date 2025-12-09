@@ -13,10 +13,10 @@ permalink: api/sensors.html
 | :--- | :--- |
 | **Source Name** | `sensors` |
 | **Data Source** | Various digital data streams |
-| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2022w36 |
-| **Earliest Date** | 2010w40 |
+| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
+| **Temporal Scope Start** | 2010w40 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 This is the documentation of the API for accessing the Digital Surveillance Sensors (`sensors`) endpoint of
@@ -42,7 +42,6 @@ the COVID-19 pandemic.
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -50,7 +49,7 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | `names` | sensor names | `list` of string |
 

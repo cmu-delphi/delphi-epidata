@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `ecdc_ili` |
 | **Data Source** | [European Centre for Disease Prevention and Control (ECDC)](https://www.ecdc.europa.eu/en/home)  |
-| **Geographic Coverage** | European countries (see [Geographic Codes](geographic_codes.html#european-countries)) |
-| **Temporal Resolution** | Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2020w12 |
-| **Earliest Date** | 2018w40 |
+| **Geographic Levels** | European countries (see [Geographic Codes](geographic_codes.html#european-countries)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020w12 |
+| **Temporal Scope Start** | 2018w40 |
 | **License** | This was scraped from a publicly-accessible website, but no explicit license terms were found. |
 
 
@@ -42,7 +42,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -50,14 +49,14 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `regions` | regions | `list` of European country labels (see [Geographic Codes](geographic_codes.html#european-countries)) |
 
 ### Optional
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `issues` | issues | `list` of epiweeks |
+| `issues` | issues (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `lag` | # weeks between each epiweek and its issue | integer |
 
 {: .note}

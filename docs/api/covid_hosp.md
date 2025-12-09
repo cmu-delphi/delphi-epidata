@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `covid_hosp_state_timeseries` |
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) |
-| **Geographic Coverage** | US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) |
-| **Temporal Resolution** | Daily |
-| **Update Frequency** | Inactive - No longer updated since 2024-04-27 |
-| **Earliest Date** | 2020-01-01 |
+| **Geographic Levels** | US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) |
+| **Temporal Granularity** | Daily |
+| **Reporting Cadence** | Inactive - No longer updated since 2024-04-27 |
+| **Temporal Scope Start** | 2020-01-01 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview
@@ -55,7 +55,6 @@ General topics not specific to any particular data source are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/>
 
-See [this documentation](README.md) for details on specifying locations and dates.
 
 ## Parameters
 
@@ -64,13 +63,13 @@ See [this documentation](README.md) for details on specifying locations and date
 | Parameter | Description                    | Type                           |
 |-----------|--------------------------------|--------------------------------|
 | `states`  | two-letter state abbreviations (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) | `list` of states               |
-| `dates`   | dates                          | `list` of dates or date ranges |
+| `dates`   | dates (see [Date Formats](date_formats.md)) | `list` of dates or date ranges |
 
 ### Optional
 
 | Parameter | Description | Type                                   |
 |-----------|-------------|----------------------------------------|
-| `issues`  | issues      | `list` of "issue" dates or date ranges |
+| `issues`  | issues (see [Date Formats](date_formats.md))      | `list` of "issue" dates or date ranges |
 
 If `issues` is not specified, then the most recent issue is used by default.
 

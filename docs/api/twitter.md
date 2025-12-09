@@ -13,10 +13,10 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `twitter` |
 | **Data Source** | [HealthTweets](http://www.healthtweets.org/) |
-| **Geographic Coverage** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
-| **Temporal Resolution** | Daily and Weekly (Epiweek) |
-| **Update Frequency** | Inactive - No longer updated since 2020w31 (2020-12-07)|
-| **Earliest Date** | 2011w48 (2011-11-27) |
+| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Temporal Granularity** | Daily and Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020w31 (2020-12-07)|
+| **Temporal Scope Start** | 2011w48 (2011-11-27) |
 
 <!-- | **License** |  | -->
 
@@ -43,7 +43,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/twitter/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -53,8 +52,8 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 | --- | --- | --- |
 | `auth` | password | string |
 | `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
-| `dates` | dates | `list` of dates |
-| `epiweeks` | epiweeks | `list` of epiweeks |
+| `dates` | dates (see [Date Formats](date_formats.html)) | `list` of dates |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 
 {: .note}
 > **Note:** Only one of `dates` and `epiweeks` is required. If both are provided, `epiweeks` is ignored.
