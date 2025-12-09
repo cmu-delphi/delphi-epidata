@@ -323,7 +323,16 @@ class FlusurvLocationFetcher:
 
     def _groupid_to_name(self, ageid, sexid, raceid, fluid):
         if ((ageid, sexid, raceid, fluid).count(0) < 3):
-            raise ValueError("Expect at least three of four group ids to be 0")
+            warn(
+                "We expect an obs to represent only a single demographic group at" +
+                "a time. This obs represents multiple, with demographic IDs " +
+                f"ageid {ageid}, sexid {sexid}, raceid {raceid}, fluid {fluid}." +
+                "Skip it."
+                )
+            # This obs will be added to the processed data, but won't be
+            # inserted into the DB, since the column name is not in
+            # constants.EXPECTED_GROUPS.
+            group = "_".join((str(ageid), str(sexid), str(raceid), str(fluid)))
         if (ageid, sexid, raceid, fluid).count(0) == 4:
             group = "overall"
         # In all cases, if id is not available as a key in the dict, use the
