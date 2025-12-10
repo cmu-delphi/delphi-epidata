@@ -16,7 +16,6 @@ grand_parent: Main Endpoint (COVIDcast)
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | DATE RELEASED TO API |
 | **License** | [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION) |
-* **License:** [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION)
 
 A brief description of what this source measures.
 
