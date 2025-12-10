@@ -21,10 +21,10 @@ nav_order: 1
 <summary>Click to expand</summary>
 
 ### March 14, 2025
-Google added earlier dates starting from 2017-08-15 and also fixed a gap of county-level data from November 14 2022 through February 20, 2023.
+Google made earlier data available (back to August 15, 2017), and fixed a gap in county-level data between November 14, 2022 and February 20, 2023.
 
 ### February 14, 2025
-We added a new signal s07_raw_search and s07_smoothed_search.
+Two new signals were added, relating to conjunctivitis: `s07_raw_search` and `s07_smoothed_search`.
 
 </details>
 
