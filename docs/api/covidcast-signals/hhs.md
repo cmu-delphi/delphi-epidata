@@ -49,20 +49,24 @@ adult and pediatric COVID-19 hospital admissions. This sum is used as the
 We also include influenza hospital admissions.
 
 
-| Signal and 7-day average signal | Description |
-|---|---|
-| `confirmed_admissions_covid_1d` and `confirmed_admissions_covid_1d_7dav` | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
-| `confirmed_admissions_covid_1d_prop` and `confirmed_admissions_covid_1d_prop_7dav` | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
-| `sum_confirmed_suspected_admissions_covid_1d` and `sum_confirmed_suspected_admissions_covid_1d_7dav` | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
-| `sum_confirmed_suspected_admissions_covid_1d_prop` and <br/> `sum_confirmed_suspected_admissions_covid_1d_prop_7dav` | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
-| `confirmed_admissions_influenza_1d` and `confirmed_admissions_influenza_1d_7dav` | All confirmed influenza hospital admissions occurring each day. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
-| `confirmed_admissions_influenza_1d_prop` and `confirmed_admissions_influenza_1d_prop_7dav` | All confirmed influenza hospital admissions occurring each day, per 100,000 population. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
+Each metric below is available in four variants:
+1.  **Raw Count:** `_1d`
+2.  **Smoothed (7-day average):** `_1d_7dav`
+3.  **Population Proportion (per 100k):** `_1d_prop`
+4.  **Smoothed Proportion:** `_1d_prop_7dav`
 
-*for all the above signals & 7-day average signals, their geography is state, and resolution is 1 day.
+| Metric | Base Signal Name | Description |
+| :--- | :--- | :--- |
+| **Confirmed COVID-19** | `confirmed_admissions_covid` | **Sum of Adult + Pediatric.** Confirmed admissions only.<br><br>**Earliest Dates:**<br>• `_1d` (Daily): **2019-12-31**<br>• `_7dav` (7-Day Avg): **2020-01-06** |
+| **Suspected + Confirmed** | `sum_confirmed_suspected_admissions_covid` | **Sum of Adult + Pediatric.** Combined count of confirmed and suspected cases.<br><br>**Earliest Dates:**<br>• `_1d` (Daily): **2019-12-31**<br>• `_7dav` (7-Day Avg): **2020-01-06** |
+| **Influenza** | `confirmed_admissions_influenza` | All confirmed influenza hospital admissions.<br><br>**Earliest Dates:**<br>• `_1d` (Daily): **2020-01-02**<br>• `_7dav` (7-Day Avg): **2020-01-08** |
 
-The 7-day average signals are computed by Delphi by calculating
-moving averages of the preceding 7 days, so e.g. the signal for June 7 is the
-average of the underlying data for June 1 through 7, inclusive.
+
+> **Note**
+> * For all the above signals & 7-day average signals, their geography is state, and resolution is 1 day.
+> * The 7-day average signals are computed by Delphi by calculating moving averages of the preceding 7 days, so e.g. the signal for June 7 is the average of the underlying data for June 1 through 7, inclusive.
+{: .note }
+
 
 ## Table of contents
 {: .no_toc .text-delta}
