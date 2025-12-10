@@ -52,17 +52,20 @@ class CsvRowValue:
 class CsvImporter:
   """Finds and parses covidcast CSV files."""
 
+  # set of allowed resolutions (aka "geo_type")
+  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'hhs', 'nation', 'hsa_nci'}
+
+  # regex pattern for matching geo types, note: sort longer string first to avoid wrong substring matches
+  geo_types_pattern = "|".join(sorted(GEOGRAPHIC_RESOLUTIONS, key=len, reverse=True))
+
   # .../source/yyyymmdd_geo_signal.csv
-  PATTERN_DAILY = re.compile(r'^.*/([^/]*)/(\d{8})_(\w+?)_(\w+)\.csv$')
+  PATTERN_DAILY = re.compile(r'^.*/([^/]*)/(\d{8})_(' + geo_types_pattern + r')_(.+)\.csv$')
 
   # .../source/weekly_yyyyww_geo_signal.csv
-  PATTERN_WEEKLY = re.compile(r'^.*/([^/]*)/weekly_(\d{6})_(\w+?)_(\w+)\.csv$')
+  PATTERN_WEEKLY = re.compile(r'^.*/([^/]*)/weekly_(\d{6})_(' + geo_types_pattern + r')_(.+)\.csv$')
 
   # .../issue_yyyymmdd
   PATTERN_ISSUE_DIR = re.compile(r'^.*/([^/]*)/issue_(\d{8})$')
-
-  # set of allowed resolutions (aka "geo_type")
-  GEOGRAPHIC_RESOLUTIONS = {'county', 'hrr', 'msa', 'dma', 'state', 'hhs', 'nation'}
 
   # set of required CSV columns
   REQUIRED_COLUMNS = {'geo_id', 'val', 'se', 'sample_size'}
@@ -158,7 +161,7 @@ class CsvImporter:
       daily_match = CsvImporter.PATTERN_DAILY.match(path.lower())
       weekly_match = CsvImporter.PATTERN_WEEKLY.match(path.lower())
       if not daily_match and not weekly_match:
-        logger.warning(event='invalid csv path/filename', detail=path, file=path)
+        logger.warning(event='invalid csv path/filename or geo_type', detail=path, file=path)
         yield (path, None)
         continue
 
@@ -186,12 +189,8 @@ class CsvImporter:
         issue_value=issue_epiweek_value
         lag_value=delta_epiweeks(time_value_week, issue_epiweek_value)
 
-      # # extract and validate geographic resolution
+      # extract geographic resolution
       geo_type = match.group(3).lower()
-      if geo_type not in CsvImporter.GEOGRAPHIC_RESOLUTIONS:
-        logger.warning(event='invalid geo_type', detail=geo_type, file=path)
-        yield (path, None)
-        continue
 
       # extract additional values, lowercased for consistency
       source = match.group(1).lower()
@@ -300,7 +299,7 @@ class CsvImporter:
       # geo_id was `None`
       return (None, 'geo_id')
 
-    if geo_type in ('hrr', 'msa', 'dma', 'hhs'):
+    if geo_type in ('hrr', 'msa', 'dma', 'hhs', 'hsa_nci'):
       # these particular ids are prone to be written as ints -- and floats
       try:
         geo_id = str(CsvImporter.floaty_int(geo_id))
@@ -337,6 +336,12 @@ class CsvImporter:
     elif geo_type == 'nation':
       # geo_id is lowercase
       if len(geo_id) != 2 or not 'aa' <= geo_id <= 'zz':
+        return (None, 'geo_id')
+
+    elif geo_type == 'hsa_nci':
+      # valid codes should be 1-3 digit numbers, or the special code of "1022" for blank
+      # https://seer.cancer.gov/seerstat/variables/countyattribs/hsa.html
+      if not re.match(r'^(1022|\d{1,3})$', geo_id):
         return (None, 'geo_id')
 
     else:
