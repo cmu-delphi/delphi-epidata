@@ -17,7 +17,7 @@ nav_order: 2
 | **Temporal Granularity** | Hourly, Daily, and Weekly (Epiweek) |
 | **Available Articles** | [54 health-related articles](#available-articles) |
 | **Reporting Cadence** | Inactive - No longer updated since 2021w11|
-| **Temporal Scope Start** | 2007w50 (2007-12-09) |
+| **Temporal Scope Start** | 2007w50 (December 9th, 2007) |
 | **License** | [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/) |
 
 
@@ -48,119 +48,77 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/wiki/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `articles` | articles | list of [articles](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/articles.md) |
+| `articles` | articles | list of [articles](#available-articles) |
 | `language` | language (currently `en`, `es`, and `pt` supported) | string |
 | `dates` | dates (see [Date Formats](date_formats.html)) | `list` of dates |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 
-#### Valid Queries
+#### Available Articles
+
+The following health-related Wikipedia articles are available:
 
 <details markdown="1">
-<summary>Click to expand full list of valid queries</summary>
+<summary>Click to expand full list of articles</summary>
 
-*   `/m/0cycc`
-*   `influenza type a`
-*   `flu duration`
-*   `flu fever`
-*   `treating flu`
-*   `fever flu`
-*   `flu recovery`
-*   `braun thermoscan`
-*   `oscillococcinum`
-*   `treating the flu`
-*   `cold or flu`
-*   `flu versus cold`
-*   `flu remedies`
-*   `contagious flu`
-*   `type a influenza`
-*   `flu or cold`
-*   `duration of flu`
-*   `cold versus flu`
-*   `flu cough`
-*   `flu headache`
-*   `thermoscan`
-*   `influenza incubation period`
-*   `flu lasts`
-*   `length of flu`
-*   `flu stomach`
-*   `cold vs flu`
-*   `flu and fever`
-*   `getting over the flu`
-*   `influenza a`
-*   `treatment for flu`
-*   `flu length`
-*   `treatment for the flu`
-*   `influenza symptoms`
-*   `over the counter flu`
-*   `flu complications`
-*   `cold and flu symptoms`
-*   `influenza incubation`
-*   `treatment of flu`
-*   `human temperature`
-*   `low body`
-*   `flu contagious`
-*   `robitussin ac`
-*   `flu how long`
-*   `ear thermometer`
-*   `flu contagious period`
-*   `treat flu`
-*   `cough flu`
-*   `low body temperature`
-*   `expectorant`
-*   `flu and cold`
-*   `rapid flu`
-*   `flu vs. cold`
-*   `how to treat the flu`
-*   `how long does the flu last?`
-*   `viral pneumonia`
-*   `flu in kids`
-*   `type a flu`
-*   `influenza treatment`
-*   `fighting the flu`
-*   `flu relief`
-*   `treat the flu`
-*   `flu medicine`
-*   `dangerous fever`
-*   `what is influenza`
-*   `tussin`
-*   `low body temp`
-*   `flu care`
-*   `flu in infants`
-*   `flu dizziness`
-*   `feed a fever`
-*   `flu vs cold`
-*   `flu vomiting`
-*   `bacterial pneumonia`
-*   `flu activity`
-*   `flu chills`
-*   `anas barbariae`
-*   `flu germs`
-*   `tylenol cold`
-*   `how to get over the flu`
-*   `flu in children`
-*   `influenza a and b`
-*   `duration of the flu`
-*   `cold symptoms`
-*   `flu report`
-*   `rapid flu test`
-*   `flu relapse`
-*   `get over the flu`
-*   `flu during pregnancy`
-*   `flu recovery time`
-*   `cure for flu`
-*   `tamiflu and breastfeeding`
-*   `flu chest pain`
-*   `flu treatment`
-*   `flu nausea`
-*   `remedies for the flu`
-*   `tamiflu in pregnancy`
-*   `side effects of tamiflu`
-*   `how to treat flu`
-*   `viral bronchitis`
-*   `flu how long contagious`
-*   `flu remedy`
+| Article Name |
+|---|
+| amantadine |
+| antiviral_drugs |
+| avian_influenza |
+| canine_influenza |
+| cat_flu |
+| chills |
+| common_cold |
+| cough |
+| equine_influenza |
+| fatigue_(medical) |
+| fever |
+| flu_season |
+| gastroenteritis |
+| headache |
+| hemagglutinin_(influenza) |
+| human_flu |
+| influenza |
+| influenzalike_illness |
+| influenzavirus_a |
+| influenzavirus_c |
+| influenza_a_virus |
+| influenza_a_virus_subtype_h10n7 |
+| influenza_a_virus_subtype_h1n1 |
+| influenza_a_virus_subtype_h1n2 |
+| influenza_a_virus_subtype_h2n2 |
+| influenza_a_virus_subtype_h3n2 |
+| influenza_a_virus_subtype_h3n8 |
+| influenza_a_virus_subtype_h5n1 |
+| influenza_a_virus_subtype_h7n2 |
+| influenza_a_virus_subtype_h7n3 |
+| influenza_a_virus_subtype_h7n7 |
+| influenza_a_virus_subtype_h7n9 |
+| influenza_a_virus_subtype_h9n2 |
+| influenza_b_virus |
+| influenza_pandemic |
+| influenza_prevention |
+| influenza_vaccine |
+| malaise |
+| myalgia |
+| nasal_congestion |
+| nausea |
+| neuraminidase_inhibitor |
+| orthomyxoviridae |
+| oseltamivir |
+| paracetamol |
+| rhinorrhea |
+| rimantadine |
+| shivering |
+| sore_throat |
+| swine_influenza |
+| viral_neuraminidase |
+| viral_pneumonia |
+| vomiting |
+| zanamivir |
 
 </details>
+
 
 
 ### Optional
@@ -332,69 +290,3 @@ print(length(res$epidata))
   </div>
 
 </div>
-
-## Available Articles
-
-The following health-related Wikipedia articles are available:
-
-<details markdown="1">
-<summary>Click to expand full list of articles</summary>
-
-| Article Name |
-|---|
-| amantadine |
-| antiviral_drugs |
-| avian_influenza |
-| canine_influenza |
-| cat_flu |
-| chills |
-| common_cold |
-| cough |
-| equine_influenza |
-| fatigue_(medical) |
-| fever |
-| flu_season |
-| gastroenteritis |
-| headache |
-| hemagglutinin_(influenza) |
-| human_flu |
-| influenza |
-| influenzalike_illness |
-| influenzavirus_a |
-| influenzavirus_c |
-| influenza_a_virus |
-| influenza_a_virus_subtype_h10n7 |
-| influenza_a_virus_subtype_h1n1 |
-| influenza_a_virus_subtype_h1n2 |
-| influenza_a_virus_subtype_h2n2 |
-| influenza_a_virus_subtype_h3n2 |
-| influenza_a_virus_subtype_h3n8 |
-| influenza_a_virus_subtype_h5n1 |
-| influenza_a_virus_subtype_h7n2 |
-| influenza_a_virus_subtype_h7n3 |
-| influenza_a_virus_subtype_h7n7 |
-| influenza_a_virus_subtype_h7n9 |
-| influenza_a_virus_subtype_h9n2 |
-| influenza_b_virus |
-| influenza_pandemic |
-| influenza_prevention |
-| influenza_vaccine |
-| malaise |
-| myalgia |
-| nasal_congestion |
-| nausea |
-| neuraminidase_inhibitor |
-| orthomyxoviridae |
-| oseltamivir |
-| paracetamol |
-| rhinorrhea |
-| rimantadine |
-| shivering |
-| sore_throat |
-| swine_influenza |
-| viral_neuraminidase |
-| viral_pneumonia |
-| vomiting |
-| zanamivir |
-
-</details>

@@ -15,7 +15,7 @@ nav_order: 1
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
 | **Geographic Levels** | National, HHS regions, states, and Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Weekly (typically Fridays) | <!-- TODO: Assuming it has the same update frequency as FluView. -->
+| **Reporting Cadence** | Weekly (typically Fridays) |
 | **Temporal Scope Start** | 2016w40 |
 | **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 

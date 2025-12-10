@@ -14,7 +14,7 @@ nav_order: 2
 | **Data Source** | SafeGraph |
 | **Geographic Levels** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md))|
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Temporal Scope Start** | 2019-01-01 |
+| **Temporal Scope Start** | January 1st, 2019 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
@@ -31,7 +31,7 @@ surface signals from two such datasets.
 ## SafeGraph Social Distancing Metrics
 
 | Attribute | Details |
-| **Date of last data revision:** | November 3, 2020 (see [data revision docs](#changelog-social-distancing-metrics)) |
+| **Date of last data revision:** | November 3rd, 2020 (see [data revision docs](#changelog-social-distancing-metrics)) |
 | **Reporting Cadence** | Inactive - No longer updated after April 19th, 2021. |
 
 ### Changelog (Social Distancing Metrics)
@@ -41,11 +41,11 @@ surface signals from two such datasets.
 
 See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
 
-#### April 19, 2021
+#### April 19th, 2021
 
 The Safegraph social distancing metrics are no longer being updated. Weekly patterns are still available.
 
-#### November 3, 2020
+#### November 3rd, 2020
 
 We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
 
@@ -99,11 +99,9 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 ## SafeGraph Weekly Patterns
 
-<!-- TODO: check right date **This dataset is no longer updated after July 15th, 2022.** -->
-
 | Attribute | Details |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog-weekly-patterns)) |
-| **Reporting Cadence** | Inactive - No longer updated after July 15th, 2022. |
+| **Reporting Cadence** | Inactive - No longer updated after May 5th, 2022 |
 
 ### Changelog (Weekly Patterns)
 
@@ -112,10 +110,10 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
 
-#### July 15, 2022
+#### July 15th, 2022
 The Safegraph Weekly Patterns dataset is no longer updated.
 
-#### November 3, 2020
+#### November 3rd, 2020
 
 We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
 

@@ -14,8 +14,9 @@ nav_order: 2
 | **Data Source** | Google |
 | **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Date of last data revision:** | March 14, 2025 (see [data revision docs](#changelog)) |
-| **Temporal Scope Start** | 2020-02-13, with some variation depending on geographic area|
+| **Reporting Cadence** | Inactive - No longer updated after November 16th, 2025 |
+| **Date of last data revision:** | March 14th, 2025 (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | February 13th, 2020, with some variation depending on geographic area|
 | **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
 ## Changelog
@@ -23,10 +24,10 @@ nav_order: 2
 <details markdown="1">
 <summary>Click to expand</summary>
 
-### March 14, 2025
+### March 14th, 2025
 Google added earlier dates starting from 2017-08-15 and also fixed a gap of county-level data from November 14 2022 through February 20, 2023.
 
-### February 14, 2025
+### February 14th, 2025
 We added a new signal s07_raw_search and s07_smoothed_search.
 
 </details>
