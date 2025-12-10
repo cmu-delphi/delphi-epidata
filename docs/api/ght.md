@@ -54,7 +54,116 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 | `auth` | password | string |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `locations` | locations | `list` of state codes (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) and/or `US` |
-| `query` | search query or topic ID <!--This link is not working (see <https://www.freebase.com/>)--> | string |
+| `query` | search query or topic ID (see [Valid Queries](#valid-queries)) | string |
+
+#### Valid Queries
+
+<details markdown="1">
+<summary>Click to expand full list of valid queries</summary>
+
+*   `/m/0cycc`
+*   `influenza type a`
+*   `flu duration`
+*   `flu fever`
+*   `treating flu`
+*   `fever flu`
+*   `flu recovery`
+*   `braun thermoscan`
+*   `oscillococcinum`
+*   `treating the flu`
+*   `cold or flu`
+*   `flu versus cold`
+*   `flu remedies`
+*   `contagious flu`
+*   `type a influenza`
+*   `flu or cold`
+*   `duration of flu`
+*   `cold versus flu`
+*   `flu cough`
+*   `flu headache`
+*   `thermoscan`
+*   `influenza incubation period`
+*   `flu lasts`
+*   `length of flu`
+*   `flu stomach`
+*   `cold vs flu`
+*   `flu and fever`
+*   `getting over the flu`
+*   `influenza a`
+*   `treatment for flu`
+*   `flu length`
+*   `treatment for the flu`
+*   `influenza symptoms`
+*   `over the counter flu`
+*   `flu complications`
+*   `cold and flu symptoms`
+*   `influenza incubation`
+*   `treatment of flu`
+*   `human temperature`
+*   `low body`
+*   `flu contagious`
+*   `robitussin ac`
+*   `flu how long`
+*   `ear thermometer`
+*   `flu contagious period`
+*   `treat flu`
+*   `cough flu`
+*   `low body temperature`
+*   `expectorant`
+*   `flu and cold`
+*   `rapid flu`
+*   `flu vs. cold`
+*   `how to treat the flu`
+*   `how long does the flu last?`
+*   `viral pneumonia`
+*   `flu in kids`
+*   `type a flu`
+*   `influenza treatment`
+*   `fighting the flu`
+*   `flu relief`
+*   `treat the flu`
+*   `flu medicine`
+*   `dangerous fever`
+*   `what is influenza`
+*   `tussin`
+*   `low body temp`
+*   `flu care`
+*   `flu in infants`
+*   `flu dizziness`
+*   `feed a fever`
+*   `flu vs cold`
+*   `flu vomiting`
+*   `bacterial pneumonia`
+*   `flu activity`
+*   `flu chills`
+*   `anas barbariae`
+*   `flu germs`
+*   `tylenol cold`
+*   `how to get over the flu`
+*   `flu in children`
+*   `influenza a and b`
+*   `duration of the flu`
+*   `cold symptoms`
+*   `flu report`
+*   `rapid flu test`
+*   `flu relapse`
+*   `get over the flu`
+*   `flu during pregnancy`
+*   `flu recovery time`
+*   `cure for flu`
+*   `tamiflu and breastfeeding`
+*   `flu chest pain`
+*   `flu treatment`
+*   `flu nausea`
+*   `remedies for the flu`
+*   `tamiflu in pregnancy`
+*   `side effects of tamiflu`
+*   `how to treat flu`
+*   `viral bronchitis`
+*   `flu how long contagious`
+*   `flu remedy`
+
+</details>
 
 ## Response
 
