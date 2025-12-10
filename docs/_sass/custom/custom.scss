@@ -34,8 +34,7 @@ h2,
 h3,
 h4,
 h5,
-h6,
-h7 {
+h6 {
     font-family: 'Source Serif Pro', serif !important;
     color: #002676 !important;
     line-height: 1.15;
@@ -69,13 +68,13 @@ aside {
 
         &:hover {
             background-color: rgba(0, 38, 118, 0.05);
-            color: #C41230;
+            color: #941120;
             text-decoration: none;
         }
 
         &.active {
             font-weight: 600;
-            color: #C41230;
+            color: #941120;
             background-color: rgba(196, 18, 48, 0.03);
         }
     }
@@ -177,10 +176,10 @@ pre code {
 .note {
     background-color: rgba(0, 123, 192, 0.05);
     border-left-color: #007BC0;
-    color: #007BC0;
+    color: #005F95;
 
     >p:first-child strong:first-child {
-        color: #007BC0;
+        color: #005F95;
     }
 }
 
@@ -201,9 +200,10 @@ pre code {
     color: #941120;
 
     >p:first-child strong:first-child {
-        color: #C41230;
+        color: #941120;
     }
 }
+
 
 .tip {
     background-color: rgba(54, 143, 51, 0.05);
