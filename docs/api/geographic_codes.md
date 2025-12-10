@@ -449,3 +449,19 @@ Geographic codes used by the [KCDC ILI](kcdc_ili.html) endpoint.
 | ROK | Republic of Korea |
 
 
+## FluView Cities
+
+Specific cities used by the [FluView](fluview.html) endpoint.
+
+| City | Code |
+|---|---|
+| Chicago | ord |
+| Los Angeles | lax |
+| New York City | jfk |
+
+### Note on New York
+
+In the CDC FluView system, New York State and New York City are often reported separately.
+* `ny_minus_jfk` represents New York State **excluding** NYC.
+* `jfk` represents New York City.
+* `ny` represents the entire state (the sum of the two).

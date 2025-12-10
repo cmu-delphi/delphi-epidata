@@ -13,7 +13,7 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `fluview` |
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
-| **Geographic Levels** | National, states, HHS regions, and Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Geographic Levels** | National, states, HHS regions, Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)), and cities (see [FluView Cities](geographic_codes.html#fluview-cities)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Weekly (typically Fridays) |
 | **Temporal Scope Start** | 1997w40 |
@@ -34,6 +34,35 @@ General topics not specific to any particular endpoint are discussed in the
 
 1. TOC
 {:toc}
+
+## Estimation
+
+### Definition of ILI
+For this system, ILI is defined as fever (temperature of 100°F [37.8°C] or greater) and a cough and/or a sore throat without a known cause other than influenza.
+
+### Weighted vs. Unweighted ILI
+The `fluview` endpoint provides two percentage metrics: `ili` (unweighted) and `wili` (weighted).
+
+* **Unweighted (`ili`):** Calculated simply as the number of ILI cases divided by the total number of patients seen:
+
+    $$ILI = 100 \cdot \frac{\text{num\_ili}}{\text{num\_patients}}$$
+
+* **Weighted (`wili`):** To produce a representative estimate for larger regions (like National or HHS Regions), the CDC weights the state-level data by state population. This corrects for the fact that some states may have higher provider participation rates than others relative to their actual population.
+
+    $$wILI_{region} = \sum_{s \in region} \left( \%ILI_s \times \frac{Pop_s}{Pop_{region}} \right)$$
+
+### Imputation
+State-level data was not publicly available from the CDC prior to the 2010-2011 flu season (2010w40). For dates prior to this, and for occasional missing reports, Delphi uses a sensor fusion approach (OLS regression) to impute state-level values based on the available regional data.
+
+Private imputed data may require specific authorization via the `auth` parameter.
+
+## Lag and Backfill
+
+The data is preliminary and subject to revision. Participating providers may report data late, or correct previously reported data. The `issues` and `lag` parameters in the API allow you to access historical versions of the data as they were reported on specific dates.
+
+## Limitations
+
+ILINet is a voluntary system. While it covers all states, the coverage within a state may not be perfectly representative of the entire population. Also, ILI is a syndromic definition, not a laboratory diagnosis. It captures patients with flu-like symptoms, which can be caused by other respiratory pathogens (including SARS-CoV-2 and RSV).
 
 # The API
 
