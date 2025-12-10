@@ -1,7 +1,7 @@
 ---
 title: Geographic Codes
 parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 100
+nav_order: 900
 ---
 
 # Geographic Codes

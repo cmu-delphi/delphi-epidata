@@ -1,8 +1,7 @@
 ---
+parent: Inactive Sources (Other)
+grand_parent: Data Sources and Signals
 title: <i>inactive</i> Google Health Trends
-parent: Data Sources and Signals
-grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 2
 ---
 
 # Google Health Trends

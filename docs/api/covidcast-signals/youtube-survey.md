@@ -1,8 +1,7 @@
 ---
+parent: Inactive Sources (COVIDcast)
+grand_parent: Data Sources and Signals
 title: <i>inactive</i> Youtube Survey
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
 ---
 
 [//]: # (code at https://github.com/cmu-delphi/covid-19/tree/deeb4dc1e9a30622b415361ef6b99198e77d2a94/youtube)

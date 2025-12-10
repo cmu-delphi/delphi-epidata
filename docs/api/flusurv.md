@@ -2,7 +2,7 @@
 title: Flusurv
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 1
+nav_order: 3
 ---
 
 # FluSurv

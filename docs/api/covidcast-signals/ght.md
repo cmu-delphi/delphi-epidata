@@ -1,8 +1,7 @@
 ---
-title: <i>inactive</i> Google Health Trends
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources (COVIDcast)
+grand_parent: Data Sources and Signals
+title: <i>inactive</i> (COVIDcast) Google Health Trends
 ---
 
 # Google Health Trends

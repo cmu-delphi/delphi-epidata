@@ -1,7 +1,7 @@
 ---
 title: Other Endpoints (COVID-19 and Other Diseases)
 has_children: true
-nav_order: 3
+nav_order: 2
 ---
 
 # Other Endpoints (COVID-19 and Other Diseases)
