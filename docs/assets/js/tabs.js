@@ -11,7 +11,7 @@ function activateTab(clickedButton, container) {
     clickedButton.classList.add('active');
 
     // Activate corresponding content
-    const tabId = clickedButton.getAttribute('data-tab');
+    const tabId = clickedButton.dataset.tab;
     const content = container.querySelector(`.tab-content[data-tab="${tabId}"]`);
     if (content) {
         content.classList.add('active');
