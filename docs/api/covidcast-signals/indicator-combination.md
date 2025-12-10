@@ -36,7 +36,7 @@ See [COVIDcast Signal Changes](../covidcast_changelog.md) for general informatio
 
 ### June 3, 2020
 
-Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of other signals based on survey estimates or other estimates with margins of error.
+Standard error is now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes about because the signal is a combination of other signals based on survey estimates or other estimates with margins of error.
 
 </details>
 
