@@ -15,8 +15,22 @@ nav_order: 2
 | **Geographic Levels** | National, U.S. HHS Region, State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated since 2023-02-22 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | Varies by indicator - 2020-2021 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report". Each issue of the CPR is made available as an attachment on that page. You can view all attachments by scrolling to the bottom of the "About this dataset" panel and clicking "Show more".
 

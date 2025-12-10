@@ -15,8 +15,22 @@ nav_order: 1
 | **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Weekly (see [date format docs](../covidcast_times.md))|
 | **Reporting Cadence** | Weekly |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020w05 with some variation by geography |
 | **License** | [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 This data source of national provisional death counts is based on death
 certificate data received and coded by the National Center for Health Statistics

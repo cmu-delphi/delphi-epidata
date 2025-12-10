@@ -15,8 +15,36 @@ nav_order: 2
 | **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated since 2023-03-09 |
+| **Date of last data revision:** | October 7, 2020 (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-01-22, with some variation by geographic area |
 | **License** | [CC BY](#source-and-licensing) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### October 7, 2020
+
+The following changes were made to all `jhu-csse` signals related to geocoding:
+- NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now [differentiated by JHU](https://github.com/CSSEGISandData/COVID-19/issues/3084),
+- “Unassigned” and “Out of State” counts are assigned to a megaFIPS at the county level (XX000 where XX is the state FIPS code) and will now be incorporated into the state totals
+- The split of the Kansas City, Missouri into its four sub-counties is now done with a more precise population proportion,
+- The split of the Dukes and Nantucket, Massachusetts FIPS codes into the two sub-counties is now done with a more precise population proportion,
+- Some counts are reported in the Utah territories JHU UIDs 84070015-84070020. These are now aggregated properly into the state megaFIPS 49000, which will be aggregated in state-level information.
+
+### September 1, 2020
+
+NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now split in proportion to the population of each county, instead of being reported in aggregate in FIPS 36061.
+
+### June 3, 2020
+
+We now include figures on Puerto Rico for all `jhu-csse` signals at the state level.
+
+</details>
+
 
 ## Overview
 

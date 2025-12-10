@@ -15,9 +15,21 @@ nav_order: 1
 | **Geographic Levels** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Daily |
+| **Date of last data revision:** | November 9, 2020 (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-02-01 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### November 9, 2020
+We went from a custom geo-mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
+</details>
 
 ## Overview
 {: .no_toc}

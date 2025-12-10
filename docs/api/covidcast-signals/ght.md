@@ -15,8 +15,20 @@ nav_order: 2
 | **Geographic Levels** | State, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA), Designated Marketing Area (DMA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated since 2021-03-04 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-02-01 |
 | **License** | [Google Terms of Service](https://policies.google.com/terms)|
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
 
 ## Overview
 

@@ -15,8 +15,22 @@ nav_order: 2
 | **Geographic Levels** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - no longer updated since 2024-04-30 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2019-12-31 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 The U.S. Department of Health & Human Services (HHS) publishes several
 datasets on patient impact and hospital capacity. The data is made available

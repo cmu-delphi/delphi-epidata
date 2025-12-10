@@ -18,7 +18,41 @@ nav_order: 2
 | **Temporal Scope Start** | 2020-04-06 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
-## Overview
+This source provides signals which are combinations of the other sources,
+calculated or composed by Delphi. It is not a primary data source.
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Statistical Combination Signals
+
+| Attribute | Details |
+| :--- | :--- |
+| **Geographic Levels** | State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Date of last data revision:** | June 3, 2020 (see [data revision docs](#changelog)) |
+
+
+### Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+#### June 3, 2020
+
+Standard errors are now included in the `nmf_day_doc_fbc_fbs_ght` signal for all geo levels and dates, representing the estimated uncertainty in this signal. This uncertainty comes because the signal is a combination of other signals based on survey estimates or other estimates with margins of error.
+
+* `nmf_day_doc_fbc_fbs_ght`
+  * all geo levels
+    * all dates
+
+</details>
+
+### Overview
 {: .no_toc}
 
 These signals combine Delphi's indicators---*not* including cases and deaths,
@@ -35,12 +69,6 @@ These signals were updated daily until March 17, 2021.
 | --- | --- |
 | `nmf_day_doc_fbc_fbs_ght` | This signal uses a rank-1 approximation, from a nonnegative matrix factorization approach, to identify an underlying signal that best reconstructs the Doctor Visits (`smoothed_adj_cli`), Facebook Symptoms surveys (`smoothed_cli`), Facebook Symptoms in Community surveys (`smoothed_hh_cmnty_cli`), and Search Trends (`smoothed_search`) indicators. It does not include official reports (cases and deaths from the `jhu-csse` source). Higher values of the combined signal correspond to higher values of the other indicators, but the scale (units) of the combination is arbitrary. Note that the Search Trends source is not available at the county level, so county values of this signal do not use it. This signal is deprecated and is no longer updated as of March 17, 2021. <br/> **Earliest date available:** 2020-04-15 |
 | `nmf_day_doc_fbs_ght` | This signal is calculated in the same way as `nmf_day_doc_fbc_fbs_ght`, but does *not* include the Symptoms in Community survey signal, which was not available at the time this signal was introduced. It also uses `smoothed_cli` from the `doctor-visits` source instead of `smoothed_adj_cli`. This signal is deprecated and is no longer updated as of May 27, 2020. <br/> **Earliest date available:** 2020-04-06 |
-
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
 
 
 ### Estimation
@@ -191,11 +219,27 @@ The resampling method for each input source is as follows:
 
 ## Compositional Signals: Confirmed Cases and Deaths
 
-* **Earliest issue available:** 7 July 2020
-* **Number of data revisions since 19 May 2020:** 1
-* **Date of last change:** [12 October 2020](../covidcast_changelog.md#indicator-combination)
-* **Geography type available:** county, msa, hrr, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type available:** day (see [date format docs](../covidcast_times.md))
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `indicator-combination` |
+| **Geographic Levels** | State, County, Metropolitan Statistical Area (MSA), U.S. HHS Region (see [geography coding docs](../covidcast_geography.md)) |
+| **Date of last data revision:** October 12, 2020 (see [data revision docs](#changelog-deaths)) |
+
+## Changelog Deaths
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### October 12, 2020
+
+The 10 October 2020 issue of all `indicator-combination` deaths signals has been removed from the API. These signals are primarily constructed of USAFacts data, whose 10 October 2020 issue was discovered to be corrupt on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates included in the 10 October issue, so this change only affects forecasters who intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
+
+</details>
+
+
+## Overview
 
 These signals combine the cases and deaths data from JHU and USA Facts. This is
 a straight composition: the signals below use the [JHU signal data](jhu-csse.md)

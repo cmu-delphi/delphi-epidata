@@ -14,8 +14,20 @@ nav_order: 1
 | **Geographic Levels** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Weekly (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Weekly |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2022-10-01 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
 
 ## Overview
 {: .no_toc}

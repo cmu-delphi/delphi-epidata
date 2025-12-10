@@ -17,9 +17,21 @@ nav_order: 2
 | **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated | <!-- TODO: Last date not available on epiportal. -->
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
 
 <!-- TODO: | **Temporal Scope Start** | 2020-04-21 | -->
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes have been made to this signal.
+
+</details>
 
 ## Overview
 
