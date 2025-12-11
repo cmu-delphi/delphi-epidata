@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro:wght@400;600;700&family=Source+Sans+Pro:wght@400;600&display=swap');
+
+// Import Custom Tabs Styles
+@import "custom/tabs";
+
+body {
+    font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+    color: var(--body-text);
+}
+
+.site-header {
+    transition: all 0.3s ease;
+    border-bottom: none !important;
+    background-color: var(--body-background) !important;
+    font-family: 'Source Serif Pro', serif !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.site-title {
+    font-family: 'Source Serif Pro', serif !important;
+    font-weight: 600;
+    color: #002676 !important;
+    white-space: nowrap !important;
+}
+
+.main-content h1 {
+    border-bottom: none;
+    line-height: 1.15;
+    margin: 2.75rem 0 1.05rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Source Serif Pro', serif !important;
+    color: #002676 !important;
+    line-height: 1.15;
+    margin: 2.75rem 0 1.05rem;
+}
+
+aside {
+    padding-top: 1.5rem;
+    border-left: none;
+
+    h2 {
+        margin-top: 1.2rem;
+        font-size: 1.25rem;
+        font-family: 'Source Serif Pro', serif;
+        color: #002676;
+    }
+
+    .roles {
+        color: var(--body-text);
+        opacity: 0.8;
+    }
+
+    .nav-list-item {
+        margin-bottom: 0.25rem;
+    }
+
+    .nav-list-link {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.2s, color 0.2s;
+
+        &:hover {
+            background-color: rgba(0, 38, 118, 0.05);
+            color: #941120;
+            text-decoration: none;
+        }
+
+        &.active {
+            font-weight: 600;
+            color: #941120;
+            background-color: rgba(196, 18, 48, 0.03);
+        }
+    }
+
+    .list-unstyled li {
+        margin-bottom: 0.5rem;
+    }
+
+    .dev-status .list-unstyled li {
+        margin-bottom: 0.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    aside {
+        margin: 0.5rem;
+        width: calc(100vw - 1rem);
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+        h2:first-child {
+            margin-top: 1rem;
+        }
+    }
+}
+
+.row>main {
+    margin-bottom: 56px;
+}
+
+footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    margin: 0 0 1rem 0;
+    font-size: 0.8rem;
+    color: var(--body-text);
+    padding-top: 1rem;
+}
+
+.site-footer-credits {
+    display: none !important;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+
+    th,
+    td {
+        padding: 0.75rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    th {
+        text-align: left;
+        font-weight: 600;
+        color: #002676;
+        border-bottom: 2px solid rgba(0, 38, 118, 0.2);
+    }
+}
+
+code {
+    background-color: rgba(0, 0, 0, 0.04);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 85%;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.note,
+.warning,
+.important,
+.tip,
+.caution {
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+
+    >p {
+        margin: 0;
+    }
+
+    >p:first-child strong:first-child {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+}
+
+.note {
+    background-color: rgba(0, 123, 192, 0.05);
+    border-left-color: #007BC0;
+    color: #005F95;
+
+    >p:first-child strong:first-child {
+        color: #005F95;
+    }
+}
+
+.important {
+    background-color: rgba(0, 38, 118, 0.05);
+    border-left-color: #002676;
+    color: #002676;
+
+    >p:first-child strong:first-child {
+        color: #002676;
+    }
+}
+
+.warning,
+.caution {
+    background-color: rgba(196, 18, 48, 0.03);
+    border-left-color: #C41230;
+    color: #941120;
+
+    >p:first-child strong:first-child {
+        color: #941120;
+    }
+}
+
+
+.tip {
+    background-color: rgba(54, 143, 51, 0.05);
+    border-left-color: #368f33;
+    color: #1b5e20;
+
+    >p:first-child strong:first-child {
+        color: #2e7d32;
+    }
+}
+
+.note>blockquote,
+.warning>blockquote,
+.important>blockquote,
+.tip>blockquote,
+.caution>blockquote {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+    color: inherit;
+}
