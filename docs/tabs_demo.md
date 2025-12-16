@@ -1,6 +1,7 @@
 ---
 title: Documentation Features Tutorial
 nav_exclude: true
+search_exclude: true
 ---
 
 # Documentation Features Tutorial
