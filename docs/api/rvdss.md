@@ -9,16 +9,31 @@ nav_order: 1
 
 {: .no_toc}
 
-- **Source name:** `rvdss`
-- **Earliest issue available:** Epiweek 36 2013 (2013-09-07)
-- **Date of last change:** Never
-- **Available for:** province, lab, region, nation (see [Geography](#geography))
-- **Time type:** week (see [date format docs](../covidcast_times.md))
-- **License:** [Open Government Licence - Canada](#source-and-licensing)
+-   **Source name:** `rvdss`
+-   **Earliest issue available:** Epiweek 36 2013 (2013-09-07)
+-   **Date of last change:** Never
+-   **Available for:** province, lab, region, nation (see [Geography](#geography))
+-   **Time type:** week (see [date format docs](../covidcast_times.md))
+-   **License:** [Open Government Licence - Canada](#source-and-licensing)
 
 This data source of respiratory virus detections in Canada is collected by the [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) and published by the Public Health Agency of Canada (PHAC). Laboratory tests for various respiratory illnesses are reported on a weekly basis by sentinel laboratories across Canada to the [Centre for Immunization and Respiratory Infectious Diseases (CIRID)](https://www.canada.ca/en/public-health/services/infectious-diseases/centre-immunization-respiratory-infectious-diseases-cirid.html), a subsidiary of PHAC. The data was originally reported in weekly online reports, but since June 2024, has changed to being reported through a dynamic dashboard.
 
 NOTE: Pandemic COVID-19 is not reported in this data source.
+
+## Table Keys
+
+There are the meta-data columns used to uniquely identify data rows/points.
+
+| Key          | Description                                                                                                                     |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `geo_value`  | The geographical location (see [Geography](#geography))                                                                         |
+| `geo_type`   | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` |
+| `time_value` | The end of the epiweek                                                                                                          |
+| `time_type`  | Type of time value, only `week` available                                                                                       |
+| `epiweek`    | Epidemiological week                                                                                                            |
+| `issue`      | Issue/version date of the data (see [Data Versioning](#version) for full details)                                               |
+
+## Signals
 
 | Signal                         | Description                                                                                                                                 |
 |--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
@@ -32,21 +47,21 @@ NOTE: Pandemic COVID-19 is not reported in this data source.
 | `flu_pct_positive`             | Percentage of influenza laboratory tests that are positive (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                 |
 | `fluah1n1pdm09_positive_tests` | Number of positive influenza A(H1N1)pdm09 laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                    |
 | `fluah3_positive_tests`        | Number of positive influenza A(H3N2) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                         |
-| `fluauns_positive_tests`       | Number of positive influenza A (unsubtyped) laboratory tests <br/> **Earliest Date Available:** 2016-09-03                                   |
+| `fluauns_positive_tests`       | Number of positive influenza A (unsubtyped) laboratory tests <br/> **Earliest Date Available:** 2016-09-03                                  |
 | `flua_positive_tests`          | Number of positive influenza A laboratory tests (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                            |
 | `flua_pct_positive`            | Percentage of influenza A laboratory tests that are positive (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31               |
 | `flub_positive_tests`          | Number of positive influenza B laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                               |
 | `flub_pct_positive`            | Percentage of influenza B laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                  |
 | `rsv_tests`                    | Number of respiratory syncytial virus (RSV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                  |
-| `rsv_positive_tests`           | Number of laboratory tests positive for RSV <br/> **Earliest Date Available:** 2013-08-31                                                       |
+| `rsv_positive_tests`           | Number of laboratory tests positive for RSV <br/> **Earliest Date Available:** 2013-08-31                                                   |
 | `rsv_pct_positive`             | Percentage of RSV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                          |
 | `hpiv_tests`                   | Number of human parainfluenza virus (HPIV) laboratory tests (for all subtypes)<br/> **Earliest Date Available:** 2013-08-31                 |
-| `hpiv1_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-1 <br/> **Earliest Date Available:** 2013-08-31                                                    |
-| `hpiv2_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-2 <br/> **Earliest Date Available:** 2013-08-31                                                    |
-| `hpiv3_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-3 <br/> **Earliest Date Available:** 2013-08-31                                                    |
-| `hpiv4_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-4 <br/> **Earliest Date Available:** 2013-08-31                                                    |
-| `hpivother_positive_tests`     | Number of HPIV laboratory tests positive for any other HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                                                |
-| `hpiv_positive_tests`          | Number of laboratory tests positive for any HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                                                      |
+| `hpiv1_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-1 <br/> **Earliest Date Available:** 2013-08-31                                           |
+| `hpiv2_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-2 <br/> **Earliest Date Available:** 2013-08-31                                           |
+| `hpiv3_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-3 <br/> **Earliest Date Available:** 2013-08-31                                           |
+| `hpiv4_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-4 <br/> **Earliest Date Available:** 2013-08-31                                           |
+| `hpivother_positive_tests`     | Number of HPIV laboratory tests positive for any other HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                           |
+| `hpiv_positive_tests`          | Number of laboratory tests positive for any HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                                      |
 | `hpiv_pct_positive`            | Percentage of HPIV laboratory tests that are positive (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                      |
 | `adv_tests`                    | Number of adenovirus (ADV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                   |
 | `adv_positive_tests`           | Number of positive ADV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                       |
@@ -76,19 +91,19 @@ Unlike most other sources in the Delphi Epidata API, this data source reports da
 
 One of the 10 provinces or three territories, abbreviated using [standard 2-letter alpha codes](https://www.canada.ca/en/government/system/digital-government/digital-government-innovations/enabling-interoperability/gc-enterprise-data-reference-standards/data-reference-standard-canadian-provinces-territories.html)
 
-- `nl`: Newfoundland and Labrador
-- `pe`: Prince Edward Island
-- `ns`: Nova Scotia
-- `nb`: New Brunswick
-- `qc`: Quebec
-- `on`: Ontario
-- `mb`: Manitoba
-- `sk`: Saskatchewan
-- `ab`: Alberta
-- `bc`: British Columbia
-- `yt`: Yukon
-- `nt`: Northwest Territories
-- `nu`: Nunavut
+-   `nl`: Newfoundland and Labrador
+-   `pe`: Prince Edward Island
+-   `ns`: Nova Scotia
+-   `nb`: New Brunswick
+-   `qc`: Quebec
+-   `on`: Ontario
+-   `mb`: Manitoba
+-   `sk`: Saskatchewan
+-   `ab`: Alberta
+-   `bc`: British Columbia
+-   `yt`: Yukon
+-   `nt`: Northwest Territories
+-   `nu`: Nunavut
 
 ### Geo type `lab`
 
@@ -96,20 +111,20 @@ The laboratories reporting lab tests. Only Ontario, Quebec, and occasionally Sas
 
 **NOTE**: Over time, some laboratories were expanded and renamed:
 
-- Children's Hospital of Eastern Ontario (CHEO) -\> Eastern Ontario Regional Laboratory Association (EORLA)
-- Sunnybrook Women’s College Health Sciences Centre -\> Shared Hospital Laboratory
-- Toronto Medical Laboratory -\> University Health Network/Mount Sinai Hospital
+-   Children's Hospital of Eastern Ontario (CHEO) -\> Eastern Ontario Regional Laboratory Association (EORLA)
+-   Sunnybrook Women’s College Health Sciences Centre -\> Shared Hospital Laboratory
+-   Toronto Medical Laboratory -\> University Health Network/Mount Sinai Hospital
 
 ### Geo type `region`
 
 The provinces and territories are also aggregated into six geographic regions:
 
-- `atlantic`: Newfoundland and Labrador, Prince Edward Island, Nova Scotia and New Brunswick
-- `prairies`: Manitoba, Saskatchewan and Alberta
-- `territories`: Nunavut, Northwest Territories and Yukon
-- `on`: Ontario
-- `qc`: Quebec
-- `bc`: British Columbia
+-   `atlantic`: Newfoundland and Labrador, Prince Edward Island, Nova Scotia and New Brunswick
+-   `prairies`: Manitoba, Saskatchewan and Alberta
+-   `territories`: Nunavut, Northwest Territories and Yukon
+-   `on`: Ontario
+-   `qc`: Quebec
+-   `bc`: British Columbia
 
 ### Geo type `nation`
 
@@ -137,7 +152,7 @@ $$\text{Number Positive Lab Tests} = \frac{\text{Percent Positive Lab Tests}}{10
 
 These values are not rounded, so some are not integers.
 
-## Data Versioning
+## Data Versioning {#version}
 
 Epiweeks end on Saturday, and the data is usually updated the following Thursday or Friday. While the data was being reported with weekly reports, the version/issue was the date the webpage was modified. If this date was more than 14 days after the epiweek being reported, we set the version to 5 days after the end of epiweek being reported, as this is usually when the data is updated. This should only be a consideration for the historic reports, as the new dashboard states when it was last updated.
 
@@ -151,10 +166,10 @@ Data comes from labs across Canada, and some provinces only have one reporting l
 
 The source uses multiple terms used to denote missing data:
 
-- NC : Not collected
-- NR : Data not reported for current week
-- NA : Not available
-- Not tested
+-   NC : Not collected
+-   NR : Data not reported for current week
+-   NA : Not available
+-   Not tested
 
 For convenience, we treat all these as NA, but there may be subtle differences.
 
@@ -166,19 +181,15 @@ Data is reported around \~5 days after the end of an epiweek. For June-August 20
 
 The data experiences backfill as counts are finalized in subsequent weeks. The amount and impact of revisions depend on the virus.
 
-Across all indicators, most (99%) observations have less than 3 revisions.
-`hpiv1_*`,`hpiv2_*`,`hpiv3_*` and `hpiv4_*` indicators have revisions even more rarely.
+Across all indicators, most (99%) observations have less than 3 revisions. `hpiv1_*`,`hpiv2_*`,`hpiv3_*` and `hpiv4_*` indicators have revisions even more rarely.
 
-Across all indicators, the top 10% of observations (unique location-date pairs) with the largest relative spread have had values revised by 25-33% or more.
-However, 90% of observations with revisions are revised to within 20% of their final value (and stay within that 20% range) 1-3 weeks after the date an observation is being reported for.
-And 95% of observations with revisions are finalized within 3-4 weeks.
-So revisions that greatly impact a reported value happen soon after an observation is first reported.
+Across all indicators, the top 10% of observations (unique location-date pairs) with the largest relative spread have had values revised by 25-33% or more. However, 90% of observations with revisions are revised to within 20% of their final value (and stay within that 20% range) 1-3 weeks after the date an observation is being reported for. And 95% of observations with revisions are finalized within 3-4 weeks. So revisions that greatly impact a reported value happen soon after an observation is first reported.
 
 Looking at the revision speed of specific indicators, `sarscov2_*` and `flub_*` indicators are finalized fairly fast (95% finalized after 12 days). `fluah3_positive_tests` and `adv_*` indicators are finalized fairly slowly (95% finalized after 30-40 days).
 
 `flu_pct_positive`, `flua_pct_positive`, `fluah1n1pdm09_positive_tests` and related indicators have larger spread than other indicators. That is, \~70-90% of observations have more than 10% relative spread vs 20-30% in other indicators.
 
-## Source and Licensing
+## Source and Licensing {#source-and-licensing}
 
 This source is derived from PHAC's Respiratory Virus Detection Data, originally reported in [weekly reports](https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada.html), and currently reported in a [dynamic dashboard](https://health-infobase.canada.ca/respiratory-virus-surveillance/?source=rvdss).
 
