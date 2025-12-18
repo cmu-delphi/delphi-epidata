@@ -71,12 +71,17 @@ class AcquisitionTests(unittest.TestCase):
     TEST_DIR = Path(__file__).parent.parent.parent.parent
     detection_data = pd.read_csv(str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable_Formatted.csv")
     detection_data['time_type'] = "week"
-    detection_data=detection_data.replace({np.nan: None})
-    #detection_data=detection_data.replace({float('nan'): None})
 
-    pdb.set_trace()
+    # get the index of the subset of data we want to use
+    subset_index = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & 
+                   (detection_data['time_value'].isin([20240831, 20240907]))].index
+    
+    
+    # change issue so the data has more than one
+    detection_data.loc[subset_index,"issue"] = 20250227
+    
     # take a small subset just for testing insertion
-    detection_subset = detection_data[(detection_data['geo_value'].isin(['nl', 'nb'])) & (detection_data['time_value'].isin([20240831, 20240907])) ]
+    detection_subset = detection_data.loc[subset_index]
     
     # get the expected response when calling the API
     # the dataframe needs to add the missing columns and replace nan with None
@@ -90,7 +95,7 @@ class AcquisitionTests(unittest.TestCase):
         "message": "success",
     }
     
-    # get the rest of the data not in the subset to test more calling options
+    # get another subset of the data not in the subset to test more calling options
     detection_subset2 = detection_data[(detection_data['geo_value'].isin(['nu', 'nt'])) & (detection_data['time_value'].isin([20240831, 20240907])) ]
     
     df2 = detection_subset2.reindex(rvdss_cols,axis=1)
@@ -102,12 +107,20 @@ class AcquisitionTests(unittest.TestCase):
         "message": "success",
     }
     
-    # after two aquisitions
-    df_full = pd.concat([detection_subset, detection_subset2], ignore_index=True).reindex(rvdss_cols,axis=1)
-    df_full = df_full.replace({np.nan: None}).sort_values(by=["epiweek","geo_value"])
-    df_full = df_full.to_dict(orient = "records")
+    # get another subset of the data for a single geo_value with multiple issues
+    subset_index2 = detection_data[(detection_data['geo_value'].isin(['ouest du québec'])) & 
+                   (detection_data['time_value'].isin([20240831, 20240907]))].index
     
-    expected_response_full = {"epidata": df_full,
+    detection_data.loc[subset_index2,"issue"] = [20250220,20250227]
+    detection_data.loc[subset_index2,"epiweek"] = [202435,202435]
+    detection_data.loc[subset_index2,"time_value"] = [20240831,20240831]
+
+    detection_subset3 = detection_data.loc[subset_index2]
+    df3 = detection_subset3.reindex(rvdss_cols,axis=1)
+    df3 = df3.replace({np.nan: None}).sort_values(by=["epiweek","geo_value"])
+    df3 = df3.to_dict(orient = "records")
+    
+    expected_response3 = {"epidata": df3,
         "result": 1,
         "message": "success",
     }
@@ -153,7 +166,7 @@ class AcquisitionTests(unittest.TestCase):
         with self.assertRaises(mysql.connector.errors.IntegrityError):
             update(detection_subset, self.logger)
 
-    # TODO: test with exact column order
+    # Request with exact column order
     with self.subTest(name='exact column order'):
         rvdss_cols_subset = [col for col in detection_subset2.columns if col in rvdss_cols]
         ordered_cols = [col for col in rvdss_cols if col in rvdss_cols_subset] 
@@ -163,9 +176,7 @@ class AcquisitionTests(unittest.TestCase):
         connection_mock.commit = self.cnx.commit
         mock_sql.return_value = connection_mock
         
-        pdb.set_trace()
         update(ordered_df, self.logger)
-        pdb.set_trace()
         
         response = Epidata.rvdss(geo_type='province',
                                  time_values= [202435, 202436],
@@ -174,14 +185,37 @@ class AcquisitionTests(unittest.TestCase):
         self.assertEqual(response,expected_response2)
         
         
-    # TODO: check requesting by issue
-    # with self.subTest(name='issue request'):
-    #     response = Epidata.rvdss(geo_type='province',
-    #                              time_values= [202435, 202436],
-    #                              geo_value = ['nl','nb'],
-    #                              issues = [])
+    # request by issue
+    with self.subTest(name='issue request'):
+        response = Epidata.rvdss(geo_type='province',
+                                 time_values= [202435, 202436],
+                                 geo_value = ['nl','nb'],
+                                 issues = 20250227)
+        
+        self.assertEqual(response,expected_response)
                             
         
-    # # TODO: check requesting individual lists
-    # with self.subTest(name='duplicate aquisition'):
+    # check requesting lists vs single values
+    with self.subTest(name='duplicate aquisition'):
+        # * with geo_value, single geo_type, time_value, issue
+        connection_mock.cursor.return_value = self.cnx.cursor()
+        connection_mock.commit = self.cnx.commit
+        mock_sql.return_value = connection_mock
+        
+        update(detection_subset3, self.logger)
+        
+        response = Epidata.rvdss(geo_type='province',
+                                 time_values= [202435, 202436],
+                                 geo_value = "*",
+                                 issues = 20250227)
+        
+        response2 = Epidata.rvdss(geo_type='lab',
+                                 time_values= 202435,
+                                 geo_value = 'ouest du québec',
+                                 issues = [20250220,20250227])
+        
+        self.assertEqual(response,expected_response)
+        self.assertEqual(response2,expected_response3)
+        
+        
 
