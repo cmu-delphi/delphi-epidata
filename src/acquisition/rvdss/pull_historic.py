@@ -20,7 +20,7 @@ from delphi.epidata.acquisition.rvdss.constants import (
         ALTERNATIVE_SEASON_BASE_URL, SEASON_BASE_URL, FIRST_WEEK_OF_YEAR, DASHBOARD_BASE_URLS_2023_2024_SEASON
     )
 from delphi.epidata.acquisition.rvdss.utils import (
-        abbreviate_geo, create_geo_types, check_date_format,
+        abbreviate_geo, create_geo_types, check_date_format,convert_date_to_int,
         fetch_archived_dashboard_data, preprocess_table_columns, add_flu_prefix
     )
  #%% Functions
@@ -499,6 +499,17 @@ def fetch_one_season_from_report(url):
             del combined_positive_tables
             del pos_table
 
+    # convert dates to integers
+    all_respiratory_detection_tables = all_respiratory_detection_tables.reset_index()
+    all_respiratory_detection_tables['time_value'] = [convert_date_to_int(t) for t in all_respiratory_detection_tables['time_value']]
+    all_respiratory_detection_tables['issue'] = [convert_date_to_int(t) for t in all_respiratory_detection_tables['issue']]
+    all_respiratory_detection_tables = all_respiratory_detection_tables.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True)
+    
+    all_positive_tables = all_positive_tables.reset_index()
+    all_positive_tables['time_value'] = [convert_date_to_int(t) for t in all_positive_tables['time_value']]
+    all_positive_tables['issue'] = [convert_date_to_int(t) for t in all_positive_tables['issue']]
+    all_positive_tables = all_positive_tables.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True)
+    
     return {
         "respiratory_detection": all_respiratory_detection_tables,
         "positive": all_positive_tables
@@ -515,5 +526,4 @@ def fetch_historical_dashboard_data():
     # Update the end of the 2023-2024 season with the dashboard data
 
     dict_list = [fetch_archived_dashboard_data(url) for url in DASHBOARD_BASE_URLS_2023_2024_SEASON]
-
     return dict_list

@@ -8,7 +8,7 @@ import pandas as pd
 import argparse
 from datetime import datetime
 
-from delphi.epidata.acquisition.rvdss.utils import create_geo_types, abbreviate_geo, fetch_current_dashboard_data, check_most_recent_update_date,get_dashboard_update_date, combine_tables, duplicate_provincial_detections,expand_detections_columns
+from delphi.epidata.acquisition.rvdss.utils import create_geo_types, abbreviate_geo, fetch_current_dashboard_data, check_most_recent_update_date,get_dashboard_update_date, combine_tables, duplicate_provincial_detections,expand_detections_columns      
 from delphi.epidata.acquisition.rvdss.constants import DASHBOARD_BASE_URL, RESP_DETECTIONS_OUTPUT_FILE, POSITIVE_TESTS_OUTPUT_FILE,UPDATE_DATES_FILE
 from delphi.epidata.acquisition.rvdss.pull_historic import fetch_report_data,fetch_historical_dashboard_data
 from delphi.epidata.acquisition.rvdss.database import update
@@ -75,6 +75,7 @@ def update_historical_data(logger):
     # Combine all rables into a single table
     data = combine_tables(hist_dict_list)
     data['time_type'] = "week"
+    
     
     #update database
     update(data,logger)

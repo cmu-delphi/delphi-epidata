@@ -483,15 +483,38 @@ class QueryBuilder:
                 self.where_integers("issue", issues)
         return self
 
-    def apply_as_of_filter(self, history_table: str, as_of: Optional[int]) -> "QueryBuilder":
+    # Note: This function was originally only used by covidcast. We also want
+    # to use this function for rvdss, which doesn't meet all the assumptions
+    # of the function.
+    #
+    # The function assumes that `source` and `signal` columns are always
+    # available, and that `time_value` is the name of the time field.
+    #
+    # `rvdss` doesn't have `source` or `signal` columns, so add the
+    # `use_source_signal` flag to toggle inclusion of `source` and `signal`
+    # columns. `use_source_signal` defaults to True so if not passed, the
+    # function retains the historical behavior.
+    #
+    # `rvdss` uses `epiweek` as the time field, so let the user set the name
+    # of the time column with`time_value_field`. `time_value_field` defaults
+    # to `time_value`, so if not passed, the function retains the historical
+    # behavior.
+    def apply_as_of_filter(self, history_table: str, as_of: Optional[int], time_value_field: Optional[str] = "time_value", use_source_signal: Optional[bool] = True) -> "QueryBuilder":
         if as_of is not None:
             self.retable(history_table)
             sub_condition_asof = "(issue <= :as_of)"
             self.params["as_of"] = as_of
-            sub_fields = "max(issue) max_issue, time_type, time_value, `source`, `signal`, geo_type, geo_value"
-            sub_group = "time_type, time_value, `source`, `signal`, geo_type, geo_value"
+
             alias = self.alias
-            sub_condition = f"x.max_issue = {alias}.issue AND x.time_type = {alias}.time_type AND x.time_value = {alias}.time_value AND x.source = {alias}.source AND x.signal = {alias}.signal AND x.geo_type = {alias}.geo_type AND x.geo_value = {alias}.geo_value"
+            source_signal_plain = source_signal_alias = ""
+            # If `use_source_signal` toggled on, append `source` and `signal` columns to group-by list and join list.
+            if use_source_signal:
+                source_signal_plain = ", `source`, `signal`"
+                source_signal_alias = f" AND x.source = {alias}.source AND x.signal = {alias}.signal"
+
+            sub_fields = f"max(issue) max_issue, time_type, {time_value_field}{source_signal_plain}, geo_type, geo_value"
+            sub_group = f"time_type, {time_value_field}{source_signal_plain}, geo_type, geo_value"
+            sub_condition = f"x.max_issue = {alias}.issue AND x.time_type = {alias}.time_type AND x.{time_value_field} = {alias}.{time_value_field}{source_signal_alias} AND x.geo_type = {alias}.geo_type AND x.geo_value = {alias}.geo_value"
             self.subquery = f"JOIN (SELECT {sub_fields} FROM {self.table} WHERE {self.conditions_clause} AND {sub_condition_asof} GROUP BY {sub_group}) x ON {sub_condition}"
         return self
 
