@@ -193,8 +193,6 @@ def get_positive_data(base_url,headers,update_date):
     df['geo_type'] = [create_geo_types(g,"lab") for g in df['geo_value']]
     df.insert(1,"issue",update_date)
     df['region'] = [abbreviate_geo(g) for g in df['region']]
-    
-    #df=df.drop(["weekorder","region","year","week"],axis=1)
 
     df = df.pivot(index=['epiweek','time_value','issue','geo_type','geo_value','region','week','weekorder','year'],
                   columns="virus",values=['tests','percentpositive','positivetests'])
@@ -355,13 +353,9 @@ def combine_tables(data_dict):
         detections=data_dict["respiratory_detection"]
         
         positive["epiweek"] = pd.to_numeric(positive["epiweek"],downcast="integer")
-        #positive["time_value"] = pd.to_datetime(positive["time_value"])
-        #positive["issue"] = pd.to_datetime(positive["issue"])
         positive['geo_type'] = [create_geo_types(g,'lab') for g in positive['geo_value']]
 
         detections["epiweek"] = pd.to_numeric(detections["epiweek"],downcast="integer")
-        #detections["time_value"] = pd.to_datetime(detections["time_value"])
-        #detections["issue"] = pd.to_datetime(detections["issue"])
         detections['geo_type'] = [create_geo_types(g,'lab') for g in detections['geo_value']]
 
         detections = expand_detections_columns(detections)
