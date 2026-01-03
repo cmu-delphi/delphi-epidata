@@ -8,16 +8,31 @@ nav_order: 1
 # Doctor Visits
 {: .no_toc}
 
-* **Source name:** `doctor-visits`
-* **Earliest issue available:** April 29, 2020
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** November 9, 2020
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `doctor-visits` |
+| **Data Source** | Health system partners |
+| **Geographic Levels** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Daily |
+| **Date of last data revision:** | November 9, 2020 (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020-02-01 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### November 9, 2020
+We went from a custom geo-mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
+</details>
 
 ## Overview
+{: .no_toc}
 
 This data source is based on information about outpatient visits, provided to us
 by health system partners. Using this outpatient data, we estimate the
@@ -50,14 +65,11 @@ $$
 	Y_{it}^{\text{Flu}}\right)}{N_{it}}
 $$
 
-The estimated standard error is:
+**Note on Uncertainty:** The standard error formula below represents the theoretical error of the binomial proportion. However, due to the smoothing and day-of-week adjustments applied later in the pipeline, the actual standard error in the final signal will differ.
 
 $$
 \widehat{\text{se}}(\hat{p}_{it}) =  100 \sqrt{\frac{\frac{\hat{p}_{it}}{100}(1-\frac{\hat{p}_{it}}{100})}{N_{it}}}.
 $$
-
-Note the quantity above is not going to be correct for multiple reasons: smoothing/day of
-week adjustments/etc.
 
 ### Day-of-Week Adjustment
 

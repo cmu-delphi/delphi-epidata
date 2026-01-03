@@ -1,22 +1,40 @@
 ---
-title: Google Symptom Search Trends
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 1
+parent: Inactive Sources (COVIDcast)
+grand_parent: Data Sources and Signals
+title: <i>inactive</i> Google Symptom Search Trends
 ---
 
 # Google Symptoms
 {: .no_toc}
 
-* **Source name:** `google-symptoms`
-* **Earliest issue available:** Aug 20, 2017
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** February 28, 2025
-* **Available for:** county, MSA, HRR, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** To download or use the data, you must agree to the Google [Terms of Service](https://policies.google.com/terms)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `google-symptoms` |
+| **Data Source** | Google |
+| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated after November 16th, 2025 |
+| **Date of last data revision:** | March 14th, 2025 (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | February 13th, 2020, with some variation depending on geographic area|
+| **License** | [Google Terms of Service](https://policies.google.com/terms) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+
+### March 14, 2025
+Google made earlier data available (back to August 15, 2017), and fixed a gap in county-level data between November 14, 2022 and February 20, 2023.
+
+### February 14, 2025
+Two new signals were added, relating to conjunctivitis: `s07_raw_search` and `s07_smoothed_search`.
+
+
+</details>
 
 ## Overview
+{: .no_toc}
 
 This data source is based on the [COVID-19 Search Trends symptoms
 dataset](https://console.cloud.google.com/marketplace/product/bigquery-public-datasets/covid19-search-trends?hl=en-GB).

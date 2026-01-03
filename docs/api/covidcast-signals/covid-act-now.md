@@ -1,20 +1,35 @@
 ---
+parent: Inactive Sources (COVIDcast)
+grand_parent: Data Sources and Signals
 title: <i>inactive</i> COVID Act Now
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
 ---
 
 # COVID Act Now (CAN)
 {: .no_toc}
 
-* **Source name:** `covid-act-now`
-* **Earliest issue available:** 2021-03-25
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
-* **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `covid-act-now` |
+| **Data Source** | COVID Act Now |
+| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2021-12-02 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020-03-01 |
+| **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 The [COVID Act Now (CAN)](https://covidactnow.org/) data source provides COVID-19 testing statistics, such as positivity rates and total tests performed.
 The county-level positivity rates and test totals are pulled directly from CAN using [their API](https://covidactnow.org/data-api).

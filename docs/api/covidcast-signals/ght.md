@@ -1,19 +1,33 @@
 ---
-title: <i>inactive</i> Google Health Trends
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources (COVIDcast)
+grand_parent: Data Sources and Signals
+title: <i>inactive</i> (COVIDcast) Google Health Trends
 ---
 
 # Google Health Trends
 {: .no_toc}
 
-* **Source name:** `ght`
-* **Earliest issue available:** April 29, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Available for:** dma, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `ght` |
+| **Data Source** | Google Health Trends |
+| **Geographic Levels** | State, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA), Designated Marketing Area (DMA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2021-03-04 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020-02-01 |
+| **License** | [Google Terms of Service](https://policies.google.com/terms)|
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
 
 ## Overview
 
