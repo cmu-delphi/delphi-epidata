@@ -7,6 +7,16 @@ nav_order: 1
 
 # FluView Metadata
 
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `fluview_meta` |
+| **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
+
+## Overview
+{: .no_toc}
+
 This is the API documentation for accessing the FluView metadata
 (`fluview_meta`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological
 data.
@@ -16,15 +26,20 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
 ## FluView Metadata
 
 Returns information about the [`fluview` endpoint](fluview.md).
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/fluview_meta/
+The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_meta/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -44,7 +59,7 @@ There are no parameters for this endpoint.
 # Example URLs
 
 ### FluView Metadata
-https://api.delphi.cmu.edu/epidata/fluview_meta/
+<https://api.delphi.cmu.edu/epidata/fluview_meta/>
 
 ```json
 {
@@ -59,3 +74,38 @@ https://api.delphi.cmu.edu/epidata/fluview_meta/
   "message": "success"
 }
 ```
+
+# Code Samples
+
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch FluView metadata.
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+```python
+# Import
+from epidatpy import EpiDataContext
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_fluview_meta()
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_fluview_meta()
+print(res)
+```
+  </div>
+
+</div>

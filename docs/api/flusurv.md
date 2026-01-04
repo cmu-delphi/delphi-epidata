@@ -1,23 +1,36 @@
 ---
-title: <i>inactive</i> Flusurv
+title: Flusurv
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 2
+nav_order: 3
 ---
 
 # FluSurv
+{: .no_toc}
 
-This is the API documentation for accessing the FluSurv (`flusurv`) endpoint of
-[Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `flusurv` |
+| **Data Source** | [CDC FluSurv-NET](https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html) |
+| **Geographic Levels** | Specific catchment areas (Network, State, or County-level catchments). See [Geographic Codes](geographic_codes.html#flusurv-locations) for full list |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Temporal Scope Start** | 2003w40 |
+| **Reporting Cadence** | Weekly |
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
+
+
+
+
+## Overview
+{: .no_toc}
+
+This data source provides laboratory-confirmed influenza hospitalization rates from the from the [CDC's Influenza Hospitalization Surveillance Network (FluSurv-NET)](https://www.cdc.gov/fluview/overview/influenza-hospitalization-surveillance.html?CDC_AAref_Val=https://www.cdc.gov/flu/weekly/influenza-hospitalization-surveillance.htm). The data includes age-stratified hospitalization rates and rates by race, sex, and flu type, when available.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
-
-## FluSurv Data
-
-FluSurv-NET data (flu hospitaliation rates) from CDC.
 
 See also:
   - <https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html>
@@ -26,11 +39,93 @@ See also:
     The US Influenza Hospitalization Surveillance Network. Emerging Infectious
     Diseases, 21(9), 1543-1550. <https://dx.doi.org/10.3201/eid2109.141912>.
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+
+## Estimation
+
+The rates provided in this dataset are pulled directly from the CDC's GRASP (Geospatial Research, Analysis, and Services Program) API.
+
+For a specific location and stratum (e.g., Age 0-4), the rate represents the number of residents of the catchment area hospitalized with laboratory-confirmed influenza divided by the total population of that stratum in that catchment area, multiplied by 100,000.
+
+### Processing Details
+The Delphi pipeline scrapes the CDC GRASP API to emulate browser requests.
+* **Duplicate Handling:** In rare instances where the source API provides two differing rates for the same location, epiweek, and demographic group, the pipeline is configured to retain the first value returned by the API.
+* **Seasonality:** Data is processed based on "seasons" defined by the CDC, but is stored and served by Delphi indexed by Epiweek.
+
+## Strata Definitions
+
+The signals are broken down into specific demographic groups. The suffix of the signal name corresponds to the groups below.
+
+### Age Groups
+The dataset includes both historical age groupings (0-4) and newer, more granular groupings (0tlt1, etc.) added in recent years.
+
+| Signal Suffix | Age Group |
+| :--- | :--- |
+| `age_0` | 0-4 yr |
+| `age_1` | 5-17 yr |
+| `age_2` | 18-49 yr |
+| `age_3` | 50-64 yr |
+| `age_4` | 65+ yr |
+| `age_5` | 65-74 yr |
+| `age_6` | 75-84 yr |
+| `age_7` | 85+ yr |
+| `age_0tlt1` | 0 to <1 yr |
+| `age_1t4` | 1-4 yr |
+| `age_5t11` | 5-11 yr |
+| `age_12t17` | 12-17 yr |
+| `age_18t29` | 18-29 yr |
+| `age_30t39` | 30-39 yr |
+| `age_40t49` | 40-49 yr |
+| `age_gte75` | >= 75 yr |
+| `age_lt18` | < 18 yr |
+| `age_gte18` | >= 18 yr |
+
+### Race and Ethnicity
+The dataset tracks 5 specific racial and ethnic groups.
+
+| Signal Suffix | Group Description |
+| :--- | :--- |
+| `race_white` | White |
+| `race_black` | Black |
+| `race_hisp` | Hispanic/Latino |
+| `race_asian` | Asian/Pacific Islander |
+| `race_natamer` | American Indian/Alaska Native |
+
+### Sex
+
+| Signal Suffix | Group Description |
+| :--- | :--- |
+| `sex_male` | Male |
+| `sex_female` | Female |
+
+### Influenza Type
+
+| Signal Suffix | Group Description |
+| :--- | :--- |
+| `flu_a` | Influenza A |
+| `flu_b` | Influenza B |
+
+## Lag and Backfill
+
+FluSurv-NET data is subject to reporting lags and revisions. The CDC may update past weekly rates as more hospitalization data becomes available or is corrected.
+
+The Delphi API tracks these changes via the `issue` date (inferred from the `loaddatetime` provided by the CDC API). When new data is fetched from the CDC, if a rate for a past week has changed, the database is updated to reflect the new value, allowing users to query historical versions of the data using the `lag` or `issues` parameters.
+
+## Limitations
+
+* This data does not cover the entire United States. It covers specific catchment areas within 13 states (EIP sites) and additional states participating in the IHSP. Rates are representative of these specific populations and may not perfectly generalize to the entire national population.
+* As with all surveillance data, recent weeks may be subject to significant backfill.
+* Not all strata (e.g., specific age bands or racial groups) may be available for all locations or all historical dates, depending on the data collection practices at the time.
+
 # The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/flusurv/>
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
@@ -38,19 +133,20 @@ See [this documentation](README.md) for details on specifying epiweeks, dates, a
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/flusurv_locations.txt) labels |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
+| `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.html#flusurv-locations)) |
 
 ### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
-| `issues`  | issues                                     | `list` of epiweeks |
+| `issues`  | issues (see [Date Formats](date_formats.html))                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+{: .note}
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
 ## Response
 
@@ -94,12 +190,13 @@ If neither is specified, the current issues are used.
 | `epidata[].season` | indicates the start and end years of the winter flu season in the format YYYY-YY (e.g. 2022-23 indicates the flu season running late 2022 through early 2023) | string |
 | `message` | `success` or error message | string |
 
-Notes:
-* The `flusurv` age groups are, in general, not the same as the ILINet
+{: .note}
+> **Note:**
+> * The `flusurv` age groups are, in general, not the same as the ILINet
 (`fluview`) age groups. However, the following groups are equivalent:
-  - flusurv age_0 == fluview age_0  (0-4 years)
-  - flusurv age_3 == fluview age_4  (50-64 years)
-  - flusurv age_4 == fluview age_5  (65+ years)
+>   - flusurv age_0 == fluview age_0  (0-4 years)
+>   - flusurv age_3 == fluview age_4  (50-64 years)
+>   - flusurv age_4 == fluview age_5  (65+ years)
 
 # Example URLs
 
@@ -130,45 +227,116 @@ Notes:
 
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201940` and `202001-202010` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201701-201801`.
 
-### JavaScript (in a web browser)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
 
-````html
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_flusurv(locations="CA", epiweeks=EpiRange(201701, 201801))
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_flusurv(locations = "CA", epiweeks = epirange(201701, 201801))
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
+
+```html
 <!-- Imports -->
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.flusurv('ca', [201940, Epidata.range(202001, 202010)]).then((res) => {
+  EpidataAsync.flusurv('CA', [EpidataAsync.range(201701, 201801)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-````
+```
+  </div>
 
-### Python
+</div>
+
+### Legacy Clients
+
+We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/), [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R), and [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.js).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.flusurv(['ca'], [201940, Epidata.range(202001, 202010)])
+res = Epidata.flusurv(['CA'], [Epidata.range(201701, 201801)])
 print(res['result'], res['message'], len(res['epidata']))
-````
+```
+  </div>
 
-### R
+  <div class="tab-content" data-tab="r" markdown="1">
 
-````R
-# Import
-source('delphi_epidata.R')
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
 # Fetch data
-res <- Epidata$flusurv(list('ca'), list(201940, Epidata$range(202001, 202010)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+res <- Epidata$flusurv(locations = list("CA"), epiweeks = list(Epidata$range(201701, 201801)))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.flusurv('CA', [EpidataAsync.range(201701, 201801)]).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+  </div>
+
+</div>
