@@ -1,5 +1,5 @@
 ---
-title: Glossary (link to Google Doc)
+title: Glossary
 nav_order: 7
 ---
 
