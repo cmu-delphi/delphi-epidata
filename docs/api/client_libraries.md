@@ -6,7 +6,7 @@ nav_order: 5
 # Getting Started with R and Python
 {: .no_toc}
 
-The [`epidatr`](https://cmu-delphi.github.io/epidatr/) (R) [`epidatpy`](https://cmu-delphi.github.io/epidatpy/) (Python) packages provide access to all the endpoints of the Delphi Epidata API, and can be used to make requests for specific signals on specific dates and in select geographic regions.
+The [`epidatr`](https://cmu-delphi.github.io/epidatr/) (R) [`epidatpy`] and (https://cmu-delphi.github.io/epidatpy/) (Python) packages provide access to all the endpoints of the Delphi Epidata API, and can be used to make requests for specific signals on specific dates and in select geographic regions.
 
 ## Table of Contents
 {: .no_toc .text-delta}
