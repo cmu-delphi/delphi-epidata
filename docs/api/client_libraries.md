@@ -68,7 +68,7 @@ To generate your key, [register for a pseudo-anonymous account](https://api.delp
 
 ## Basic Usage
 
-Fetching data from the Delphi Epidata API is simple. Suppose we are interested in the [`covidcast` endpoint](/covidcast.md), which provides access to a [wide range of data](/covidcast_signals.md) on COVID-19. Reviewing the endpoint documentation, we see that we [need to specify](/covidcast_api_queries.md) a data source name, a signal name, a geographic level, a time resolution, and the location and times of interest.
+Fetching data from the Delphi Epidata API is simple. Suppose we are interested in the [main endpoint](/covidcast.md) (formerly called `covidcast`), which provides access to a [wide range of data](/covidcast_signals.md) on COVID-19 and other diseases. Reviewing the endpoint documentation, we see that we [need to specify](/covidcast_api_queries.md) a data source name, a signal name, a geographic level, a time resolution, and the location and times of interest.
 
 The `pub_covidcast()` function lets us access the `covidcast` endpoint:
 
