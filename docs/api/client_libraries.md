@@ -47,7 +47,7 @@ remotes::install_github("cmu-delphi/epidatr", ref = "dev")
 The `epidatpy` package will soon be [available on PyPI as `epidatpy`](https://pypi.org/project/epidatpy/).
 Meanwhile, it can be [installed from GitHub](https://github.com/cmu-delphi/epidatpy/) with
 
-```Python
+```python
 pip install "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 ```
 
