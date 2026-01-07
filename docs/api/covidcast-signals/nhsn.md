@@ -49,9 +49,10 @@ State and nation-level values are pulled directly from the source; HHS-level val
 ### Available Signals
 {: .no_toc}
 
-* **Reporting Cutoffs:**
-  * **Finalized Signals:** Data received by Friday/Saturday of the following week (~6-7 day lag).
-  * **Preliminary (`_prelim`) Signals:** Data received by Wednesday of the following week (~4 day lag).
+#### Reporting Cutoffs
+
+  * **Finalized Signals:** Includes only data received by Friday/Saturday of the following week (~6-7 day lag).
+  * **Preliminary Signals (`_prelim` suffix):** Includes only data received by Wednesday of the following week (~4 day lag).
 
 | Signal Name | Pathogen | Metric Description | Version |
 | :--- | :--- | :--- | :--- |

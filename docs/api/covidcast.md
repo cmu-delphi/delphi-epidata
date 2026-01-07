@@ -86,7 +86,7 @@ data <- pub_covidcast('fb-survey', 'smoothed_cli', 'county', 'day', geo_values =
 [The API clients](covidcast_clients.md) have extensive documentation providing
 further examples.
 
-Alternatively, to manually construct URLs and parse responses to access data, [refer to this section](covidcast_api_queries.md).
+Alternatively, users can [manually construct URLs and parse responses to access data](covidcast_api_queries.md).
 
 ## Data Sources and Signals
 
@@ -110,7 +110,7 @@ data from this endpoint are listed in the [changelog](covidcast_changelog.md).
 To obtain many of these signals and update them daily, Delphi has written
 extensive software to obtain data from various sources, aggregate the data,
 calculate statistical estimates, and format the data to be shared through the
-COVIDcast endpoint of the Delphi Epidata API. This code is 
+COVIDcast endpoint of the Delphi Epidata API. This code is
 [open source and available on GitHub](https://github.com/cmu-delphi/covidcast-indicators),
 and contributions are welcome.
 

@@ -41,14 +41,14 @@ As of May 2024, NSSP received data from 78% of US EDs.
 ### Available Signals
 {: .no_toc}
 
-* **Raw Signals** (`pct_ed_visits_...`) represent the weekly percentage of ED visits for the specific pathogen.
-* **Smoothed Signals** (`smoothed_pct_ed_visits_...`) represent a **3-week moving average** of the raw signal.
+* **Raw Signals** (prefix `pct_ed_visits_`) represent the weekly percentage of ED visits associated with a specific pathogen.
+* **Smoothed Signals** (prefix `smoothed_pct_ed_visits_`) represent a **3-week moving average** of the raw signal.
 
 | Signal Pair (Raw / Smoothed) | Pathogen | Description |
 | :--- | :--- | :--- |
-| `pct_ed_visits_covid`<br>`smoothed_pct_ed_visits_covid` | **COVID-19** | Percentage of ED visits with a discharge diagnosis of COVID-19. | 
-| `pct_ed_visits_influenza`<br>`smoothed_pct_ed_visits_influenza` | **Influenza** | Percentage of ED visits with a discharge diagnosis of Influenza. | 
-| `pct_ed_visits_rsv`<br>`smoothed_pct_ed_visits_rsv` | **RSV** | Percentage of ED visits with a discharge diagnosis of RSV. | 
+| `pct_ed_visits_covid`<br>`smoothed_pct_ed_visits_covid` | **COVID-19** | Percentage of ED visits with a discharge diagnosis of COVID-19. |
+| `pct_ed_visits_influenza`<br>`smoothed_pct_ed_visits_influenza` | **Influenza** | Percentage of ED visits with a discharge diagnosis of Influenza. |
+| `pct_ed_visits_rsv`<br>`smoothed_pct_ed_visits_rsv` | **RSV** | Percentage of ED visits with a discharge diagnosis of RSV. |
 | `pct_ed_visits_combined`<br>`smoothed_pct_ed_visits_combined` | **Combined** | Percentage of ED visits with a diagnosis of **any** of the above (COVID, Flu, or RSV). |                                 |
 
 ## Table of Contents

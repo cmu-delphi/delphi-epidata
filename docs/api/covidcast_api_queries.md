@@ -1,9 +1,9 @@
 ---
-title: Constructing API Queries
+title: Manually Constructing API Queries
 parent: Main Endpoint (COVIDcast)
 nav_order: 4
 ---
-# Constructing API Queries
+# Manually Constructing API Queries
 
 The COVIDcast API is based on HTTP GET queries and returns data in JSON form.
 The base URL is <https://api.delphi.cmu.edu/epidata/covidcast/>.
