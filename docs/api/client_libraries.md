@@ -292,6 +292,9 @@ epidata.pub_covidcast(
   </div>
 </div>
 
+> **Note:** Requesting a large number of issues for several locations or several time values at once can result in slow-running queries or timeouts. If you encounter timeouts, try querying subsets of locations or dates.
+{: .note }
+
 Finally, we can use the `lag` argument to request only data that was reported a certain number of days after the event.
 
 <div class="code-tabs">
@@ -412,9 +415,9 @@ International data is available via
 
 ## Finding data sources and signals of interest
 
-Above we used data from [Delphi’s symptom surveys](https://delphi.cmu.edu/covid19/ctis/), but the Epidata API includes numerous data streams: medical claims data, cases and deaths, mobility, and many others. This can make it a challenge to find the data stream that you are most interested in.
+Above we used data from [Delphi’s symptom surveys](../symptom-survey/index.md), but the Epidata API includes numerous data streams: medical claims data, cases and deaths, mobility, and many others. This can make it a challenge to find the data stream that you are most interested in.
 
-The Epidata documentation lists all the data sources and signals available through the API for [COVID-19](/covidcast_signals.md) and for [other diseases](README.md#source-specific-parameters).
+The Epidata documentation lists all the data sources and signals available through the API's [main endpoint](/covidcast_signals.md), focused on respiratory diseases, and [the collection of legacy endpoints](README.md#source-specific-parameters), covering additional diseases such as dengue.
 
 You can also use the client libraries to discover endpoints interactively:
 
@@ -449,9 +452,9 @@ print(covidcast.signal_names("jhu-csse"))
 ## Legacy Clients
 
 Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/), [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R), and [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.js),
-but its use is discouraged.
+but their use is discouraged.
 
-The following samples show how to import the library and fetch Delphi’s COVID-19 Surveillance Streams from Facebook Survey CLI for county `06001` and days `20200401` and `20200405-20200414` (11 days total).
+The following samples show how to import each legacy library and fetch Delphi’s COVID-19 Surveillance Streams from Facebook Survey CLI for county `06001` and days `20200401` and `20200405-20200414` (11 days total).
 
 <div class="code-tabs">
   <div class="tab-header">

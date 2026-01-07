@@ -1,6 +1,7 @@
 ---
 title: Glossary
-nav_order: 7
+parent: Epidata API Intro
+nav_order: 5
 ---
 
 # Glossary
