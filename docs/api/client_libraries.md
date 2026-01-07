@@ -18,8 +18,6 @@ The [`epidatr`](https://cmu-delphi.github.io/epidatr/) (R) [`epidatpy`] and (htt
 
 ### Installation
 
-You can install these packages like this:
-
 <div class="code-tabs">
   <div class="tab-header">
     <button class="active" data-tab="r">R</button>
@@ -340,8 +338,6 @@ epidata.pub_covidcast(
 See the [versioned data documentation](https://cmu-delphi.github.io/epidatpy/versioned_data.html) for details and more ways to specify versioned data.
   </div>
 </div>
-
-See `vignette("versioned-data")` for details and more ways to specify versioned data.
 
 ## Plotting
 
