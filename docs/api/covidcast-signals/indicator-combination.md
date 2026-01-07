@@ -11,14 +11,18 @@ title: <i>inactive</i> Indicator Combination
 | :--- | :--- |
 | **Source Name** | `indicator-combination` |
 | **Data Source** | Delphi |
-| **Geographic Levels** | State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | Varies |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - no longer updated since 2021-03-16 |
+| **Date of last data revision:** | Varies |
 | **Temporal Scope Start** | 2020-04-06 |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 This source provides signals which are combinations of the other sources,
 calculated or composed by Delphi. It is not a primary data source.
+
+Delphi has combined indicators in different ways over time.
+The [statistical combination signals](#statistical-combination-signals) and [compositional signals](#compositional-signals-confirmed-cases-and-deaths) summarize different sets of primary data sources, and are thus available for different geographic levels and have different revision behavior.
 
 ## Table of contents
 {: .no_toc .text-delta}
