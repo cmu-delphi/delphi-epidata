@@ -28,7 +28,6 @@ See [COVIDcast Signal Changes](../covidcast_changelog.md) for general informatio
 ### October 7, 2020
 
 The following changes were made to all `jhu-csse` signals related to geocoding:
-- NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now [differentiated by JHU](https://github.com/CSSEGISandData/COVID-19/issues/3084),
 - “Unassigned” and “Out of State” counts are assigned to a megaFIPS at the county level (XX000 where XX is the state FIPS code) and will now be incorporated into the state totals
 - The split of the Kansas City, Missouri into its four sub-counties is now done with a more precise population proportion,
 - The split of the Dukes and Nantucket, Massachusetts FIPS codes into the two sub-counties is now done with a more precise population proportion,
@@ -36,7 +35,7 @@ The following changes were made to all `jhu-csse` signals related to geocoding:
 
 ### September 1, 2020
 
-NY Boroughs county FIPS (36005, 36047, 36061, 36081, 36085) are now split in proportion to the population of each county, instead of being reported in aggregate in FIPS 36061.
+Data for New York City's constituent counties (FIPS 36005, 36047, 36061, 36081, 36085, each coinciding with a borough) is now [differentiated by JHU]](https://github.com/CSSEGISandData/COVID-19/issues/3084). Instead of being reported in aggregate in FIPS 36061, totals are split in proportion to the population of each county.
 
 ### June 3, 2020
 
