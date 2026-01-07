@@ -319,6 +319,7 @@ pub_covidcast(
 )
 ```
 
+See the [versioned data vignette](https://cmu-delphi.github.io/epidatr/articles/versioned-data.html) for details and more ways to specify versioned data.
   </div>
   <div class="tab-content" data-tab="python" markdown="1">
 
@@ -336,6 +337,7 @@ epidata.pub_covidcast(
 ).df()
 ```
 
+See the [versioned data documentation](https://cmu-delphi.github.io/epidatpy/versioned_data.html) for details and more ways to specify versioned data.
   </div>
 </div>
 
