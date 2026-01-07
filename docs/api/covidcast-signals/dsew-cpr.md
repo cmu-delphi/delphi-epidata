@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (COVIDcast)
+parent: Inactive Sources
 grand_parent: Data Sources and Signals
 title: <i>inactive</i> Data Strategy and Execution Workgroup Community Profile Report
 ---
@@ -33,7 +33,7 @@ No changes so far.
 
 The Community Profile Report (CPR) is published by the Data Strategy and Execution Workgroup (DSEW) of the White House COVID-19 Team. For more information, see the [official description at healthdata.gov](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) for "COVID-19 Community Profile Report". Each issue of the CPR is made available as an attachment on that page. You can view all attachments by scrolling to the bottom of the "About this dataset" panel and clicking "Show more".
 
-This data source provides various COVID-19 related metrics, of which we report hospital admissions and vaccinations. 
+This data source provides various COVID-19 related metrics, of which we report hospital admissions and vaccinations.
 
 For hospital admissions, other sources of data in COVIDcast include [HHS](hhs.md) and [medical insurance claims](hospital-admissions.md).  The CPR differs from these sources in that it is part of the public health surveillance stream (like HHS, unlike claims) but is available at a daily-county level (like claims, unlike HHS). CPR hospital admissions figures at the state level and above are meant to match those from HHS, but are known to differ. See the Limitations section for details.
 
@@ -59,7 +59,7 @@ County, MSA, state, and HHS-level values are pulled directly from CPR when avail
 
 For counts-based fields like hospital admissions, CPR reports rolling sums for the preceding 7 days. The 7-day average signals are computed by Delphi by dividing each sum by 7 and assigning it to the last date in the included range, so e.g. the signal for June 7 is the average of the underlying data for June 1 through 7, inclusive.
 
-The `confirmed_admissions_covid_1d_7dav` signal mirrors the `Confirmed COVID-19 admissions - last 7 days` CPR field for all geographic resolutions except nation. Nation-level admissions is calculated by summing state-level values. 
+The `confirmed_admissions_covid_1d_7dav` signal mirrors the `Confirmed COVID-19 admissions - last 7 days` CPR field for all geographic resolutions except nation. Nation-level admissions is calculated by summing state-level values.
 
 The `doses_admin_7dav` and `booster_doses_admin_7dav` signals mirror the `Doses administered - last 7 days` and `Booster doses administered - last 7 days` CPR fields for all geographic resolutions except nation. Nation-level doses are calculated by summing state-level values.
 
@@ -84,10 +84,10 @@ Standard errors and sample sizes are not applicable to these metrics.
 
 ### Differences with HHS reports
 
-An analysis comparing the 
-[CPR labeled January 5, 2022](https://healthdata.gov/api/views/gqxm-d9w9/files/14ee1150-edf1-4b54-b225-500c8954e6a8?download=true&filename=Community%20Profile%20Report%2020220105.xlsx) 
-(newest file as of January 6, 2022) with the HHS 
-[COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) 
+An analysis comparing the
+[CPR labeled January 5, 2022](https://healthdata.gov/api/views/gqxm-d9w9/files/14ee1150-edf1-4b54-b225-500c8954e6a8?download=true&filename=Community%20Profile%20Report%2020220105.xlsx)
+(newest file as of January 6, 2022) with the HHS
+[COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh)
 (downloaded January 6, 2022) suggests that the CPR undercounts the hospital admissions published by HHS by 10-15% or more. We are waiting from clarification from the data provider, but until then, exercise caution when comparing work based on the CPR with work based on HHS reports.
 
 ## Lag and Backfill

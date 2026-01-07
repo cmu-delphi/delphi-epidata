@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (COVIDcast)
+parent: Inactive Sources
 grand_parent: Data Sources and Signals
 title: <i>inactive</i> COVID Act Now
 ---
@@ -56,7 +56,7 @@ We receive county-level positivity rate and total tests from CAN, originating fr
 These quantiles are based on the counts of PCR specimens tested.
 They are also already smoothed with a 7-day-average.
 
-For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$ denote the number of PCR specimens 
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$ denote the number of PCR specimens
 tested that have a positive result. Let $$N_{it}$$ denote the total number of PCR specimens tested.
 Let $$p_{it}$$ be the PCR-specimen positivity rate as a binomial proportion.
 
@@ -68,7 +68,7 @@ $$
 $$
 
 Let $$G$$ be a set of counties with associated population weights $$w_i$$ for each county $$i \in G$$.
-At other geographical levels, the total number of tests $$N_{Gt}$$ 
+At other geographical levels, the total number of tests $$N_{Gt}$$
 and our estimate of the positivity rate $$\hat{p}_{Gt}$$ is:
 
 $$
@@ -108,7 +108,7 @@ Ideally we would aggregate raw values
 then smooth, but the raw values are not accessible in this case.
 
 The reported test positivity rate should not be interpreted as the population positivity rate as
-the testing performed are typically not randomly sampled, especially for early data 
+the testing performed are typically not randomly sampled, especially for early data
 with lower testing volumes.
 
 A few counties, most notably in California, are also not covered by this data source.
@@ -119,13 +119,13 @@ no tests were performed for the day.
 ## Lag and Backfill
 
 The lag for these signals varies depending on the reporting patterns of individual counties.
-Most counties have their latest data report with a lag of 2 days, while others can take 9 days 
+Most counties have their latest data report with a lag of 2 days, while others can take 9 days
 or more, as is the case with California counties.
 
 Revisions are sometimes made to the data. For example, backlogged test results can get assigned to past dates.
 The majority of recent test positivity rates do not change substantially with backfill (having a median delta of close to 0).
 However, the majority of recent total tests performed is expected to increase in later data revisions (having a median increase of 7%).
-Values more than 5 days in the past are expected to remain fairly static (with total tests performed 
+Values more than 5 days in the past are expected to remain fairly static (with total tests performed
 having a median increase of 1% of less), as most major revisions have already occurred.
 
 ## Source and Licensing

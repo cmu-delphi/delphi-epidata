@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (COVIDcast)
+parent: Inactive Sources
 grand_parent: Data Sources and Signals
 title: <i>inactive</i> Change Healthcare
 ---
@@ -236,7 +236,7 @@ each day if we allowed the pipeline to continue running.
 On October 8, 2021, we paused the `chng` pipeline, and it remained inactive
 while we completed a fix. In the meantime, the versions with
 the deletion markings were removed, so that default (latest) queries and
-queries with as-of set to 2021-10-04 or later submitted during the inactive 
+queries with as-of set to 2021-10-04 or later submitted during the inactive
 period returned the next-most-recently-updated value for these dates.
 
 On December 2, we resumed the `chng` pipeline. We will soon be reconstructing

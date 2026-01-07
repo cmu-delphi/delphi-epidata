@@ -1,7 +1,7 @@
 ---
-parent: Inactive Sources (COVIDcast)
+parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> (COVIDcast) Google Health Trends
+title: <i>inactive</i> Google Health Trends
 ---
 
 # Google Health Trends

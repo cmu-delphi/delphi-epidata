@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (COVIDcast)
+parent: Inactive Sources
 grand_parent: Data Sources and Signals
 title: <i>inactive</i> SafeGraph
 ---
@@ -55,7 +55,7 @@ We went from a custom geo mapping file (for aggregating from county->state) to a
 
 Data source based on the [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) data product.  SafeGraph
 provided this data for individual census block groups, using differential
-privacy to protect individual people's data privacy. 
+privacy to protect individual people's data privacy.
 
 Delphi creates features of the SafeGraph data at the census block group level,
 then aggregates these features to the county and state levels. The aggregated
@@ -169,9 +169,9 @@ COVIDcast API.
 
 ## Limitations
 
-SafeGraph's [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) 
+SafeGraph's [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics)
 and [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) data products
-are based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. 
+are based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public.
 These counts do not represent absolute counts, and only count visits by members of the panel in that region. This can result in several biases:
 
 * **Geographic bias.** If some regions have a greater density of SafeGraph panel members as a percentage of the population than other regions, comparisons of metrics between regions may be biased. Regions with more SafeGraph panel members will appear to have more visits counted, even if the rate of visits in the general population is the same.

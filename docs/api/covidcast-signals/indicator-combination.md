@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (COVIDcast)
+parent: Inactive Sources
 grand_parent: Data Sources and Signals
 title: <i>inactive</i> Indicator Combination
 ---
@@ -183,7 +183,7 @@ in question are missing and hence should be reflected in the rest of state
 estimate). The order in which we look to perform geographic imputations is
 observed values from megacounties, followed by median
 observed values in the geographic hierarchy (county, MSA, state, or country).
-We chose this imputation sequence among different options by evaluating 
+We chose this imputation sequence among different options by evaluating
 their effectiveness to mimic the actual observed sensor values in validation experiments.
 
 ### Standard Errors
