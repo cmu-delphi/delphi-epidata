@@ -10,7 +10,7 @@ title: <i>inactive</i> Google Symptom Surveys
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `google-survey` |
-| **Data Source** | [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/)/Delphi |
+| **Data Source** | [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/), in collaboration with Delphi |
 | **Geographic Levels** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020-05-14 |

@@ -49,17 +49,18 @@ adult and pediatric COVID-19 hospital admissions. This sum is used as the
 We also include influenza hospital admissions.
 
 
-Each metric below is available in four variants:
-1.  **Raw Count:** `_1d`
+Each metric below is available in four variants, with the relevant suffix added to the end of a base signal name, given in the table below.
+
+1.  **Raw Count (daily) :** `_1d`
 2.  **Smoothed (7-day average):** `_1d_7dav`
 3.  **Population Proportion (per 100k):** `_1d_prop`
 4.  **Smoothed Proportion:** `_1d_prop_7dav`
 
 | Metric | Base Signal Name | Description |
 | :--- | :--- | :--- |
-| **Confirmed COVID-19** | `confirmed_admissions_covid` | **Sum of Adult + Pediatric.** Confirmed admissions only.<br><br>**Earliest Dates:**<br>• `_1d` (Daily): **2019-12-31**<br>• `_7dav` (7-Day Avg): **2020-01-06** |
-| **Suspected + Confirmed** | `sum_confirmed_suspected_admissions_covid` | **Sum of Adult + Pediatric.** Combined count of confirmed and suspected cases.<br><br>**Earliest Dates:**<br>• `_1d` (Daily): **2019-12-31**<br>• `_7dav` (7-Day Avg): **2020-01-06** |
-| **Influenza** | `confirmed_admissions_influenza` | All confirmed influenza hospital admissions.<br><br>**Earliest Dates:**<br>• `_1d` (Daily): **2020-01-02**<br>• `_7dav` (7-Day Avg): **2020-01-08** |
+| **Confirmed COVID-19** | `confirmed_admissions_covid` | **Sum of Adult + Pediatric.** Confirmed admissions only.<br><br>**Earliest Dates:**<br>• `_1d`: **2019-12-31**<br>• `_7dav`: **2020-01-06** |
+| **Suspected + Confirmed** | `sum_confirmed_suspected_admissions_covid` | **Sum of Adult + Pediatric.** Combined count of confirmed and suspected cases.<br><br>**Earliest Dates:**<br>• `_1d`: **2019-12-31**<br>• `_7dav`: **2020-01-06** |
+| **Influenza** | `confirmed_admissions_influenza` | All confirmed influenza hospital admissions.<br><br>**Earliest Dates:**<br>• `_1d`: **2020-01-02**<br>• `_7dav`: **2020-01-08** |
 
 
 > **Note**
