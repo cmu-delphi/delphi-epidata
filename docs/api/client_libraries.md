@@ -101,7 +101,6 @@ head(epidata)
 ```python
 from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
 
-# Initialize client (caching enabled for 7 days)
 epidata = EpiDataContext(use_cache=True, cache_max_age_days=7)
 
 # Obtain the most up-to-date version of the confirmed cumulative cases
