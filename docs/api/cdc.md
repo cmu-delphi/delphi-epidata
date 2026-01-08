@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> CDC
+title: <i>inactive</i> CDC Webpage Visits
 ---
 
 # CDC
@@ -22,7 +22,8 @@ title: <i>inactive</i> CDC
 ## Overview
 {: .no_toc}
 
-This data source provides CDC-collected influenza surveillance data from various sources.
+This data source provides information about the number of visits to various CDC webpages related to influenza topics.
+Delphi receives summary site statistics from the CDC and derives counts of page visits to pages of interest.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -59,14 +60,14 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 | `epidata`             | list of results                                                 | array of objects |
 | `epidata[].location`  | location label                                                  | string           |
 | `epidata[].epiweek`   | epiweek                                                         | integer          |
-| `epidata[].num1`      | number of hits for datasource 1                                 | integer          |
-| `epidata[].num2`      | number of hits for datasource 2                                 | integer          |
-| `epidata[].num3`      | number of hits for datasource 3                                 | integer          |
-| `epidata[].num4`      | number of hits for datasource 4                                 | integer          |
-| `epidata[].num5`      | number of hits for datasource 5                                 | integer          |
-| `epidata[].num6`      | number of hits for datasource 6                                 | integer          |
-| `epidata[].num7`      | number of hits for datasource 7                                 | integer          |
-| `epidata[].num8`      | number of hits for datasource 8                                 | integer          |
+| `epidata[].num1`      | number of page hits for datasource 1                                 | integer          |
+| `epidata[].num2`      | number of page hits for datasource 2                                 | integer          |
+| `epidata[].num3`      | number of page hits for datasource 3                                 | integer          |
+| `epidata[].num4`      | number of page hits for datasource 4                                 | integer          |
+| `epidata[].num5`      | number of page hits for datasource 5                                 | integer          |
+| `epidata[].num6`      | number of page hits for datasource 6                                 | integer          |
+| `epidata[].num7`      | number of page hits for datasource 7                                 | integer          |
+| `epidata[].num8`      | number of page hits for datasource 8                                 | integer          |
 | `epidata[].total`     | total page hits across all datasources                          | integer          |
 | `epidata[].value`     | computed value (may be null)                                    | float or null    |
 | `message`             | `success` or error message                                      | string           |
