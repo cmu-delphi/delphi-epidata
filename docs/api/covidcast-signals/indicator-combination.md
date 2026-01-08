@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Indicator Combination
+title: Indicator Combination
 ---
 
 # Indicator Combination
@@ -221,7 +221,7 @@ The resampling method for each input source is as follows:
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `indicator-combination` |
-| **Geographic Levels** | State, County, Metropolitan Statistical Area (MSA), U.S. HHS Region (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | State, County, Metropolitan Statistical Area (MSA), Department of Health & Human Services (HHS) Regions (see [geography coding docs](../covidcast_geography.md)) |
 | **Date of last data revision:** October 12, 2020 (see [data revision docs](#changelog-deaths)) |
 
 ## Changelog Deaths

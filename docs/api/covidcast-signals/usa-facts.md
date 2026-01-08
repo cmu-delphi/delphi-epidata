@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> USAFacts Cases and Deaths
+title: USAFacts Cases and Deaths
 ---
 
 # USAFacts Cases and Deaths
@@ -11,7 +11,7 @@ title: <i>inactive</i> USAFacts Cases and Deaths
 | :--- | :--- |
 | **Source Name** | `usa-facts` |
 | **Data Source** | [USAFacts](https://usafacts.org/)	 |
-| **Geographic Levels** | National, U.S. HHS Region, State/ADM 1, County/ADM 2, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated since 2023-01-02 |
 | **Date of last data revision:** | November 3, 2020 (see [data revision docs](#changelog)) |

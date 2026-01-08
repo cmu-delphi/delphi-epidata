@@ -39,7 +39,7 @@ None required.
 | `epidata[].max_value`     | maximum value                                                       | float             |
 | `epidata[].mean_value`    | mean of value                                                       | float             |
 | `epidata[].stdev_value`   | standard deviation of value                                         | float             |
-| `epidata[].last_update`   | most recent date when data was updated                              | integer (YYYYMMDD)|
+| `epidata[].last_update`   | most recent timestamp when data was updated                         | integer (Unix timestamp)|
 | `epidata[].max_issue`     | most recent date data was issued                                    | integer (YYYYMMDD)|
 | `epidata[].min_lag`       | smallest lag from observation to issue, in `time_type` units        | integer           |
 | `epidata[].max_lag`       | largest lag from observation to issue, in `time_type` units         | integer           |
@@ -75,7 +75,37 @@ None required.
 
 ## Code Samples
 
-Python and R users are advised to use the dedicated API client, which provides support to return metadata as a data frame. The Python client includes a `metadata()` method for this purpose, while the R client offers a `covidcast_meta()` function to achieve the same.
+Python and R users are advised to use the dedicated API client, which provides support to return metadata as a data frame. The Python client includes a `pub_covidcast_meta()` method for this purpose, while the R client offers a `pub_covidcast_meta()` function to achieve the same.
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+```python
+from epidatpy import EpiDataContext
+
+epidata = EpiDataContext()
+# Fetch metadata
+meta = epidata.pub_covidcast_meta().df()
+print(meta)
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+
+# Fetch metadata
+meta <- pub_covidcast_meta()
+print(meta)
+```
+  </div>
+</div>
 
 Alternatively, libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
 The following samples show how to import the library and fetch Delphi's COVID-19 Surveillance Streams metadata.

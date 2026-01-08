@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Google Symptom Search Trends
+title: Google Symptom Search Trends
 ---
 
 # Google Symptoms
@@ -11,7 +11,7 @@ title: <i>inactive</i> Google Symptom Search Trends
 | :--- | :--- |
 | **Source Name** | `google-symptoms` |
 | **Data Source** | Google |
-| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated after November 16th, 2025 |
 | **Date of last data revision:** | March 14th, 2025 (see [data revision docs](#changelog)) |

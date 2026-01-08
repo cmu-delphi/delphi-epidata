@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Change Healthcare
+title: Change Healthcare
 ---
 
 # Change Healthcare
@@ -11,7 +11,7 @@ title: <i>inactive</i> Change Healthcare
 | :--- | :--- |
 | **Source Name** | `chng` |
 | **Data Source** | Change Healthcare |
-| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated since 2024-02-19 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |

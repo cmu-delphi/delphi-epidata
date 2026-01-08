@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Data Strategy and Execution Workgroup Community Profile Report
+title: Data Strategy and Execution Workgroup Community Profile Report
 ---
 
 # Data Strategy and Execution Workgroup Community Profile Report (CPR)
@@ -11,7 +11,7 @@ title: <i>inactive</i> Data Strategy and Execution Workgroup Community Profile R
 | :--- | :--- |
 | **Source Name** | `dsew-cpr` |
 | **Data Source** | [Community Profile Report (CPR)](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) |
-| **Geographic Levels** | National, U.S. HHS Region, State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - No longer updated since 2023-02-22 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |

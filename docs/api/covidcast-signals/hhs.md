@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> HHS Hospitalizations from NHSN
+title: HHS Hospitalizations from NHSN
 ---
 
 # Department of Health & Human Services Hospitalizations
@@ -11,7 +11,7 @@ title: <i>inactive</i> HHS Hospitalizations from NHSN
 | :--- | :--- |
 | **Source Name** | `hhs` |
 | **Data Source** | U.S. Department of Health & Human Services |
-| **Geographic Levels** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Inactive - no longer updated since 2024-04-30 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |

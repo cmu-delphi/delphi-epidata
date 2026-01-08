@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> COVID-19 Trends and Impact Survey
+title: COVID-19 Trends and Impact Survey
 permalink: api/covidcast-signals/fb-survey.html
 ---
 

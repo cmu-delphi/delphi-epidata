@@ -11,7 +11,7 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `nhsn` |
 | **Data Source** | [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) |
-| **Geographic Levels** | National, U.S. HHS Region, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Weekly (Sunday to Saturday) (see [date format docs](../covidcast_times.md)) |
 | **Reporting Cadence** | Weekly |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |

@@ -12,7 +12,11 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `quidel` |
 | **Data Source** | QuidelOrtho Corp. |
+| **Geographic Levels** | **COVID-19 Tests:** National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA)<br>**Flu Tests:** State, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | **COVID-19 Tests:** Daily<br>**Flu Tests:** Inactive |
+| **Temporal Scope Start** | **COVID-19 Tests:** 2020-05-26<br>**Flu Tests:** 2020-01-31 |
+| **Date of last data revision:** | **COVID-19 Tests:** October 22, 2020<br>**Flu Tests:** Never (see [data revision docs](#changelog-covid-19-tests)) |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Table of Contents
@@ -29,7 +33,7 @@ nav_order: 1
 
 | Attribute | Details |
 | :--- | :--- |
-| **Geographic Levels** | National, U.S. HHS Region, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Reporting Cadence** | Daily |
 | **Date of last data revision:** | October 22, 2020 (see [data revision docs](#changelog-covid-19-tests)) |
 | **Temporal Scope Start** | 2020-05-26 |
