@@ -6,7 +6,7 @@ nav_order: 5
 # Getting Started with R and Python
 {: .no_toc}
 
-The [`epidatr`](https://cmu-delphi.github.io/epidatr/) (R) [`epidatpy`] and (https://cmu-delphi.github.io/epidatpy/) (Python) packages provide access to all the endpoints of the Delphi Epidata API, and can be used to make requests for specific signals on specific dates and in select geographic regions.
+The [`epidatr`](https://cmu-delphi.github.io/epidatr/) (R) and [`epidatpy`](https://cmu-delphi.github.io/epidatpy/) (Python) packages provide access to all the endpoints of the Delphi Epidata API, and can be used to make requests for specific signals on specific dates and in select geographic regions.
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -101,7 +101,7 @@ head(epidata)
 ```python
 from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
 
-epidata = EpiDataContext(use_cache=True, cache_max_age_days=7)
+epidata = EpiDataContext(use_cache=True)
 
 # Obtain the most up-to-date version of the confirmed cumulative cases
 # from JHU CSSE for the US
@@ -414,7 +414,11 @@ International data is available via
 
 Above we used data from [Delphi’s symptom surveys](../symptom-survey/index.md), but the Epidata API includes numerous data streams: medical claims data, cases and deaths, mobility, and many others. This can make it a challenge to find the data stream that you are most interested in.
 
+The [EpiPortal data browser](https://delphi.cmu.edu/epiportal) is a convenient way to find new data streams and indicators. It has filter functionality, and also generates data previews, plots, extracts, and API client code.
+We recommend starting here to get an overview of Delphi's data offerings.
+
 The Epidata documentation lists all the data sources and signals available through the API's [main endpoint](/covidcast_signals.md), focused on respiratory diseases, and [the collection of legacy endpoints](README.md#source-specific-parameters), covering additional diseases such as dengue.
+The Epidata documentation has in-depth information about each source.
 
 You can also use the client libraries to discover endpoints interactively:
 
@@ -509,7 +513,7 @@ EpidataAsync.covidcast(
   );
 });
 </script>
-``` 
+```
   </div>
 
 </div>
