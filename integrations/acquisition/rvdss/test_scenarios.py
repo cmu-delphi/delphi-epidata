@@ -125,6 +125,18 @@ class AcquisitionTests(unittest.TestCase):
         "message": "success",
     }
     
+    # expected response when asking for all provinces
+    provincial_subset = pd.concat([detection_subset,detection_subset2])
+    provincial_subset = provincial_subset.sort_values(by=['epiweek','geo_value'])
+    df4 = provincial_subset.reindex(rvdss_cols,axis=1)
+    df4 = df4.replace({np.nan: None}).sort_values(by=["epiweek","geo_value"])
+    df4 = df4.to_dict(orient = "records")
+    
+    expected_response4 = {"epidata": df4,
+        "result": 1,
+        "message": "success",
+    }
+    
     # make sure the data does not yet exist
     with self.subTest(name='no data yet'):
       response = Epidata.rvdss(geo_type='province',
@@ -209,13 +221,31 @@ class AcquisitionTests(unittest.TestCase):
                                  geo_value = "*",
                                  issues = 20250227)
         
-        response2 = Epidata.rvdss(geo_type='lab',
+        response2 = Epidata.rvdss(geo_type='province',
+                                 time_values= "*",
+                                 geo_value = ['nl','nb'],
+                                 issues = 20250227)
+        
+        response3 = Epidata.rvdss(geo_type='lab',
                                  time_values= 202435,
                                  geo_value = 'ouest du québec',
                                  issues = [20250220,20250227])
         
-        self.assertEqual(response,expected_response)
-        self.assertEqual(response2,expected_response3)
         
+        response4 = Epidata.rvdss(geo_type='lab',
+                                 time_values= 202435,
+                                 geo_value = 'ouest du québec',
+                                 issues = "*")
+        
+        response5 = Epidata.rvdss(geo_type='province',
+                                 time_values= '*',
+                                 geo_value = '*',
+                                 issues = "*")
+        
+        self.assertEqual(response,expected_response)
+        self.assertEqual(response2,expected_response)
+        self.assertEqual(response3,expected_response3)
+        self.assertEqual(response4,expected_response3)
+        self.assertEqual(response5,expected_response4)
         
 
