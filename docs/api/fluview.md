@@ -17,12 +17,12 @@ nav_order: 1
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Weekly (typically Fridays) |
 | **Temporal Scope Start** | 1997w40 |
-| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) | 
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview
 {: .no_toc}
 
-Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet).
+The `fluview` endpoint reports influenza-like illness (ILI) data sourced from the U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet) dashboard.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

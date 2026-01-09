@@ -12,7 +12,7 @@ title: <i>inactive</i> NIDSS Flu
 | :--- | :--- |
 | **Source Name** | `nidss_flu` |
 | **Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh) |
-| **Geographic Levels** | Taiwan regions (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
+| **Geographic Levels** | Taiwan [hexchotomy regions](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
 | **Temporal Scope Start** | 2008w14 |
@@ -21,10 +21,9 @@ title: <i>inactive</i> NIDSS Flu
 ## Overview
 {: .no_toc}
 
-This data source provides weekly influenza case counts for Taiwan, as reported by the National Infectious Disease Statistics System (NIDSS).
+This endpoing provides weekly influenza case counts for Taiwan, as reported by the Taiwan National Infectious Disease Statistics System (NIDSS) via the Taiwan CDC.
 
-This is the documentation of the API for accessing the Taiwan National Infectious Disease Statistics System Flu (`nidss_flu`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+The data is generally released weekly on Tuesday.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

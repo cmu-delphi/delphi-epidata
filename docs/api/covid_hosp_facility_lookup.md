@@ -23,6 +23,7 @@ title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity - 
 {: .no_toc}
 
 This endpoint is a companion to the [`covid_hosp_facility` endpoint](covid_hosp_facility.md). It provides a way to find unique identifiers and other metadata for facilities of interest.
+A total of 4922 facilities are included.
 
 Metadata is derived from the "COVID-19 Reported Patient Impact and Hospital Capacity by Facility" dataset provided by HHS via healthdata.gov.
 

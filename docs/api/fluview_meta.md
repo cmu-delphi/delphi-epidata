@@ -17,9 +17,8 @@ nav_order: 1
 ## Overview
 {: .no_toc}
 
-This is the API documentation for accessing the FluView metadata
-(`fluview_meta`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological
-data.
+The FluView metadata (`fluview_meta`) endpoint is a companion data source to the [FluView](fluview.md) endpoint.
+It describes when the FluView endpoint was last updated and how many records are available.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

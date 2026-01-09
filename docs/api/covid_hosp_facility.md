@@ -61,8 +61,8 @@ See [this documentation](README.md) for details on specifying locations and date
 
 
 {: .note}
-> **NOTES:** 
-> - [`covid_hosp_facility_lookup` endpoint](covid_hosp_facility_lookup.md) can > be used to lookup facility identifiers in a variety of ways.
+> **NOTES:**
+> - The companion [`covid_hosp_facility_lookup` endpoint](covid_hosp_facility_lookup.md) can be used to lookup facility identifiers in a variety of ways.
 > - A collection week spans Friday -- Thursday, and weeks are identified by
 >  the date corresponding to the Friday at the start of the week. Therefore, the
 > `collection_weeks` parameter is formatted as a `YYYYMMDD` date (or list of

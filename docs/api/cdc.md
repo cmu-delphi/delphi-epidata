@@ -11,7 +11,7 @@ title: <i>inactive</i> CDC Webpage Visits
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `cdc` |
-| **Data Source** | CDC influenza surveillance data |
+| **Data Source** | US Centers for Disease Control (CDC) site statistics |
 | **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w03 (2020-01-12) |
@@ -103,7 +103,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 # Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
-The following samples show how to import the library and fetch CDC data for national level for epiweek `201501`.
+The following samples show how to import the library and fetch `cdc` data at the national level for epiweek `201501`.
 
 <div class="code-tabs">
   <div class="tab-header">

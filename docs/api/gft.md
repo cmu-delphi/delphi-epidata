@@ -22,7 +22,10 @@ title: <i>inactive</i> Google Flu Trends
 ## Overview
 {: .no_toc}
 
-This data source provides influenza activity estimates from Google Flu Trends, which used search query data to track ILI activity.
+This data source provides estimates of influenza activity (e.g. ILI) based on the volume of certain search queries. The data is from Google Flu Trends.
+
+We offer similar search query-based disease tracking that is more up to date: [Google Health Trends](ght.md), available through mid 2022, and [Google Symptoms](covidcast-signals/google-symptoms.md), available through late 2025.
+Although these datasets are all based on search query volume, the processing and privacy handling differs such that reported values may not be comparable between sources.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -176,7 +179,7 @@ print(length(res$epidata))
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-```    
+```
   </div>
 
 </div>

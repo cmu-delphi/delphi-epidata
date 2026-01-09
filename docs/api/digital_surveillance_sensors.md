@@ -28,12 +28,14 @@ General topics not specific to any particular endpoint are discussed in the
 
 {: .note}
 > **Note:** This repository was built to support modelling and forecasting efforts
-> surrounding seasonal influenza (and dengue).  In the current COVID-19 pandemic,
-> syndromic surveillance data, like ILI data (influenza-like illness) through
-> FluView, will likely prove very useful.  However, **we urge caution to users
-> examining the digital surveillance sensors**, like ILI Nearby, Google Flu
-> Trends, etc., during the COVID-19 pandemic, because these were designed to track
-> ILI as driven by seasonal influenza, and were NOT designed to track ILI during
+> surrounding dengue and seasonal influenza.
+> Syndromic surveillance data, like ILI data (influenza-like illness) through
+> FluView, will likely prove very useful for understanding disease in
+> the time period that includes the COVID-19 pandemic.
+> However, **we urge caution to users examining the digital surveillance sensors**,
+> like ILI Nearby, Google Flu
+> Trends, etc., during that same date range, because these were designed to track
+> ILI as driven by _seasonal_ influenza, and were NOT designed to track ILI during
 the COVID-19 pandemic.
 
 
@@ -54,12 +56,12 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 
 {: .note}
 > **Notes:**
-> * Names of open sensors (no `auth` token required): `sar3`, `epic`, `arch`
-> * Names of sensors requiring `auth` token: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`
+> * Names of publicly-accessible sensors (no `auth` token required): `sar3`, `epic`, `arch`
+> * Names of private sensors requiring `auth` token: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`
 
 ### Optional
 
-| Parameter | Description                                                                         | Type             |
+| Parameter | Description                                                                        | Type             |
 |-----------|-------------------------------------------------------------------------------------|------------------|
 | `auth`    | sensor authentication tokens (currently restricted to 1); can be global or granular | `list` of string |
 
@@ -131,7 +133,7 @@ print(res['result'], res['message'], len(res['epidata']))
 ```R
 library(epidatr)
 # Fetch data
-res <- pvt_sensors(auth = 'SECRET_API_AUTH_SENSORS', locations = 'nat', 
+res <- pvt_sensors(auth = 'SECRET_API_AUTH_SENSORS', locations = 'nat',
 names = 'sar3', epiweeks = epirange(201501, 202001))
 print(res)
 ```

@@ -23,7 +23,7 @@ nav_order: 2
 ## Overview
 {: .no_toc}
 
-This data source provides age-stratified clinical data on laboratory-confirmed influenza from the US Flu View system.
+This data source provides age-stratified clinical data based on laboratory-confirmed influenza reports from the US FluView dashboard.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -193,7 +193,7 @@ print(length(res$epidata))
 
   <div class="tab-content" data-tab="js" markdown="1">
 
-  
+
 
   ```html
   <!-- Imports -->

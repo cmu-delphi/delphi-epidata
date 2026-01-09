@@ -12,7 +12,7 @@ title: <i>inactive</i> NIDSS Dengue
 | :--- | :--- |
 | **Source Name** | `nidss_dengue` |
 | **Data Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)|
-| **Geographic Levels** | Taiwan regions and cities/counties (see [Geographic Codes](geographic_codes.html#nidss)) |
+| **Geographic Levels** | Taiwan [hexchotomy regions](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) and [cities/counties](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) (see [Geographic Codes](geographic_codes.html#nidss)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
 | **Temporal Scope Start** | 2003w01 |
@@ -21,8 +21,7 @@ title: <i>inactive</i> NIDSS Dengue
 ## Overview
 {: .no_toc}
 
-This is the documentation of the API for accessing the Taiwan National Infectious Disease Statistics System Dengue (`nidss_dengue`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This endpoint reports counts of confirmed dengue cases from the Taiwan National Infectious Disease Statistics System (NIDSS) via the Taiwan CDC.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -56,9 +55,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_dengue/>
 |----------------------|-----------------------------------------------------------------|------------------|
 | `result`             | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`            | list of results                                                 | array of objects |
-| `epidata[].location` | location                                                        | string           |
+| `epidata[].location` | location (hexchotomy region)                                  | string           |
 | `epidata[].epiweek`  | epiweek during which the data was collected                     | integer          |
-| `epidata[].count`    | number of cases                                                 | integer          |
+| `epidata[].count`    | number of confirmed dengue cases                             | integer          |
 | `message`            | `success` or error message                                      | string           |
 
 # Example URLs

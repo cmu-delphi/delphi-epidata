@@ -17,7 +17,7 @@ This page documents the valid date and time formats accepted by various API endp
 
 ## Epiweeks
 
-Epiweeks (Epidemiological Weeks) use the [U.S. CDC definition](https://ndc.services.cdc.gov/wp-content/uploads/MMWR_week_overview.pdf). That is, the first epiweek each year is the week, starting on a Sunday, containing January 4.
+Epiweeks (Epidemiological Weeks) use the [U.S. CDC definition](https://ndc.services.cdc.gov/wp-content/uploads/MMWR_week_overview.pdf). That is, the first epiweek each year is the week, starting on a Sunday, that contains January 4.
 
 **Format:** `YYYYWW`
 *   `YYYY`: Four-digit year

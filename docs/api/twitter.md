@@ -22,7 +22,7 @@ title: <i>inactive</i> Twitter Stream
 ## Overview
 {: .no_toc}
 
-Estimate of influenza activity based on analysis of language used in tweets.
+This endpoint reports estimates of influenza activity based on analysis of language used in tweets on Twitter.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -94,7 +94,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/twitter/>
 # Citing the Survey
 Researchers who use the Twitter Stream data for research are asked to credit and cite the survey in publications based on the data. Specifically, we ask that you cite our paper describing the survey:
 
-  > Mark Dredze, Renyuan Cheng, Michael J Paul, David A Broniatowski. HealthTweets.org: A Platform for Public Health Surveillance using Twitter. AAAI Workshop on the World Wide Web and Public Health 
+  > Mark Dredze, Renyuan Cheng, Michael J Paul, David A Broniatowski. HealthTweets.org: A Platform for Public Health Surveillance using Twitter. AAAI Workshop on the World Wide Web and Public Health
   > Intelligence, 2014.
 
 
@@ -165,7 +165,7 @@ Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.twitter('auth_token', ['nat'], time_type="week", time_values=[201501])  
+res = Epidata.twitter('auth_token', ['nat'], time_type="week", time_values=[201501])
 print(res['result'], res['message'], len(res['epidata']))
 ```
   </div>

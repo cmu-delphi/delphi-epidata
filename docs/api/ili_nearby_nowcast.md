@@ -23,11 +23,12 @@ permalink: api/nowcast.html
 ## Overview
 {: .no_toc}
 
-The ILI Nearby endpoint provides a "nowcast" predictive estimate of the percentage of outpatient visits due to Influenza-Like Illness (ILI).
+This endpoint provides Delphi's nowcast esimtates of the percentage of outpatient visits due to Influenza-Like Illness (ILI).
 
-This system uses a sensor-fusion approach to estimate the current level of flu activity before the official CDC reports are finalized. It is available:
-* **National/Regional:** 7 days before the first official CDC ILINet report.
-* **State-level:** 5 days before the first official CDC ILINet report.
+This system uses a sensor-fusion approach to estimate the current level of flu activity before the official CDC reports are finalized.
+It is available for:
+* **National/Regional:** 7 days before the first official CDC ILINet report for a given date.
+* **State-level:** 5 days before the first official CDC ILINet report for a given date. State values report weighted percent ILI.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -188,4 +189,3 @@ print(length(res$epidata))
   </div>
 
 </div>
-```

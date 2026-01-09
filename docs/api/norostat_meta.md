@@ -17,8 +17,8 @@ permalink: api/meta_norostat.html
 
 <!-- | **License** | Open Access | -->
 
-This is the documentation of the API for accessing the NoroSTAT Metadata (`meta_norostat`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This endpoint is a companion data source to the [NoroSTAT](norostat.md) endpoint.
+It describes when the NoroSTAT endpoint was last updated and for which locations.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

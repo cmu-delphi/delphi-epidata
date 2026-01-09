@@ -23,7 +23,7 @@ title: <i>inactive</i> Wikipedia Access
 ## Overview
 {: .no_toc}
 
-This data source provides pageview counts for Influenza-related Wikipedia articles, which can serve as indicators of public health interest and awareness.
+This data source provides pageview counts for English-language influenza-related Wikipedia articles, which can serve as indicators of public health interest and awareness.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -127,7 +127,7 @@ The following health-related Wikipedia articles are available:
 | `hours`   | hours       | `list` of hours (0-23) |
 
 {: .note}
-> **Notes:** 
+> **Notes:**
 > - Only one of `dates` and `epiweeks` is required. If both are provided, `epiweeks` is ignored.
 > - `dates`, `epiweeks`, and `hours` are `None` by default.
 > - `language` is `en` by default.

@@ -22,7 +22,7 @@ title: <i>inactive</i> NoroSTAT
 ## Overview
 {: .no_toc}
 
-This data source provides norovirus surveillance data for US states, collected through the NoroSTAT system.
+This data source provides norovirus surveillance data for US states, collected through the NoroSTAT system via the US CDC.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
