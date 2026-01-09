@@ -25,7 +25,7 @@ NOTE: Human coronovirus (HCoV) refers to seasonal coronovirus, which differs fro
 There are the meta-data columns used to uniquely identify data rows/points.
 
 | Key          | Description                                                                                                                     |
-|------------------|------------------------------------------------------|
+|--------------|---------------------------------------------------------------------------------------------------------------------------------|
 | `geo_value`  | The geographical location (see [Geography](#geography))                                                                         |
 | `geo_type`   | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` |
 | `time_value` | The end of the epiweek                                                                                                          |
@@ -36,7 +36,7 @@ There are the meta-data columns used to uniquely identify data rows/points.
 ## Signals
 
 | Signal                         | Description                                                                                                                                                                              |
-|-------------------|-----------------------------------------------------|
+|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `sarscov2_tests`               | Number of SARS-CoV-2 (COVID-19) laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                                                           |
 | `sarscov2_positive_tests`      | Number of positive SARS-CoV-2 (COVID-19) laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                                                  |
 | `sarscov2_pct_positive`        | Percentage of SARS-CoV-2 (COVID-19) laboratory tests that are positive <br/> **Earliest Date Available:** 2022-09-03                                                                     |
@@ -194,3 +194,7 @@ Looking at the revision speed of specific indicators, `sarscov2_*` and `flub_*` 
 This source is derived from PHAC's Respiratory Virus Detection Data, originally reported in [weekly reports](https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada.html), and currently reported in a [dynamic dashboard](https://health-infobase.canada.ca/respiratory-virus-surveillance/?source=rvdss).
 
 The data is made available under the [Open Government Licence - Canada](https://open.canada.ca/en/open-government-licence-canada).
+
+## Additional Resources
+
+For a more detailed overview of respiratory surveillance in Canada, see this [page](https://www.canada.ca/en/public-health/services/diseases/flu-influenza/influenza-surveillance/about-fluwatch.html).
