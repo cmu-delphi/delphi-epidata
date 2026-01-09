@@ -18,14 +18,14 @@ nav_order: 1
 
 This data source of respiratory virus detections in Canada is collected by the [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) and published by the Public Health Agency of Canada (PHAC). Laboratory tests for various respiratory illnesses are reported on a weekly basis by sentinel laboratories across Canada to the [Centre for Immunization and Respiratory Infectious Diseases (CIRID)](https://www.canada.ca/en/public-health/services/infectious-diseases/centre-immunization-respiratory-infectious-diseases-cirid.html), a subsidiary of PHAC. The data was originally reported in weekly online reports, but since June 2024, has changed to being reported through a dynamic dashboard.
 
-NOTE: Pandemic COVID-19 is not reported in this data source.
+NOTE: Human coronovirus (HCoV) refers to seasonal coronovirus, which differs from SARS-CoV-2, the novel pandemic coronovirus that causes COVID-19. SARS-CoV-2 (COVID-19) was not reported until the start of the 2022-2023 season.
 
 ## Table Keys
 
 There are the meta-data columns used to uniquely identify data rows/points.
 
 | Key          | Description                                                                                                                     |
-|--------------|---------------------------------------------------------------------------------------------------------------------------------|
+|------------------|------------------------------------------------------|
 | `geo_value`  | The geographical location (see [Geography](#geography))                                                                         |
 | `geo_type`   | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` |
 | `time_value` | The end of the epiweek                                                                                                          |
@@ -35,47 +35,47 @@ There are the meta-data columns used to uniquely identify data rows/points.
 
 ## Signals
 
-| Signal                         | Description                                                                                                                                 |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `sarscov2_tests`               | Number of SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                         |
-| `sarscov2_positive_tests`      | Number of positive SARS-CoV-2 laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                |
-| `sarscov2_pct_positive`        | Percentage of SARS-CoV-2 laboratory tests that are positive <br/> **Earliest Date Available:** 2022-09-03                                   |
-| `flu_tests`                    | Number of influenza laboratory tests (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                                       |
-| `flua_tests`                   | Number of influenza A laboratory tests (Same as `flu_tests`, just maintained for convenience) <br/> **Earliest Date Available:** 2013-08-31 |
-| `flub_tests`                   | Number of influenza B laboratory tests (Same as `flu_tests`, just maintained for convenience) <br/> **Earliest Date Available:** 2013-08-31 |
-| `flu_positive_tests`           | Number of positive influenza laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                 |
-| `flu_pct_positive`             | Percentage of influenza laboratory tests that are positive (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                 |
-| `fluah1n1pdm09_positive_tests` | Number of positive influenza A(H1N1)pdm09 laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                    |
-| `fluah3_positive_tests`        | Number of positive influenza A(H3N2) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                         |
-| `fluauns_positive_tests`       | Number of positive influenza A (unsubtyped) laboratory tests <br/> **Earliest Date Available:** 2016-09-03                                  |
-| `flua_positive_tests`          | Number of positive influenza A laboratory tests (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                            |
-| `flua_pct_positive`            | Percentage of influenza A laboratory tests that are positive (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31               |
-| `flub_positive_tests`          | Number of positive influenza B laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                               |
-| `flub_pct_positive`            | Percentage of influenza B laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                  |
-| `rsv_tests`                    | Number of respiratory syncytial virus (RSV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                  |
-| `rsv_positive_tests`           | Number of laboratory tests positive for RSV <br/> **Earliest Date Available:** 2013-08-31                                                   |
-| `rsv_pct_positive`             | Percentage of RSV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                          |
-| `hpiv_tests`                   | Number of human parainfluenza virus (HPIV) laboratory tests (for all subtypes)<br/> **Earliest Date Available:** 2013-08-31                 |
-| `hpiv1_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-1 <br/> **Earliest Date Available:** 2013-08-31                                           |
-| `hpiv2_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-2 <br/> **Earliest Date Available:** 2013-08-31                                           |
-| `hpiv3_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-3 <br/> **Earliest Date Available:** 2013-08-31                                           |
-| `hpiv4_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-4 <br/> **Earliest Date Available:** 2013-08-31                                           |
-| `hpivother_positive_tests`     | Number of HPIV laboratory tests positive for any other HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                           |
-| `hpiv_positive_tests`          | Number of laboratory tests positive for any HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                                      |
-| `hpiv_pct_positive`            | Percentage of HPIV laboratory tests that are positive (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                      |
-| `adv_tests`                    | Number of adenovirus (ADV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                   |
-| `adv_positive_tests`           | Number of positive ADV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                       |
-| `adv_pct_positive`             | Percentage of ADV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                          |
-| `hmpv_tests`                   | Number of human metapneumovirus (hMPV)laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                        |
-| `hmpv_positive_tests`          | Number of positive hMPV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                      |
-| `hmpv_pct_positive`            | Percentage of hMPV laboratory tests that are positive <br/>**Earliest Date Available:** 2013-08-31                                          |
-| `evrv_tests`                   | Number of enterovirus/rhinovirus (EV/RV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                     |
-| `evrv_positive_tests`          | Number of positive EV/RV laboratory tests <br/>**Earliest Date Available:** 2013-08-31                                                      |
-| `evrv_pct_positive`            | Percentage of EV/RV laboratory tests that are positive <br/>**Earliest Date Available:** 2013-08-31                                         |
-| `hcov_tests`                   | Number of human coronavirus (HCoV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                           |
-| `hcov_positive_tests`          | Number of positive HCoV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                      |
-| `hcov_pct_positive`            | Percentage of HCoV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                         |
-| `year`                         | Current year <br/> **Earliest Date Available:** 2023-09-02                                                                                  |
+| Signal                         | Description                                                                                                                                                                              |
+|-------------------|-----------------------------------------------------|
+| `sarscov2_tests`               | Number of SARS-CoV-2 (COVID-19) laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                                                           |
+| `sarscov2_positive_tests`      | Number of positive SARS-CoV-2 (COVID-19) laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                                                  |
+| `sarscov2_pct_positive`        | Percentage of SARS-CoV-2 (COVID-19) laboratory tests that are positive <br/> **Earliest Date Available:** 2022-09-03                                                                     |
+| `flu_tests`                    | Number of influenza laboratory tests (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                                                                                    |
+| `flua_tests`                   | Number of influenza A laboratory tests (Value is always the same as `flu_tests` and `flub_tests`, just maintained for convenience) <br/> **Earliest Date Available:** 2013-08-31         |
+| `flub_tests`                   | Number of influenza B laboratory tests (Value is always the same as `flu_tests` and `flua_tests`, just maintained for convenience) <br/> **Earliest Date Available:** 2013-08-31         |
+| `flu_positive_tests`           | Number of positive influenza laboratory tests. Positive test results for all influenza subtypes are included. <br/> **Earliest Date Available:** 2013-08-31                              |
+| `flu_pct_positive`             | Percentage of influenza laboratory tests that are positive. Positive test results for all influenza subtypes are included. <br/> **Earliest Date Available:** 2013-08-31                 |
+| `fluah1n1pdm09_positive_tests` | Number of positive influenza A(H1N1)pdm09 laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                 |
+| `fluah3_positive_tests`        | Number of positive influenza A(H3N2) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                      |
+| `fluauns_positive_tests`       | Number of positive influenza A (unsubtyped) laboratory tests <br/> **Earliest Date Available:** 2016-09-03                                                                               |
+| `flua_positive_tests`          | Number of positive influenza A laboratory tests. This is the sum of influenza A(H1N1)pdm09, A(H3N2) and other (unsubtyped) positive tests. <br/> **Earliest Date Available:** 2013-08-31 |
+| `flua_pct_positive`            | Percentage of influenza A laboratory tests that are positive. <br/> **Earliest Date Available:** 2013-08-31                                                                              |
+| `flub_positive_tests`          | Number of positive influenza B laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                            |
+| `flub_pct_positive`            | Percentage of influenza B laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                               |
+| `rsv_tests`                    | Number of respiratory syncytial virus (RSV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                               |
+| `rsv_positive_tests`           | Number of laboratory tests positive for RSV <br/> **Earliest Date Available:** 2013-08-31                                                                                                |
+| `rsv_pct_positive`             | Percentage of RSV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
+| `hpiv_tests`                   | Number of human parainfluenza virus (HPIV) laboratory tests (for all subtypes)<br/> **Earliest Date Available:** 2013-08-31                                                              |
+| `hpiv1_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-1 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpiv2_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-2 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpiv3_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-3 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpiv4_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-4 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpivother_positive_tests`     | Number of HPIV laboratory tests positive for any other HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                                                                        |
+| `hpiv_positive_tests`          | Number of laboratory tests positive for any HPIV subtype <br/> **Earliest Date Available:** 2013-08-31                                                                                   |
+| `hpiv_pct_positive`            | Percentage of HPIV laboratory tests that are positive (for all subtypes) <br/> **Earliest Date Available:** 2013-08-31                                                                   |
+| `adv_tests`                    | Number of adenovirus (ADV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                |
+| `adv_positive_tests`           | Number of positive ADV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                    |
+| `adv_pct_positive`             | Percentage of ADV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
+| `hmpv_tests`                   | Number of human metapneumovirus (hMPV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                    |
+| `hmpv_positive_tests`          | Number of positive hMPV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                   |
+| `hmpv_pct_positive`            | Percentage of hMPV laboratory tests that are positive <br/>**Earliest Date Available:** 2013-08-31                                                                                       |
+| `evrv_tests`                   | Number of enterovirus/rhinovirus (EV/RV) laboratory tests. Enterovirus and rhinovirus are both types of enteroviruses. <br/> **Earliest Date Available:** 2013-08-31                     |
+| `evrv_positive_tests`          | Number of positive EV/RV laboratory tests <br/>**Earliest Date Available:** 2013-08-31                                                                                                   |
+| `evrv_pct_positive`            | Percentage of EV/RV laboratory tests that are positive <br/>**Earliest Date Available:** 2013-08-31                                                                                      |
+| `hcov_tests`                   | Number of human coronavirus (HCoV) laboratory tests. <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
+| `hcov_positive_tests`          | Number of positive HCoV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                   |
+| `hcov_pct_positive`            | Percentage of HCoV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                      |
+| `year`                         | Current year <br/> **Earliest Date Available:** 2023-09-02                                                                                                                               |
 
 ## Table of contents
 
