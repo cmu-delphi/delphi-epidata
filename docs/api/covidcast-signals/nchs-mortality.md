@@ -8,13 +8,29 @@ nav_order: 1
 # NCHS Mortality Data
 {: .no_toc}
 
-* **Source name:** `nchs-mortality`
-* **Earliest issue available:** Epiweek 50 2020 (6-12 December 2020)
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Available for:** state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** week (see [date format docs](../covidcast_times.md))
-* **License:** [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `nchs-mortality` |
+| **Data Source** | [National Center for Health Statistics (NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) |
+| **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Weekly (see [date format docs](../covidcast_times.md))|
+| **Reporting Cadence** | Weekly |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020w05 with some variation by geography |
+| **License** | [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 This data source of national provisional death counts is based on death
 certificate data received and coded by the National Center for Health Statistics
@@ -71,7 +87,7 @@ We report the NCHS Mortality data in a weekly format (`time_type=week` &
 `time_value={YYYYWW}`, where `YYYYWW` refers to an epiweek). The CDC defines
 the [epiweek](https://web.archive.org/web/20210623224758/https://wwwn.cdc.gov/nndss/document/MMWR_Week_overview.pdf) as
 seven days, from Sunday to Saturday. We check the week-ending dates provided in
-the NCHS morality data and use Python package
+the NCHS mortality data and use Python package
 [epiweeks](https://pypi.org/project/epiweeks/) to convert them into epiweek
 format.
 
