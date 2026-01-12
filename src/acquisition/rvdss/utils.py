@@ -268,6 +268,9 @@ def expand_detections_columns(data):
     new_data = data.copy(deep=True)
     new_data = new_data.reset_index()
     
+    if "index" in new_data.columns:
+        new_data = new_data.drop("index",axis=1)
+        
     # add extra columns - percent positivities
     if "adv_positive_tests" in new_data.columns and "adv_tests" in new_data.columns:
         new_data["adv_pct_positive"] =  np.divide(new_data["adv_positive_tests"], new_data["adv_tests"], 
@@ -335,6 +338,9 @@ def duplicate_provincial_detections(data):
     '''
     dat = data.copy(deep=True)
     dat = dat.reset_index()
+    
+    if "index" in dat.columns:
+        dat = dat.drop("index",axis=1)
     
     # provincial data
     provincial_regions = ['bc','on','qc']
