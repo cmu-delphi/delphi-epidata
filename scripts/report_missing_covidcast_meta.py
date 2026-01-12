@@ -8,8 +8,7 @@ base_dir = Path(__file__).parent.parent
 base_url = 'https://api.delphi.cmu.edu/epidata'
 
 def is_known_missing(source: str, signal: str) -> bool:
-    if '7dav_cumulative' in signal:
-        return True
+
     if source in ('youtube-survey', 'indicator-combination'):
         return True
     return False
