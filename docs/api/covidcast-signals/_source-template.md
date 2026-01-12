@@ -7,19 +7,30 @@ grand_parent: Main Endpoint (COVIDcast)
 # SOURCE NAME
 {: .no_toc}
 
-* **Source name:** `SOURCE-API-NAME`
-* **Earliest issue available:** DATE RELEASED TO API
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `SOURCE-API-NAME` |
+| **Data Source** | [DATA SOURCE PROVIDER] |
+| **Geographic Levels** | county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | day (see [date format docs](../covidcast_times.md)) |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | DATE RELEASED TO API |
+| **License** | [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION) |
 
 A brief description of what this source measures.
 
 | Signal        | Description                                                                                              |
 |---------------|----------------------------------------------------------------------------------------------------------|
 | `signal_name` | Brief description of the signal, including the units it is measured in and any smoothing that is applied |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+Your collapsible content goes here. You can still use **Markdown** inside.
+
+</details>
 
 ## Table of contents
 {: .no_toc .text-delta}

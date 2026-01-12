@@ -1,8 +1,7 @@
 ---
-title: <i>inactive</i> Youtube Survey
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
+title: Youtube Survey
 ---
 
 [//]: # (code at https://github.com/cmu-delphi/covid-19/tree/deeb4dc1e9a30622b415361ef6b99198e77d2a94/youtube)
@@ -10,13 +9,27 @@ nav_order: 2
 # Youtube Survey
 {: .no_toc}
 
-* **Source name:** `youtube-survey`
-* **Earliest issue available:** May 01, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Available for:** state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `youtube-survey` |
+| **Data Source** | Google/Delphi |
+| **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated after June 22nd, 2020 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
+| **Temporal Scope Start** | April 21st, 2020 |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes have been made to this signal.
+
+</details>
 
 ## Overview
 

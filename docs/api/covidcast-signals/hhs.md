@@ -1,20 +1,35 @@
 ---
-title: <i>inactive</i> HHS Hospitalizations from NHSN
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
+title: HHS Hospitalizations from NHSN
 ---
 
 # Department of Health & Human Services Hospitalizations
 {: .no_toc}
 
-* **Source name:** `hhs`
-* **Earliest issue available:** November 16, 2020
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
-* **Available for:** state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [Public Domain US Government](https://www.usa.gov/government-works)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `hhs` |
+| **Data Source** | U.S. Department of Health & Human Services |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - no longer updated since 2024-04-30 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2019-12-31 |
+| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 The U.S. Department of Health & Human Services (HHS) publishes several
 datasets on patient impact and hospital capacity. The data is made available
@@ -34,20 +49,25 @@ adult and pediatric COVID-19 hospital admissions. This sum is used as the
 We also include influenza hospital admissions.
 
 
-| Signal and 7-day average signal | Description |
-|---|---|
-| `confirmed_admissions_covid_1d` and `confirmed_admissions_covid_1d_7dav` | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
-| `confirmed_admissions_covid_1d_prop` and `confirmed_admissions_covid_1d_prop_7dav` | Sum of adult and pediatric confirmed COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
-| `sum_confirmed_suspected_admissions_covid_1d` and `sum_confirmed_suspected_admissions_covid_1d_7dav` | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day. <br/> **Earliest date available:** 2019-12-31 |
-| `sum_confirmed_suspected_admissions_covid_1d_prop` and <br/> `sum_confirmed_suspected_admissions_covid_1d_prop_7dav` | Sum of adult and pediatric confirmed and suspected COVID-19 hospital admissions occurring each day, per 100,000 population. <br/> **Earliest date available:** 2019-12-31 |
-| `confirmed_admissions_influenza_1d` and `confirmed_admissions_influenza_1d_7dav` | All confirmed influenza hospital admissions occurring each day. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
-| `confirmed_admissions_influenza_1d_prop` and `confirmed_admissions_influenza_1d_prop_7dav` | All confirmed influenza hospital admissions occurring each day, per 100,000 population. We made this signal available November 1, 2021. <br/> **Earliest issue available:** 2021-09-20 <br/> **Earliest date available:** 2020-01-02 |
+Each metric below is available in four variants, with the relevant suffix added to the end of a base signal name, given in the table below.
 
-*for all the above signals & 7-day average signals, their geography is state, and resolution is 1 day.
+1.  **Raw Count (daily) :** `_1d`
+2.  **Smoothed (7-day average):** `_1d_7dav`
+3.  **Population Proportion (per 100k):** `_1d_prop`
+4.  **Smoothed Proportion:** `_1d_prop_7dav`
 
-The 7-day average signals are computed by Delphi by calculating
-moving averages of the preceding 7 days, so e.g. the signal for June 7 is the
-average of the underlying data for June 1 through 7, inclusive.
+| Metric | Base Signal Name | Description |
+| :--- | :--- | :--- |
+| **Confirmed COVID-19** | `confirmed_admissions_covid` | **Sum of Adult + Pediatric.** Confirmed admissions only.<br><br>**Earliest Dates:**<br>• `_1d`: **2019-12-31**<br>• `_7dav`: **2020-01-06** |
+| **Suspected + Confirmed** | `sum_confirmed_suspected_admissions_covid` | **Sum of Adult + Pediatric.** Combined count of confirmed and suspected cases.<br><br>**Earliest Dates:**<br>• `_1d`: **2019-12-31**<br>• `_7dav`: **2020-01-06** |
+| **Influenza** | `confirmed_admissions_influenza` | All confirmed influenza hospital admissions.<br><br>**Earliest Dates:**<br>• `_1d`: **2020-01-02**<br>• `_7dav`: **2020-01-08** |
+
+
+> **Note**
+> * For all the above signals & 7-day average signals, their geography is state, and resolution is 1 day.
+> * The 7-day average signals are computed by Delphi by calculating moving averages of the preceding 7 days, so e.g. the signal for June 7 is the average of the underlying data for June 1 through 7, inclusive.
+{: .note }
+
 
 ## Table of contents
 {: .no_toc .text-delta}

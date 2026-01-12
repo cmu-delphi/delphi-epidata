@@ -34,7 +34,7 @@ Academic publications may cite our paper:
 These data sources are provided under the terms of the [Creative Commons
 Attribution license](https://creativecommons.org/licenses/by/4.0/):
 
-* [COVID-19 Trends and Impact Survey](covidcast-signals/fb-survey.md)
+* [COVID-19 Trends and Impact Survey](covidcast-signals/covid-trends-and-impact-survey.md)
 * [Doctor Visits](covidcast-signals/doctor-visits.md)
 * [Hospital Admissions](covidcast-signals/hospital-admissions.md)
 * [Indicator Combination](covidcast-signals/indicator-combination.md) (signals with names beginning `nmf_*`)
