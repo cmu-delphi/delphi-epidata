@@ -3,9 +3,10 @@ title: <i>inactive</i> COVID-19 Trends and Impact Survey
 parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 2
+permalink: api/covidcast-signals/fb-survey.html
 ---
 
-# COVID-19 Trends and Impact Survey 2020-2022 (Facebook Survey)
+# COVID-19 Trends and Impact Survey (CTIS)
 {: .no_toc}
 
 * **Source name:** `fb-survey`
@@ -27,6 +28,8 @@ researchers under a data use agreement. No individual survey responses are
 shared back to Facebook. See our [surveys
 page](https://delphi.cmu.edu/covid19/ctis/) for more detail about how the
 surveys work and how they are used outside the COVIDcast API.
+
+This survey was also known unofficially as the Facebook Survey.
 
 As of November 2021, the average number of Facebook survey responses we
 received each day was about 40,000. The survey ran from April 6, 2020 to June

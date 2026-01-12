@@ -164,3 +164,24 @@ CREATE TABLE `covidcast_meta_cache` (
     PRIMARY KEY (`timestamp`)
 ) ENGINE=InnoDB;
 INSERT INTO covidcast_meta_cache VALUES (0, '[]');
+
+CREATE TABLE `coverage_crossref` (
+    `signal_key_id` bigint NOT NULL,
+    `geo_key_id` bigint NOT NULL,
+    `min_time_value` int NOT NULL,
+    `max_time_value` int NOT NULL,
+    UNIQUE INDEX coverage_crossref_geo_sig (`geo_key_id`, `signal_key_id`),
+    INDEX coverage_crossref_sig_geo (`signal_key_id`, `geo_key_id`)
+) ENGINE=InnoDB;
+
+CREATE OR REPLACE VIEW `coverage_crossref_v` AS
+SELECT
+    `sd`.`source`,
+    `sd`.`signal`,
+    `gd`.`geo_type`,
+    `gd`.`geo_value`,
+    `cc`.`min_time_value`,
+    `cc`.`max_time_value`
+FROM `coverage_crossref` `cc`
+JOIN `signal_dim` `sd` USING (`signal_key_id`)
+JOIN `geo_dim` `gd` USING (`geo_key_id`);

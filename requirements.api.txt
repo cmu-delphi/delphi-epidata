@@ -2,7 +2,6 @@ delphi_utils
 epiweeks==2.1.2
 Flask==2.2.5
 Flask-Limiter==3.3.0
-jinja2==3.1.4
 more_itertools==8.4.0
 mysqlclient==2.1.1
 orjson==3.9.15
@@ -10,11 +9,11 @@ pandas==1.2.3
 python-dotenv==0.15.0
 pyyaml
 redis==3.5.3
-requests==2.32.0
+requests==2.32.4
 scipy==1.10.0
 sentry-sdk[flask]
 SQLAlchemy==1.4.40
 structlog==22.1.0
 tenacity==7.0.0
 typing-extensions
-werkzeug==2.3.8
+werkzeug==3.0.6

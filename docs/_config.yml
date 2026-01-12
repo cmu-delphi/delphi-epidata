@@ -57,3 +57,5 @@ favicon_ico: "favicon.ico"
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+color_scheme: delphi

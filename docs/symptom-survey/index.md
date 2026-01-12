@@ -5,28 +5,32 @@ nav_order: 4
 
 # COVID-19 Trends and Impact Survey (CTIS)
 
-Since April 2020, Delphi has conducted a voluntary survey about COVID-19,
-distributed daily to users in the United States via a partnership with Facebook.
-This survey asks respondents about COVID-like symptoms, their behavior (such as
-social distancing), mental health, and economic and health impacts they have
-experienced as a result of the pandemic. A high-level overview of the survey is
-posted [on the Delphi website](https://delphi.cmu.edu/covid19/ctis/),
-and an international version is
-[conducted by the University of Maryland](https://covidmap.umd.edu/).
+From April 2020 to June 2022, Delphi conducted a voluntary survey about
+COVID-19, distributed daily to users in the United States via a partnership with
+Facebook. This survey asked respondents about COVID-like symptoms, their
+behavior (such as social distancing), mental health, and economic and health
+impacts they have experienced as a result of the pandemic. A high-level overview
+of the survey is posted [on the Delphi
+website](https://delphi.cmu.edu/epidemic-signals/ctis/), and an international
+version is [conducted by the University of Maryland](https://covidmap.umd.edu/).
 Data collection [ceased on June 25, 2022](end-of-survey.md).
 
 This survey was also known unofficially as the Facebook Survey.
 
 More survey details are also available [on the COVID-19 Trends and Impact Survey 2020-2022 (inactive) page](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html) under the COVIDcast Main Endpoint's Data Source and Signals section of this API documentation site. 
 
-The [CTIS Methodology
-Report](https://dataforgood.facebook.com/dfg/resources/CTIS-methodology-report)
-describes the survey design, data collection process, weighting, and aggregation
-processes, and is the primary reference for researchers working with the survey
-data. This website describes details specific to the US version of the survey
-and documents the individual response data, which is available to researchers
-with a signed Data Use Agreement. If you are a researcher and would like to get
-access to the data, see our page on getting [data access](data-access.md).
+The survey dataset is now archived via ICPSR:
+
+* Reinhart, Alex, Mejia, Robin, and Tibshirani, Ryan J. COVID-19 Trends and
+  Impact Survey (CTIS), United States, 2020-2022. Inter-university Consortium
+  for Political and Social Research [distributor], 2025-02-28.
+  <https://doi.org/10.3886/ICPSR39207.v1>
+
+The archive includes complete documentation, including a Methodology Report on
+survey design, a survey weighting guide, guides to the aggregate and microdata,
+and example code. Aggregate contingency tables are available for public download
+and restricted microdata can be obtained upon request. If you are a researcher
+and would like to get access to the data, see our page on getting [data access](data-access.md).
 
 If you have questions about the survey or getting access to data, contact us at
 <delphi-survey-info@lists.andrew.cmu.edu>.
@@ -59,19 +63,15 @@ include:
 The survey protocol is reviewed by the Carnegie Mellon University Institutional
 Review Board.
 
-The support of several institutions makes the survey possible. Facebook supports
-the survey through recruitment (participants are invited via their News Feed),
-survey sampling and weighting procedures, technical assistance in survey design
-and implementation, and coordination with researchers and public health
-officials. The University of Maryland's Social Data Science Center conducts a
-[global version of the survey](https://covidmap.umd.edu/), and we coordinate
-closely on survey design and implementation. Delphi collects, aggregates, and
-distributes the US survey data, and retains ultimate responsibility for the US
-survey instrument and data.
-
-We develop the survey collaboratively with data users, public health officials,
-and others. If you are interested in getting involved, see our
-[collaboration and survey revision information](collaboration-revision.md).
+The support of several institutions makes the survey possible. Facebook
+supported the survey through recruitment (participants are invited via their
+News Feed), survey sampling and weighting procedures, technical assistance in
+survey design and implementation, and coordination with researchers and public
+health officials. The University of Maryland's Social Data Science Center
+conducted a [global version of the survey](https://covidmap.umd.edu/), and we
+coordinated closely on survey design and implementation. Delphi collected,
+aggregated, and distributes the US survey data, and retains ultimate
+responsibility for the US survey instrument and data.
 
 ## Citing the Survey
 
@@ -96,8 +96,11 @@ the survey in publications based on the data. Specifically, we ask that you:
    individual survey results. If you are unsure whether a particular aggregation
    will prevent disclosure of individual survey results, please email us at
    <delphi-survey-info@lists.andrew.cmu.edu>.
-4. Finally, send a copy of your publication, once it appears publicly as a
-   preprint or journal article, to <delphi-survey-info@lists.andrew.cmu.edu>.
+4. Finally, please notify us when your research is published. If you obtained
+   the data via ICPSR, please [visit their
+   site](https://www.icpsr.umich.edu/web/ICPSR/studies/39207) to find the form
+   to submit data-related publications; otherwise, send a copy of your
+   publication to <delphi-survey-info@lists.andrew.cmu.edu>.
 
 When referring to the survey in text, we prefer the following formats:
 

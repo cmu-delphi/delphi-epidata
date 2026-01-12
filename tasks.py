@@ -18,7 +18,7 @@ def update_gdoc(
     base_dir = pathlib.Path("./src/server/endpoints/covidcast_utils/")
 
     def _migrate_file(url: str, filename: str):
-        r = requests.get(url).text.replace("\r\n", "\n")
+        r = requests.get(url).content.decode("utf8").replace("\r\n", "\n")
         rows = r.split("\n")
         rows = [r for r in rows if not r.startswith(",")]
         file_ = base_dir / filename
