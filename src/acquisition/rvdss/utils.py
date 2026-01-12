@@ -226,11 +226,15 @@ def get_detections_data(base_url,headers,update_date):
     df_detections = pd.read_csv(io.StringIO(detections_url_response.text))
     
     if ("date" in df_detections.columns):
-        df_detections["year"] = [int(re.search(r"20\d{2}", w).group(0)) for w in  df_detections["date"]] 
-        ew = df_detections.apply(lambda x: Week(x['year'],x['week']),axis=1)
-        df_detections.insert(0,"epiweek",[int(str(w)) for w in ew])
+        # df_detections["year"] = [int(re.search(r"20\d{2}", w).group(0)) for w in  df_detections["date"]] 
+        # ew = df_detections.apply(lambda x: Week(x['year'],x['week']),axis=1)
+        
+        df_detections["epiweek"] = [Week.fromdate(datetime.strptime(d,"%Y-%m-%d")) for d in df_detections["date"]]
+        df_detections["year"] = [e.year for e in df_detections["epiweek"]] 
         df_detections['epiweek'] = [int(str(w)) for w in df_detections['epiweek']]
+
     else:
+        # for the archived reports, the date is not available in the table
         #Get current week and year
         summary_url =  base_url + "RVD_SummaryText.csv"
         summary_url_response = requests.get(summary_url, headers=headers)
