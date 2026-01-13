@@ -1,7 +1,7 @@
 ---
-title: Respiratory Virus Detections in Canada
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+title: Respiratory Virus Detections in Canada
 nav_order: 1
 ---
 
@@ -9,12 +9,15 @@ nav_order: 1
 
 {: .no_toc}
 
--   **Source name:** `rvdss`
--   **Earliest issue available:** Epiweek 36 2013 (2013-09-07)
--   **Date of last change:** Never
--   **Available for:** province, lab, region, nation (see [Geography](#geography))
--   **Time type:** week (see [date format docs](../covidcast_times.md))
--   **License:** [Open Government Licence - Canada](#source-and-licensing)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `rvdss` |
+| **Data Source** | [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) from the Public Health Agency of Canada |
+| **Geographic Levels** | province, lab, region, nation (see [Geography](#geography)) |
+| **Temporal Granularity** | Weekly (Epiweek) (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Weekly, typically the Thursday or Friday after the end of an epiweek |
+| **Temporal Scope Start** | Epiweek 36 2013 (2013-09-07) |
+| **License** | [Open Government Licence - Canada](#source-and-licensing) |
 
 This data source of respiratory virus detections in Canada is collected by the [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) and published by the Public Health Agency of Canada (PHAC). Laboratory tests for various respiratory illnesses are reported on a weekly basis by sentinel laboratories across Canada to the [Centre for Immunization and Respiratory Infectious Diseases (CIRID)](https://www.canada.ca/en/public-health/services/infectious-diseases/centre-immunization-respiratory-infectious-diseases-cirid.html), a subsidiary of PHAC. The data was originally reported in weekly online reports, but since June 2024, has changed to being reported through a dynamic dashboard.
 
