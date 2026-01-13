@@ -163,15 +163,20 @@ We defined the version date of a particular data issue to be the date the report
 Historically, page-modified dates were generally 5 days after the end of an epiweek.
 Occasionally, page-modified dates were larger than that -- sometimes much larger (up to a year).
 
-Our understanding is that weekly reports were not modified after the fact and expect later modified dates to indicate changes in the text on the page rather than the data.
+Our understanding is that weekly reports were not modified after the fact and expect later modified dates to indicate changes in the text on the page rather than changes to the data.
 With that in mind, if the page-modified date was more than 14 days after the epiweek being reported, we set the version date to be 5 days after the end of epiweek being reported,
 This should only be a consideration for the historic reports, as the new dashboard states when it was last updated.
 
 ## Limitations
 
-This data reports the results of laboratory testing of respiratory viruses, which only represents a subset of people who may be sick. People with mild symptoms may be excluded, and there may be a delay between someone developing symptoms and the getting the results of a lab test.
+This data reports the results of laboratory testing of respiratory viruses, which only represents a subset of people who may be sick. People with mild symptoms may be excluded, and there may be a delay between someone developing symptoms and getting a lab test.
 
-Data comes from labs across Canada, and some provinces only have one reporting lab, with no further information, so there may be bias if it is easier or faster for people in more densely populated areas to have lab tests done than those in rural locations.
+Data comes from labs across Canada, and some provinces only have one reporting lab, with no further information about, for example, location of individual labs.
+Only Quebec and Ontario report detailed disaggregated (lab-level) data.
+Other provinces may have multiple labs, but don't report them separately.
+If labs or healthcare providers tend to be located in larger cities or cities in general, and it is easier for people in more densely populated areas to have lab tests done than those in rural locations, the data may overrepresent the urban population.
+
+Our assumptions about version date in data prior to xx 2024 may be incorrect.
 
 ## Missingness
 
@@ -182,6 +187,7 @@ The source uses multiple terms used to denote missing data:
 -   NA : Not available
 -   Not tested
 
+We were unable to find detailed guidance about the difference between these categories.
 For convenience, we treat all these as NA, but there may be subtle differences.
 
 For epiweeks 5 and 47 of the 2019-2020 season, the reports are empty, so data from these weeks are missing.
@@ -190,7 +196,7 @@ For epiweeks 5 and 47 of the 2019-2020 season, the reports are empty, so data fr
 
 Data is reported around \~5 days after the end of an epiweek. For June-August 2025, the dashboard containing the data was updated every two weeks, so the lag during that period was larger.
 
-The data experiences backfill as counts are finalized in subsequent weeks. The amount and impact of revisions depend on the virus.
+The data experiences backfill as counts are finalized in subsequent weeks. The amount and impact of revisions depends on the virus.
 
 Across all indicators, most (99%) observations have less than 3 revisions. `hpiv1_*`,`hpiv2_*`,`hpiv3_*` and `hpiv4_*` indicators have revisions even more rarely.
 
