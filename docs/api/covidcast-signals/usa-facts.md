@@ -1,20 +1,41 @@
 ---
-title: <i>inactive</i> USAFacts Cases and Deaths
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
+title: USAFacts Cases and Deaths
 ---
 
 # USAFacts Cases and Deaths
 {: .no_toc}
 
-* **Source name:** `usa-facts`
-* **Earliest issue available:** June 24, 2020
-* **Number of data revisions since May 19, 2020:** 2
-* **Date of last change:** [November 3, 2020](../covidcast_changelog.md#usa-facts)
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](#source-and-licensing)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `usa-facts` |
+| **Data Source** | [USAFacts](https://usafacts.org/)	 |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2023-01-02 |
+| **Date of last data revision:** | November 3, 2020 (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020-01-25 |
+| **License** | [CC BY](#source-and-licensing) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### November 3, 2020
+We went from a custom geo mapping file (for aggregating from county->(msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
+### October 12, 2020
+
+The 10 October 2020 issue of all `usa-facts` deaths signals has been removed from the API. The file for deaths provided by USAFacts on 10 October included case data instead. The resulting spurious 100× increase in magnitude of COVIDcast `usa-facts` deaths signals was noticed on 11 October and repaired on 12 October. Subsequent issues have adequate coverage of all regions and dates included in the 10 October issue, so this change only affects forecasters that intend to pull training data with an `as_of` or `issues` parameter set to 20201010.
+
+</details>
+
+
+## Overview
 
 This data source of confirmed COVID-19 cases and deaths is based on reports made
 available by [USAFacts](https://usafacts.org/).

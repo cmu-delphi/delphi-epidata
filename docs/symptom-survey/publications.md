@@ -26,6 +26,10 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- S. Pampati, E.A. Stuart, J. Lessler et al (2024). [Impact of School-Based
+  Infection Prevention Strategies on Household COVID-19 and Respiratory
+  Disease Outcomes: a Cross-Sectional Study](https://doi.org/10.1016/j.annepidem.2025.10.019).
+  *Annals of Epidemiology*.
 - K.B. Smith, S. Shen, and B.T. Denton (2025). [Can past variants of SARS-CoV-2
   predict the impact of future variants? Machine learning for early warning
   of US counties at risk](https://doi.org/10.1007/s10729-025-09728-4).

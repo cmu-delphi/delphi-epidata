@@ -1,0 +1,36 @@
+// Delphi Color Scheme - Delphidocs Style
+// Blue headings/title, Red links
+
+// Core Colors
+$cmu-red: #C41230;
+$skibo-red: #941120;
+$berkley-blue: #002676;
+$fg: #373c46;
+$bg: #fff;
+$border: #e1e4e8;
+
+// Base Colors
+$body-background-color: $bg;
+$body-text-color: $fg;
+$headings-color: $berkley-blue;
+$link-color: $skibo-red;
+$border-color: $border;
+
+// Sidebar and Navigation
+$site-title-color: $berkley-blue;
+$nav-list-link-color: $fg;
+$nav-list-link-hover-color: $berkley-blue;
+$nav-list-link-active-color: $berkley-blue;
+$nav-child-link-color: $fg;
+
+// Code
+$code-background-color: #f6f8fa;
+$code-text-color: $fg;
+
+// Layout Configuration
+// Sidebar width
+$nav-width: 22rem;
+$nav-width-md: 22rem;
+
+// Content area width
+$content-width: 100rem;
