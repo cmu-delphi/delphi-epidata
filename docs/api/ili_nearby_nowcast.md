@@ -14,7 +14,7 @@ permalink: api/nowcast.html
 | **Source Name** | `nowcast` |
 | **Data Source** | [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/) |
 | **Dataset Type** | Predictive (Leading Indicator) |
-| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
 | **Temporal Scope Start** | 2010w45 |
@@ -53,8 +53,8 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
 ## Response
 

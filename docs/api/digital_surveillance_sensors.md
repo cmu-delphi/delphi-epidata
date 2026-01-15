@@ -12,7 +12,7 @@ permalink: api/sensors.html
 | :--- | :--- |
 | **Source Name** | `sensors` |
 | **Data Source** | Various digital data streams |
-| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
 | **Temporal Scope Start** | 2010w40 |
@@ -50,8 +50,8 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 | `names` | sensor names | `list` of string |
 
 {: .note}

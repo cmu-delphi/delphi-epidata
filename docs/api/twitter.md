@@ -12,7 +12,7 @@ title: <i>inactive</i> Twitter Stream
 | :--- | :--- |
 | **Source Name** | `twitter` |
 | **Data Source** | [HealthTweets](http://www.healthtweets.org/) |
-| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 | **Temporal Granularity** | Daily and Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w31 (2020-12-07)|
 | **Temporal Scope Start** | 2011w48 (2011-11-27) |
@@ -50,9 +50,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/twitter/>
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
-| `dates` | dates (see [Date Formats](date_formats.html)) | `list` of dates |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
+| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
+| `dates` | dates (see [Date Formats](date_formats.md)) | `list` of dates |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 
 {: .note}
 > **Note:** Only one of `dates` and `epiweeks` is required. If both are provided, `epiweeks` is ignored.

@@ -12,7 +12,7 @@ title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity by
 | :--- | :--- |
 | **Source Name** | `covid_hosp_state_timeseries` |
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) |
-| **Geographic Levels** | US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) |
+| **Geographic Levels** | US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) |
 | **Temporal Granularity** | Daily |
 | **Reporting Cadence** | Inactive - No longer updated since 2024-04-27 |
 | **Temporal Scope Start** | 2020-01-01 |
@@ -61,7 +61,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries
 
 | Parameter | Description                    | Type                           |
 |-----------|--------------------------------|--------------------------------|
-| `states`  | two-letter state abbreviations (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) | `list` of states               |
+| `states`  | two-letter state abbreviations (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) | `list` of states               |
 | `dates`   | dates (see [Date Formats](date_formats.md)) | `list` of dates or date ranges |
 
 ### Optional

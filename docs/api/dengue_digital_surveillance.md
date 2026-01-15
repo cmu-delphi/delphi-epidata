@@ -13,7 +13,7 @@ permalink: api/dengue_sensors.html
 | :--- | :--- |
 | **Source Name** | `dengue_sensors` |
 | **Data Source** | Various digital data streams |
-| **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
+| **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.md#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w32|
 | **Temporal Scope Start** | 2014w04 |
@@ -64,9 +64,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_sensors/>
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `name` | name | `list` of names (see [Available Signals](#available-signals)) | 
-| `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) |
+| `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.md#countries-and-territories-in-the-americas)) |
 
 
 ## Response

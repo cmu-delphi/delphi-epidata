@@ -12,7 +12,7 @@ title: <i>inactive</i> ECDC ILI
 | :--- | :--- |
 | **Source Name** | `ecdc_ili` |
 | **Data Source** | [European Centre for Disease Prevention and Control (ECDC)](https://www.ecdc.europa.eu/en/home)  |
-| **Geographic Levels** | European countries (see [Geographic Codes](geographic_codes.html#european-countries)) |
+| **Geographic Levels** | European countries (see [Geographic Codes](geographic_codes.md#european-countries)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w12 |
 | **Temporal Scope Start** | 2018w40 |
@@ -48,14 +48,14 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `regions` | regions | `list` of European country labels (see [Geographic Codes](geographic_codes.html#european-countries)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `regions` | regions | `list` of European country labels (see [Geographic Codes](geographic_codes.md#european-countries)) |
 
 ### Optional
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `issues` | issues (see [Date Formats](date_formats.html)) | `list` of epiweeks |
+| `issues` | issues (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `lag` | # weeks between each epiweek and its issue | integer |
 
 {: .note}

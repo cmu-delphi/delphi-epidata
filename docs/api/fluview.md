@@ -13,7 +13,7 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `fluview` |
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
-| **Geographic Levels** | National, states, HHS regions, Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)), and cities (see [FluView Cities](geographic_codes.html#fluview-cities)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)), Cities (see [FluView Cities](geographic_codes.md#fluview-cities)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Weekly (typically Fridays) |
 | **Temporal Scope Start** | 1997w40 |
@@ -75,14 +75,14 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
 ### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
-| `issues`  | issues (see [Date Formats](date_formats.html))                                     | `list` of epiweeks |
+| `issues`  | issues (see [Date Formats](date_formats.md))                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 | `auth`    | password for private imputed data          | string             |
 

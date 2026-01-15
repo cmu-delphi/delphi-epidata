@@ -12,7 +12,7 @@ title: <i>inactive</i> Google Flu Trends
 | :--- | :--- |
 | **Source Name** | `gft` |
 | **Data Source** | [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_) ([context](https://en.wikipedia.org/wiki/Google_Flu_Trends)) |
-| **Geographic Levels** | National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)), Selected US Cities (see [Selected US Cities](geographic_codes.md#selected-us-cities)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2015w32 |
 | **Temporal Scope Start** | 2003w40 |
@@ -49,7 +49,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/gft/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `locations` | Locations to fetch. National, HHS regions, US states (see [US Regions and States](geographic_codes.html#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.html#selected-us-cities)). | `list` of strings |
+| `locations` | Locations to fetch. National, HHS regions, US states (see [US Regions and States](geographic_codes.md#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.md#selected-us-cities)). | `list` of strings |
 | `epiweeks` | Epiweeks to fetch. Supports [`epirange()`] and defaults to all ("*") dates. | `list` of epiweeks |
 
 ## Response

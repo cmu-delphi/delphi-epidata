@@ -12,7 +12,7 @@ title: <i>inactive</i> Google Health Trends
 | :--- | :--- |
 | **Source Name** | `ght` |
 | **Data Source** | Google Health Trends |
-| **Geographic Levels** | [US States](geographic_codes.html#us-states-and-territories) and national level (US) |
+| **Geographic Levels** | National, State (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) |
 | **Temporal Granularity** | Weekly (Epiweek) | 
 | **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
 | **Temporal Scope Start** | 1993w01 |
@@ -51,8 +51,8 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `locations` | locations | `list` of state codes (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) and/or `US` |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `locations` | locations | `list` of state codes (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) and/or `US` |
 | `query` | search query or topic ID (see [Valid Queries](#valid-queries)) | string |
 
 #### Valid Queries

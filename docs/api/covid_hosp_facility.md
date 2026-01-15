@@ -12,7 +12,7 @@ title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity by
 | :--- | :--- |
 | **Source Name** | `covid_hosp_facility` |
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
-| **Geographic Levels** | Healthcare facility |
+| **Geographic Levels** | Healthcare Facility (see [HealthData.gov](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) or [Facility Lookup](covid_hosp_facility_lookup.md)) |
 | **Temporal Granularity** | Weekly (Friday -- Thursday) |
 | **Reporting Cadence** | Inactive - No longer updated since 2024w08 |
 | **Temporal Scope Start** | 2020-07-31 |
@@ -77,9 +77,10 @@ See [this documentation](README.md) for details on specifying locations and date
 If `publication_dates` is not specified, then the most recent issue is used by
 default.
 
-NOTE: The `publication_dates` parameter is semantically equivalent to the
-`issues` parameter in the related [`covid_hosp` endpoint](covid_hosp.md). It
-has been renamed here for clarity.
+{: .note}
+> **NOTE:** The `publication_dates` parameter is semantically equivalent to the
+> `issues` parameter in the related [`covid_hosp` endpoint](covid_hosp.md). It
+> has been renamed here for clarity.
 
 ## Response
 

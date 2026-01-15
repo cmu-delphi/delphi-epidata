@@ -13,7 +13,7 @@ nav_order: 2
 | :--- | :--- |
 | **Source Name** | `fluview_clinical` |
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
-| **Geographic Levels** | National, HHS regions, states, and Census divisions (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Weekly (typically Fridays) |
 | **Temporal Scope Start** | 2016w40 |
@@ -48,14 +48,14 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_clinical/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
 ### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
-| `issues`  | issues (see [Date Formats](date_formats.html))                                     | `list` of epiweeks |
+| `issues`  | issues (see [Date Formats](date_formats.md))                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
 {: .note}

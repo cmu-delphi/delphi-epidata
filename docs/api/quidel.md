@@ -12,7 +12,7 @@ title: <i>inactive</i> Quidel
 | :--- | :--- |
 | **Source Name** | `quidel` |
 | **Data Source** | QuidelOrtho Corp. influenza testing data |
-| **Geographic Levels** | HHS regions (see [Geographic Codes](geographic_codes.html#hhs-regions)) |
+| **Geographic Levels** | Department of Health & Human Services (HHS) Regions (see [Geographic Codes](geographic_codes.md#hhs-regions)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w15|
 | **Temporal Scope Start** | 2015w35 |
@@ -45,8 +45,8 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `locations` | locations | `list` of `hhs<#>` region labels (see [Geographic Codes](geographic_codes.html#hhs-regions)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `locations` | locations | `list` of `hhs<#>` region labels (see [Geographic Codes](geographic_codes.md#hhs-regions)) |
 
 ## Response
 

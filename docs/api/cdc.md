@@ -12,7 +12,7 @@ title: <i>inactive</i> CDC Webpage Visits
 | :--- | :--- |
 | **Source Name** | `cdc` |
 | **Data Source** | US Centers for Disease Control (CDC) site statistics |
-| **Geographic Levels** | National, HHS regions, Census divisions, and US states (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w03 (2020-01-12) |
 | **Temporal Scope Start** | 2013w02 (2013-01-06) |
@@ -49,8 +49,8 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `locations` | locations | `list` of location codes: `nat` (national), HHS regions (`hhs1`-`hhs10`), Census divisions (`cen1`-`cen9`), or state codes (see [Geographic Codes](geographic_codes.html#us-regions-and-states)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `locations` | locations | `list` of location codes: `nat` (national), HHS regions (`hhs1`-`hhs10`), Census divisions (`cen1`-`cen9`), or state codes (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
 ## Response
 

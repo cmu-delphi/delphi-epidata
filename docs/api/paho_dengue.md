@@ -12,7 +12,7 @@ title: <i>inactive</i> PAHO Dengue
 | :--- | :--- |
 | **Source Name** | `paho_dengue` |
 | **Data Source** | [Pan American Health Organization (PAHO) Dengue surveillance](https://www.paho.org/en/arbo-portal/dengue-data-and-analysis) |
-| **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
+| **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.md#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w31 |
 | **Temporal Scope Start** | 2014w01 |
@@ -47,8 +47,8 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/paho_dengue/>
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `regions` | regions | `list` of region labels (see [Geographic Codes](geographic_codes.html#paho-dengue)) |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `regions` | regions | `list` of region labels (see [Geographic Codes](geographic_codes.md#paho-dengue)) |
 
 ## Response
 

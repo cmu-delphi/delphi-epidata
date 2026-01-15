@@ -12,7 +12,7 @@ title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity - 
 | :--- | :--- |
 | **Source Name** | `covid_hosp_facility_lookup` |
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
-| **Geographic Levels** | Healthcare facility ([state](geographic_codes.html#us-states-and-territories), ccn city, zip, fips) |
+| **Geographic Levels** | Healthcare Facility ([State](geographic_codes.md#us-states-and-territories), CCN, City, Zip, FIPS) |
 | **Reporting Cadence** | Inactive - No longer updated since 2024w08 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
@@ -53,7 +53,7 @@ See [this documentation](README.md) for details on specifying locations and date
 
 | Parameter   | Description                       | Type   |
 |-------------|-----------------------------------|--------|
-| `state`     | two-letter state abbreviation (see [Geographic Codes](geographic_codes.html#us-states-and-territories)) | string |
+| `state`     | two-letter state abbreviation (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) | string |
 | `ccn`       | facility CMS Certification Number | string |
 | `city`      | city name                         | string |
 | `zip`       | 5-digit ZIP code                  | string |

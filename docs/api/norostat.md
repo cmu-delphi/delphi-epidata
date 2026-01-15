@@ -13,7 +13,7 @@ title: <i>inactive</i> NoroSTAT
 | **Source Name** | `norostat` |
 | **Data Source** | [CDC NoroSTAT](https://www.cdc.gov/norovirus/php/reporting/norostat-data.html) metadata endpoint (requires authentication) |
 | **Dataset Type** | Surveillance (Inactive) |
-| **Geographic Levels** | Only a specific list of full state names are permitted. See the `locations` output of the [meta_norostat](meta_norostat.html#norostat-metadata-1) endpoint for the allowed values. |
+| **Geographic Levels** | Only a specific list of full state names are permitted. See the `locations` output of the [meta_norostat](norostat_meta.md#norostat-metadata-1) endpoint for the allowed values. |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w30. |
 | **Temporal Scope Start** | 2012w31 |
