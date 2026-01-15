@@ -44,10 +44,11 @@ there are several ways to use your key to authenticate your requests:
 
 * [epidatr](https://cmu-delphi.github.io/epidatr/#api-keys)
 * [epidatpy](https://cmu-delphi.github.io/epidatpy/#api-keys)
-* [delphi-epidata](https://cmu-delphi.github.io/delphi-epidata/api/client_libraries.html)
 * covidcast (deprecated in favor of `epidatr` and `epidatpy`)
   * [R client](https://cmu-delphi.github.io/covidcast/covidcastR/reference/covidcast_signal.html#api-keys-1)
   * [Python client](https://cmu-delphi.github.io/covidcast/covidcast-py/html/signals.html#covidcast.use_api_key)
+
+More details on how to use the clients [here](api/client_libraries.html).
 
 ### Via request parameter
 

@@ -1,24 +1,36 @@
 ---
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
 title: Change Healthcare
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 1
 ---
 
 # Change Healthcare
 {: .no_toc}
 
-* **Source name:** `chng`
-* **Earliest issue available:** November 4, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `chng` |
+| **Data Source** | Change Healthcare |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2024-02-19 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020-02-01 |
+| **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
 
 ## Overview
-
-**Notice: This data source was inactive between 2021-10-04 and 2021-12-02 to allow us resolve some problems with the data pipeline. We have resumed daily updates and are working on a data patch to fill the gap. [Additional details on this inactive period are available below](#pipeline-pause).**
+{: .no_toc}
 
 This data source is based on Change Healthcare claims data that has been
 de-identified in accordance with HIPAA privacy regulations. Change Healthcare is
@@ -224,7 +236,7 @@ each day if we allowed the pipeline to continue running.
 On October 8, 2021, we paused the `chng` pipeline, and it remained inactive
 while we completed a fix. In the meantime, the versions with
 the deletion markings were removed, so that default (latest) queries and
-queries with as-of set to 2021-10-04 or later submitted during the inactive 
+queries with as-of set to 2021-10-04 or later submitted during the inactive
 period returned the next-most-recently-updated value for these dates.
 
 On December 2, we resumed the `chng` pipeline. We will soon be reconstructing

@@ -1,20 +1,33 @@
 ---
-title: <i>inactive</i> Google Symptom Surveys
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
+title: Google Symptom Surveys
 ---
 
 # Google Symptom Surveys
 {: .no_toc}
 
-* **Source name:** `google-survey`
-* **Earliest issue available:** May 01, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Available for:** county, hrr, msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `google-survey` |
+| **Data Source** | [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/), in collaboration with Delphi |
+| **Geographic Levels** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020-05-14 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020-04-11 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
 
 ## Overview
 
@@ -26,7 +39,7 @@ is sick (fever, along with cough, or shortness of breath, or difficulty
 breathing) right now?" Using this survey data, we estimate the percentage of
 people in a given location, on a given day, that *know somebody who has a
 COVID-like illness*. This estimates a similar quantity to the `*_cmnty_cli`
-signals from the [COVID-19 Trends and Impact Survey](fb-survey.md) (`fb-survey`) source, but using
+signals from the [COVID-19 Trends and Impact Survey](covid-trends-and-impact-survey.md) (`fb-survey`) source, but using
 a different survey population and recruitment method.
 
 The survey sampled from all counties with greater than 100,000 population, along

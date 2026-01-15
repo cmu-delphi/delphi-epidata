@@ -1,21 +1,53 @@
 ---
-title: <i>inactive</i> COVID-19 Trends and Impact Survey
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
+title: COVID-19 Trends and Impact Survey
 permalink: api/covidcast-signals/fb-survey.html
 ---
 
 # COVID-19 Trends and Impact Survey (CTIS)
 {: .no_toc}
 
-* **Source name:** `fb-survey`
-* **Earliest issue available:** April 29, 2020
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** [June 3, 2020](../covidcast_changelog.md#fb-survey)
-* **Available for:** county, hrr, msa, state, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `fb-survey` |
+| **Data Source** | [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/) |
+| **Geographic Levels** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2022-06-25 |
+| **Date of last data revision:** | June 3, 2020 (see [data revision docs](../covidcast_changelog.md#fb-survey)) |
+| **Temporal Scope Start** | Varies by indicator - 2020-2021 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+### June 3, 2020
+
+Duplicate survey weights had corrupted historical figures for the following signals and dates. The correct data has been restored to the API.
+* `raw_wcli`
+  * `county`: 20200406, 20200408, 20200410, 20200430
+  * `hrr`: 20200406, 20200408-20200410, 20200430
+  * `msa`: 20200408, 20200410, 20200430
+  * `state`: 20200408-20200410, 20200430
+* `smoothed_wcli`
+  * `county`: 20200406, 20200408-20200414, 20200430-20200506
+  * `hrr`: 20200406-20200415, 20200430-20200506
+  * `msa`: 20200408-20200414, 20200430-20200506
+  * `state`: 20200408-20200416, 20200430-20200506
+
+### November 20, 2020
+
+Due to a bug in our data processing system, estimates of the percentage of people reporting that they have been tested for COVID-19 calculated before October 8th were incorrect.
+We incorrectly treated an answer of “no” as a missing response, which affected the `smoothed_tested_14d` and `smoothed_wtested_14d` signals from the `fb-survey` source.
+
+As of Nov. 20th, the error has been corrected and all affected data reissued.
+
+</details>
 
 ## Overview
 
@@ -790,12 +822,11 @@ of zero, and in simulations improves the quality of the standard error
 estimates. See the [Appendix](#appendix) for further motivation for these
 estimators.
 
-<div style="background-color:#FCC; padding: 10px 30px;"><strong>Note:</strong>
-Currently the standard errors are calculated as though all survey weights are
-equal, that is \(w^\text{part}_i = 1\) for all respondents. The result is that
-reported standard errors are artificially narrow for weighted estimates. This
-will be corrected in a future update to the API.
-</div>
+> **Note:** Currently the standard errors are calculated as though all survey weights are
+> equal, that is $$w^\text{part}_i = 1$$ for all respondents. The result is that
+> reported standard errors are artificially narrow for weighted estimates. This
+> will be corrected in a future update to the API.
+{: .note }
 
 The pseudo-observation is not used in $$\hat{p}$$ and $$\hat{q}$$ themselves, to
 avoid potentially large amounts of estimation bias, as $$p$$ and $$q$$ are
