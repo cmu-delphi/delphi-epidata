@@ -22,7 +22,7 @@ title: <i>inactive</i> Google Flu Trends
 ## Overview
 {: .no_toc}
 
-This data source provides estimates of influenza activity (e.g. ILI) based on the volume of certain search queries. The data is from Google Flu Trends.
+This data source provides a historical estimate of influenza activity based on the aggregated volume of search queries related to flu symptoms, treatments, and related topics. The data is sourced from Google Flu Trends (GFT), which used these query volumes to model ILI rates.
 
 We offer similar search query-based disease tracking that is more up to date: [Google Health Trends](ght.md), available through mid 2022, and [Google Symptoms](covidcast-signals/google-symptoms.md), available through late 2025.
 Although these datasets are all based on search query volume, the processing and privacy handling differs such that reported values may not be comparable between sources.

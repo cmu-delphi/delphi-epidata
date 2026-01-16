@@ -16,13 +16,16 @@ title: <i>inactive</i> ECDC ILI
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w12 |
 | **Temporal Scope Start** | 2018w40 |
-| **License** | This was scraped from a publicly-accessible website, but no explicit license terms were found. |
+| **License** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (with [attribution to ECDC](https://www.ecdc.europa.eu/en/copyright)) |
 
 
 ## Overview
 {: .no_toc}
 
-This data source provides weekly influenza-like illness (ILI) data for European countries, as reported by the European Centre for Disease Prevention and Control (ECDC).
+This endpoint provides weekly influenza-like illness (ILI) rates for European countries, as reported by the European Centre for Disease Prevention and Control (ECDC). Data is scraped from `flunewseurope.org`.
+
+> [!WARNING]
+> The scraper may occasionally fail to download all available data due to website responsiveness.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

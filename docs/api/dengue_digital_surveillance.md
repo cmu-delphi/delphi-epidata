@@ -23,7 +23,7 @@ permalink: api/dengue_sensors.html
 ## Overview
 {: .no_toc}
 
-This endpoint provides digital surveillance sensor estimates for dengue activity, derived from various data streams.
+This endpoint provides digital surveillance sensor estimates for dengue activity, derived from various data streams including Wikipedia access counts, CDC page hits, and Google Trends data.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

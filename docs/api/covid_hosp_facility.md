@@ -21,7 +21,7 @@ title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity by
 ## Overview
 {: .no_toc}
 
-This data source provides various measures of COVID-19 burden on patients and healthcare facilities in the US. It is a mirror of the "COVID-19 Reported Patient Impact and Hospital Capacity by Facility" dataset provided by HHS via healthdata.gov.
+This dataset provides facility-level daily surveys of hospital COVID-19 capacity and patient impact. Data is acquired from HealthData.gov. It is a mirror of the "COVID-19 Reported Patient Impact and Hospital Capacity by Facility" dataset provided by HHS via healthdata.gov.
 
 HHS performs up to four days of forward-fill for missing values.
 

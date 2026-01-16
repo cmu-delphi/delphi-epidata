@@ -18,8 +18,13 @@ title: <i>inactive</i> Google Health Trends
 | **Temporal Scope Start** | 1993w01 |
 | **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
-This is the API documentation for accessing the Google Health Trends  (`ght`)
-endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+## Overview
+{: .no_toc}
+
+The `ght` endpoint provides access to Google Health Trends data, which tracks the aggregated volume of search queries related to specific influenza symptoms and treatments.
+
+> [!NOTE]
+> This data source tracks the search interest for specific terms (e.g., "flu symptoms", "thermometer") rather than model estimates. It is distinct from Google Flu Trends (GFT) which provided modeled ILI rates.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

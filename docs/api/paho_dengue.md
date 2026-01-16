@@ -21,7 +21,10 @@ title: <i>inactive</i> PAHO Dengue
 ## Overview
 {: .no_toc}
 
-This data source provides weekly dengue case counts for countries and territories in the Americas, as reported by the Pan American Health Organization (PAHO).
+This endpoint provides weekly dengue case counts for countries and territories in the Americas, as reported by the Pan American Health Organization (PAHO).
+
+> [!IMPORTANT]
+> Data acquisition is performed via web scraping of a Tableau dashboard, which renders the process fragile to website changes.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

@@ -23,7 +23,7 @@ title: <i>inactive</i> Wikipedia Access
 ## Overview
 {: .no_toc}
 
-This data source provides pageview counts for English-language influenza-related Wikipedia articles, which can serve as indicators of public health interest and awareness.
+This data source measures public interest in health topics by tracking access counts for specific influenza-related articles on English-language Wikipedia. Delphi aggregates these counts from Wikimedia's public pageview dumps, providing a proxy for information-seeking behavior and public awareness of the flu.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

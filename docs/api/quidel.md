@@ -22,7 +22,7 @@ title: <i>inactive</i> Quidel
 ## Overview
 {: .no_toc}
 
-This data source provides influenza testing data from Quidel Corporation, covering HHS health regions in the United States.
+This data source provides influenza testing data from Quidel Corporation, covering HHS health regions. Data is aggregated by unique device. Covers US states (excluding some like FL in older mappings).
 
 General topics not specific to any particular endpoint are discussed in the [API overview](https://cmu-delphi.github.io/delphi-epidata/). Such topics include: [contributing](https://cmu-delphi.github.io/delphi-epidata/api/README.html#contributing), [citing](https://cmu-delphi.github.io/delphi-epidata/api/README.html#citing), and [data licensing](https://cmu-delphi.github.io/delphi-epidata/api/README.html#data-licensing).
 

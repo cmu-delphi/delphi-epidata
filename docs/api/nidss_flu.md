@@ -21,9 +21,14 @@ title: <i>inactive</i> NIDSS Flu
 ## Overview
 {: .no_toc}
 
-This endpoing provides weekly influenza case counts for Taiwan, as reported by the Taiwan National Infectious Disease Statistics System (NIDSS) via the Taiwan CDC.
+This endpoint provides weekly influenza case counts for Taiwan, as reported by the Taiwan National Infectious Disease Statistics System (NIDSS) via the Taiwan CDC.
 
 The data is generally released weekly on Tuesday.
+
+> [!WARNING]
+> This data source contains historical reporting quirks:
+> - **Week 53 (2003-2007):** For years prior to 2008 (excluding 2003), week 53 was reported but is mapped to week 52 in this endpoint to maintain standard epiweek numbering.
+> - **2009 Epiweek Change:** Taiwan adopted a new epiweek system in 2009. Data for 2009 is shifted by -1 week (e.g., 2009w02 becomes 2009w01) to align with standard US CDC epiweek definitions.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

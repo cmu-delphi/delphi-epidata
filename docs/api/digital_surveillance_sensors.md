@@ -18,8 +18,7 @@ permalink: api/sensors.html
 | **Temporal Scope Start** | 2010w40 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
-This is the documentation of the API for accessing the Digital Surveillance Sensors (`sensors`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+This endpoint provides access to the Digital Surveillance Sensors of [Delphi](https://delphi.cmu.edu/). It aggregates signals from various digital sources, such as search query volumes, Wikipedia page views, and Twitter posts, to track disease activity before official reports are available.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

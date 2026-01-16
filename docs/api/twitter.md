@@ -22,7 +22,7 @@ title: <i>inactive</i> Twitter Stream
 ## Overview
 {: .no_toc}
 
-This endpoint reports estimates of influenza activity based on analysis of language used in tweets on Twitter.
+This data source provides estimates of influenza activity derived from the content of public Twitter posts. The data was processed by HealthTweets.org using natural language processing (NLP) to classify tweets as flu-related, serving as a real-time indicator of public discussion about influenza.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

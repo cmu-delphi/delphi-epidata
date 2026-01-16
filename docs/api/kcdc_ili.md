@@ -21,7 +21,7 @@ title: <i>inactive</i> KCDC ILI
 ## Overview
 {: .no_toc}
 
-This data source provides weekly influenza-like illness (ILI) data for the Republic of Korea, as reported by the Korea Centers for Disease Control and Prevention (KCDC).
+This endpoint provides weekly influenza-like illness (ILI) rates for South Korea, as reported by the Korea Centers for Disease Control and Prevention (KCDC).
 
 This is the API documentation for accessing the KCDC ILI (`kcdc_ili`) endpoint of [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
 

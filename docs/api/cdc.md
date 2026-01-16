@@ -22,8 +22,7 @@ title: <i>inactive</i> CDC Webpage Visits
 ## Overview
 {: .no_toc}
 
-This data source provides information about the number of visits to various CDC webpages related to influenza topics.
-Delphi receives summary site statistics from the CDC and derives counts of page visits to pages of interest.
+This data source tracks public interest in influenza by counting visits to specific informational pages on the CDC website. Delphi receives server log summaries directly from the CDC, which count page hits for key topics such as 'Flu Symptoms & Severity', 'How Flu Spreads', and 'What To Do If You Get Sick'. These counts act as a proxy for information-seeking behavior related to the flu.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

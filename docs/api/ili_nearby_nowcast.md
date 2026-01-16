@@ -23,7 +23,7 @@ permalink: api/nowcast.html
 ## Overview
 {: .no_toc}
 
-This endpoint provides Delphi's nowcast esimtates of the percentage of outpatient visits due to Influenza-Like Illness (ILI).
+This endpoint provides Delphi's nowcast estimates of the percentage of outpatient visits due to Influenza-Like Illness (ILI).
 
 This system uses a sensor-fusion approach to estimate the current level of flu activity before the official CDC reports are finalized.
 It is available for:

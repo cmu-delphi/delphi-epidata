@@ -22,7 +22,7 @@ title: <i>inactive</i> Dengue Nowcast
 ## Overview
 {: .no_toc}
 
-This endpoint provides Delphi's nowcast esimtates of dengue incidence, based on historical data and reported case counts.
+This endpoint provides Delphi's nowcast estimates of dengue incidence, based on historical data and reported case counts.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:

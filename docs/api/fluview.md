@@ -22,7 +22,7 @@ nav_order: 1
 ## Overview
 {: .no_toc}
 
-The `fluview` endpoint reports influenza-like illness (ILI) data sourced from the U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet) dashboard.
+The `fluview` endpoint reports influenza-like illness (ILI) data sourced from the U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet) dashboard. Data is sourced from both ILINet (public health labs) and WHO_NREVSS (clinical labs).
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
