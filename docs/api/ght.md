@@ -31,6 +31,8 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
 
 This data may be useful for real-time monitoring of diseases, as in:
 - Herman Anthony Carneiro, Eleftherios Mylonakis. [Google Trends: A Web-Based Tool for Real-Time Surveillance of Disease Outbreaks](https://doi.org/10.1086/630200). Clinical Infectious Diseases, Volume 49, Issue 10, 15 November 2009, Pages 1557–1564. 
@@ -44,8 +46,7 @@ This data may be useful for real-time monitoring of diseases, as in:
 1. TOC
 {:toc}
 
-{: .note}
-> **Note:** Restricted access: This endpoint requires authentication.
+
 
 # The API
 

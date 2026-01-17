@@ -54,10 +54,11 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/wiki/>
 
 #### Available Articles
 
-The following health-related Wikipedia articles are available:
+Articles are categorized by the disease or condition they are most closely related to. Note that some articles (like "fever" or "nausea") may overlap across categories.
 
+##### Influenza (Flu)
 <details markdown="1">
-<summary>Click to expand full list of articles</summary>
+<summary>Click to expand</summary>
 
 | Article Name |
 |---|
@@ -118,6 +119,62 @@ The following health-related Wikipedia articles are available:
 
 </details>
 
+##### Norovirus (Noro)
+<details markdown="1">
+<summary>Click to expand</summary>
+
+| Article Name |
+|---|
+| abdominal_pain |
+| caliciviridae |
+| dehydration |
+| diarrhea |
+| fecal–oral_route |
+| foodborne_illness |
+| gastroenteritis |
+| intravenous_therapy |
+| leaky_scanning |
+| nausea |
+| norovirus |
+| oral_rehydration_therapy |
+| rotavirus |
+| shellfish |
+| vomiting |
+
+</details>
+
+##### Dengue
+<details markdown="1">
+<summary>Click to expand</summary>
+
+| Article Name |
+|---|
+| aedes |
+| aedes_aegypti |
+| arthralgia |
+| blood_transfusion |
+| dengue_fever |
+| dengue_vaccine |
+| dengue_virus |
+| diarrhea |
+| exanthem |
+| fever |
+| flavivirus |
+| headache |
+| hematuria |
+| mosquito |
+| mosquito-borne_disease |
+| myalgia |
+| nausea |
+| nosebleed |
+| paracetamol |
+| petechia |
+| rhinitis |
+| thrombocytopenia |
+| vomiting |
+
+</details>
+
 
 
 ### Optional
@@ -139,12 +196,12 @@ The following health-related Wikipedia articles are available:
 | `result`            | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`           | list of results                                                 | array of objects |
 | `epidata[].article` | Wikipedia article name                                          | string           |
-| `epidata[].count`   | number of pageviews                                             | integer          |
-| `epidata[].total`   | total pageviews                                                 | integer          |
-| `epidata[].hour`    | hour (-1 if `hour` not used)                                   | integer          |
-| `epidata[].date`    | date (yyyy-MM-dd) (only included if `date` used)                | string           |
-| `epidata[].epiweek` | epiweek (only included if `epiweek` used)                       | integer          |
-| `epidata[].value`   | normalized pageview count                                       | float            |
+| `epidata[].count`   | article-specific pageview count for the requested period/hours  | integer          |
+| `epidata[].total`   | total Wikipedia pageviews for the specified `language` (e.g., all English Wikipedia traffic) over the same period/hours | integer          |
+| `epidata[].hour`    | hour (0-23) of access (-1 if not filtering by hour)            | integer          |
+| `epidata[].date`    | date (yyyy-MM-dd)                                               | string           |
+| `epidata[].epiweek` | epiweek                                                         | integer          |
+| `epidata[].value`   | normalized pageview count (pageviews per million total language traffic): `(count / total) * 10^6` | float            |
 | `message`           | `success` or error message                                      | string           |
 
 # Example URLs
