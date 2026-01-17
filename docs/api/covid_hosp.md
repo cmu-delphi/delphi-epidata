@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
+title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
 ---
 
 # COVID-19 Hospitalization by State

@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Google Health Trends
+title: Google Health Trends
 ---
 
 # Google Health Trends

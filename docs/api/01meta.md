@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Epidata Metadata
+title: Epidata Metadata
 permalink: api/meta.html
 ---
 

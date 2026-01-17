@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Delphi Forecasts
+title: Delphi Forecasts
 ---
 
 # Delphi Forecasts

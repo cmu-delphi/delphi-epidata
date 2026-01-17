@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Dengue Digital Surveillance
+title: Dengue Digital Surveillance
 permalink: api/dengue_sensors.html
 ---
 

@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> Google Flu Trends
+title: Google Flu Trends
 ---
 
 # Google Flu Trends
@@ -60,7 +60,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/gft/>
 | `epidata`            | list of results                                                 | array of objects |
 | `epidata[].location` | location                                                        | string           |
 | `epidata[].epiweek`  | epiweek                                                         | integer          |
-| `epidata[].num`      | GFT estimate                                                    | integer          |
+| `epidata[].num`      | GFT estimate (estimated ILI cases per 100,000 physician visits) | integer          |
 | `message`            | `success` or error message                                      | string           |
 
 # Example URLs
