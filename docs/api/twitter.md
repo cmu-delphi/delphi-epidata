@@ -22,12 +22,15 @@ title: Twitter Stream
 ## Overview
 {: .no_toc}
 
-This data source provides estimates of influenza activity derived from the content of public Twitter posts. The data was processed by HealthTweets.org using natural language processing (NLP) to classify tweets as flu-related, serving as a real-time indicator of public discussion about influenza.
+This data source provides estimates of influenza activity derived from the content of public Twitter posts. The data was processed by HealthTweets.org using natural language processing (NLP) to classify tweets as flu-related.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
+
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -35,8 +38,19 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
-{: .note}
-> **Note:** Restricted access: This endpoint requires authentication.
+
+# Methodology
+
+The classification and processing pipeline involves several stages to transform raw Twitter data into health trends:
+
+1.  Two streams are collected via the Twitter Streaming API: a HEALTH stream (capped at 1% of public tweets) using 269 health-related keywords, and a SAMPLE stream (a random 1% of all public tweets).
+2.  A statistical classifier identifies health-related tweets within the HEALTH stream, designed to balance precision and recall (estimated F1-score of 0.70).
+3.  Health-related tweets are processed to distinguish those reporting an actual influenza infection from general discussion, concerns, or awareness.
+4.  Every identified health tweet and every tweet from the SAMPLE stream is geolocated using Carmen, which identifies the Country, State, County and City using user profile information and geotagged data.
+5.  The volume of identified influenza infections (`num`) is normalized by the total volume of tweets from the same location in the SAMPLE stream (`total`) to provide a relative measure of prevalence (`percent`).
+6.  Gaps in data collection (e.g., due to network interruptions) are filled by estimating missing data based on adjacent days.
+
+For more technical details, see the [research paper below](#citing-the-survey).
 
 # The API
 
@@ -66,9 +80,10 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/twitter/>
 | `epidata[].location`  | location label                                                  | string           |
 | `epidata[].date`      | date (yyyy-MM-dd)                                               | string           |
 | `epidata[].epiweek`   | epiweek                                                         | integer          |
-| `epidata[].num`       | number of tweets                                                | integer          |
-| `epidata[].total`     | total tweets                                                    | integer          |
-| `epidata[].percent`   | percent of tweets                                               | float            |
+| `epidata[].num`       | number of flu-related tweets in the HEALTH stream (see [Methodology](#methodology)) | integer          |
+| `epidata[].total`     | total number of tweets in the random SAMPLE stream for the same location | integer          |
+| `epidata[].percent`   | flu-related tweets normalized based on the number
+of tweets in SAMPLE                           | float            |
 | `message`             | `success` or error message                                      | string           |
 
 # Example URLs
