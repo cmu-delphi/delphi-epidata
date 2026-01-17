@@ -116,8 +116,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview/>
 | `message`                 | `success` or error message                                      | string           |
 
 {: .note}
-> **Notes:**
-> - If authorized via `auth`, private data is not included.
+> **Note:** Private data (imputed values) is only returned if authorized via a valid `auth` token.
 
 # Example URLs
 

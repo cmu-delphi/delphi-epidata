@@ -35,6 +35,8 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
 
 # The API
 

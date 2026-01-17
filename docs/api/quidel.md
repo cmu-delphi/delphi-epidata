@@ -32,6 +32,9 @@ General topics not specific to any particular endpoint are discussed in the [API
 1. TOC
 {:toc}
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
+
 ## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/quidel/>

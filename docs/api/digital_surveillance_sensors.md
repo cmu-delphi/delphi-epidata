@@ -54,9 +54,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 | `names` | sensor names | `list` of string |
 
 {: .note}
-> **Notes:**
-> * Names of publicly-accessible sensors (no `auth` token required): `sar3`, `epic`, `arch`
-> * Names of private sensors requiring `auth` token: `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki`
+> **Note:** Restricted access: Some component signals require authentication.
+> - **Publicly-accessible sensors:** `sar3`, `epic`, `arch` (no `auth` required)
+> - **Private sensors:** `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki` (require `auth` token)
 
 ### Optional
 

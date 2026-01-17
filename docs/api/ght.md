@@ -44,6 +44,9 @@ This data may be useful for real-time monitoring of diseases, as in:
 1. TOC
 {:toc}
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
+
 # The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>

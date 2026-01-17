@@ -52,6 +52,9 @@ The following signals are available:
 1. TOC
 {:toc}
 
+{: .note}
+> **Note:** Restricted access: Some component signals require authentication.
+
 # The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_sensors/>

@@ -36,7 +36,7 @@ General topics not specific to any particular endpoint are discussed in the
 {:toc}
 
 {: .note}
-> **Note:** Restricted access: Delphi doesn't have permission to share this dataset.
+> **Note:** Restricted access: This endpoint requires authentication.
 
 # The API
 
