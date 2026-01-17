@@ -1,7 +1,7 @@
 ---
 parent: Inactive Sources (Other)
 grand_parent: Data Sources and Signals
-title: <i>inactive</i> KCDC ILI
+title: KCDC ILI
 ---
 
 # KCDC ILI
@@ -16,7 +16,7 @@ title: <i>inactive</i> KCDC ILI
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w44 |
 | **Temporal Scope Start** | 2004w36 |
-| **License** | This was scraped from a publicly-accessible government website, but no explicit license terms were found. |
+| **License** | [KCDC Copyright policy](https://www.kdca.go.kr/kdca/3509/subview..do) |
 
 ## Overview
 {: .no_toc}
@@ -74,8 +74,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/kcdc_ili/>
 | `epidata[].issue`         | epiweek of issue                                                | integer          |
 | `epidata[].epiweek`       | epiweek of data                                                 | integer          |
 | `epidata[].lag`           | lag in weeks                                                    | integer          |
-| `epidata[].ili`           | percent ILI                                                     | float            |
-| `epidata[].visits`        | number of visits                                                | integer          |
+| `epidata[].ili`           | ILI cases per 1,000 outpatient visits                           | float            |
 | `message`                 | `success` or error message                                      | string           |
 
 # Example URLs
@@ -93,7 +92,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/kcdc_ili/>
       "issue": 202001,
       "epiweek": 202001,
       "lag": 44,
-      "ili": 49.8,
+      "ili": 49.8
     }
   ],
   "message": "success"
