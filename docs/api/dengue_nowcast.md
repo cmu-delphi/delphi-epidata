@@ -49,6 +49,8 @@ The endpoint provides estimates of dengue incidence.
 ### Methodology
 The model synthesizes historical incidence records (from PAHO) with real-time digital surveillance signals (such as Google Health Trends) to produce a current nowcast with quantified uncertainty. 
 
+For details on the methodology, see Jahja et al., ["Kalman Filter, Sensor Fusion, and Constrained Regression: Equivalences and Insights"](https://arxiv.org/abs/1905.11436).
+
 <!-- Source code: https://github.com/rumackaaron/nowcast-dengue/blob/afcde229140dc0ea3522c6c36826d9281b2d4681/src/nowcast_update.py -->
 
 ## Limitations
