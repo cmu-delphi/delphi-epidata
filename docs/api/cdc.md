@@ -38,7 +38,9 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
-## Signal Data Sources
+## Estimation
+
+This endpoint exposes raw aggregation of server logs.
 
 The endpoint consists of page hit counts for specific CDC informational pages.
 
@@ -55,10 +57,6 @@ The endpoint consists of page hit counts for specific CDC informational pages.
 | `total` | total number of hits for all CDC pages |
 
 <!-- Definitions derived from src/acquisition/cdcp/cdc_extract.py -->
-
-## Estimation
-
-This endpoint exposes raw aggregation of server logs.
 
 ### Proxy Nature
 These signals represent information-seeking behavior (internet searches/page visits), which may not perfectly correlate with clinical influenza burden. Media events or public panic can drive spikes in traffic unrelated to actual disease prevalence.
