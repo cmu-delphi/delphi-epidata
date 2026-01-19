@@ -22,7 +22,7 @@ title: ECDC ILI
 ## Overview
 {: .no_toc}
 
-This endpoint provides weekly influenza-like illness (ILI) rates for European countries, as reported by the European Centre for Disease Prevention and Control (ECDC). Data is scraped from `flunewseurope.org`.
+This endpoint provides weekly influenza-like illness (ILI) incidence rates for European countries. Data is sourced from the European Centre for Disease Prevention and Control (ECDC).
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -34,6 +34,12 @@ General topics not specific to any particular endpoint are discussed in the
 
 1. TOC
 {:toc}
+
+## Estimation
+
+Values represent ILI incidence rates (cases per 100,000 population) as reported and presented by the ECDC. Data is subject to backfill if the source provides historical revisions.
+
+<!-- Source code: src/acquisition/ecdc/ecdc_ili.py, src/acquisition/ecdc/ecdc_db_update.py -->
 
 # The API
 
@@ -72,8 +78,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
 | `epidata[].issue`         | epiweek of issue                                                | integer          |
 | `epidata[].epiweek`       | epiweek of data                                                 | integer          |
 | `epidata[].lag`           | lag in weeks                                                    | integer          |
-| `epidata[].count`         | number of ILI cases                                             | integer          |
-| `epidata[].rate`          | ILI rate                                                        | float            |
+| `epidata[].incidence_rate`| ILI incidence rate (cases per 100,000 population)              | float            |
 | `message`                 | `success` or error message                                      | string           |
 
 # Example URLs
@@ -86,13 +91,12 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
   "result": 1,
   "epidata": [
     {
-      "release_date": "2020-01-10",
+      "release_date":"2020-03-26",
       "region": "Austria",
-      "issue": 202001,
+      "issue": 202012,
       "epiweek": 202001,
-      "lag": 0,
-      "count": 123,
-      "rate": 12.34
+      "lag": 11,
+      "incidence_rate": 406.60630449
     }
   ],
   "message": "success"
