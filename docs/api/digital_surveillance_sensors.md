@@ -6,7 +6,7 @@ permalink: api/sensors.html
 ---
 
 # Digital Surveillance Sensors
-
+{: .no_toc}
 
 | Attribute | Details |
 | :--- | :--- |
@@ -18,7 +18,10 @@ permalink: api/sensors.html
 | **Temporal Scope Start** | 2010w40 |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
-This endpoint provides access to the Digital Surveillance Sensors of [Delphi](https://delphi.cmu.edu/). It aggregates signals from various digital sources, such as search query volumes, Wikipedia page views, and Twitter posts, to track disease activity before official reports are available.
+## Overview
+{: .no_toc}
+
+This endpoint provides access to Delphi's digital surveillance sensor estimates for seasonal influenza-like illness (ILI). It aggregates signals from multiple digital sources, including Google Health Trends, Wikipedia access counts, Twitter posts, and CDC web traffic, to provide real-time indicators of flu activity before official clinical reports are finalized.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -35,7 +38,30 @@ General topics not specific to any particular endpoint are discussed in the
 > like ILI Nearby, Google Flu
 > Trends, etc., during that same date range, because these were designed to track
 > ILI as driven by _seasonal_ influenza, and were NOT designed to track ILI during
-the COVID-19 pandemic.
+> the COVID-19 pandemic.
+
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Signal Data Sources
+
+The endpoint aggregates data from the following sources.
+
+| Signal | Name | Description | Documentation |
+|:---|:---|:---|:---|
+| `cdc` | **CDC Webpage Visits** | Count of hits to CDC flu-related pages | [Docs](cdc.md) |
+| `gft` | **Google Flu Trends** | Estimated ILI cases | [Docs](gft.md) |
+| `ght` | **Google Health Trends** | Search volume for flu terms | [Docs](ght.md) |
+| `twtr` | **Twitter Stream** | Percentage of tweets related to ILI | [Docs](twitter.md) |
+| `wiki` | **Wikipedia Access** | Page view counts for flu articles | [Docs](wiki.md) |
+| `quid` | **Quidel** | Positive influenza lab tests | [Docs](quidel.md) |
+| `sar3` | **Seasonal Auto-Regressive model (v3)** | SAR3 is a regression model that, given the current week number and preliminary wILI values of the past three weeks, provides an estimate of the final wILI value of the current week. | [Reference (Subsection 4.3.2: Predictions)](http://reports-archive.adm.cs.cmu.edu/anon/cbd/CMU-CB-16-101.pdf) |
+| `epic` | **Epicast** | A web-based system that collects and aggregates epidemic predictions from human participants to leverage collective human judgment. | [Reference](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005248) |
+| `arch` | **Archefilter** | Builds an archetype influenza trajectory by splitting, smoothing, centering, and averaging historical wILI trajectories to estimate the current season's curve. | [Reference (Appendix B: The Archefilter)](http://reports-archive.adm.cs.cmu.edu/anon/cbd/CMU-CB-16-101.pdf) |
 
 
 # The API
@@ -71,9 +97,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 | `result`             | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`            | list of results                                                 | array of objects |
 | `epidata[].name`     | sensor name                                                     | string           |
-| `epidata[].location` |                                                                 | string           |
-| `epidata[].epiweek`  |                                                                 | integer          |
-| `epidata[].value`    |                                                                 | float            |
+| `epidata[].location` | location code                                                   | string           |
+| `epidata[].epiweek`  | epiweek                                                         | integer          |
+| `epidata[].value`    | signal value (varies by sensor)                  | float            |
 | `message`            | `success` or error message                                      | string           |
 
 # Example URLs
