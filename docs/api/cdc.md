@@ -29,14 +29,39 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
+
 ## Table of contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
 
-{: .note}
-> **Note:** Restricted access: This endpoint requires authentication.
+## Signal Data Sources
+
+The endpoint consists of page hit counts for specific CDC informational pages.
+
+| Field | Description |
+|:---|:---|
+| `num1` | hits for 'What You Should Know for the ... Influenza Season' |
+| `num2` | hits for 'What To Do If You Get Sick' |
+| `num3` | hits for 'Flu Symptoms & Severity' |
+| `num4` | hits for 'How Flu Spreads' |
+| `num5` | hits for 'What You Should Know About Flu Antiviral Drugs' |
+| `num6` | hits for 'Weekly US Map' |
+| `num7` | hits for 'Basics' |
+| `num8` | hits for 'Flu Activity & Surveillance' |
+| `total` | total number of hits for all CDC pages |
+
+<!-- Definitions derived from src/acquisition/cdcp/cdc_extract.py -->
+
+## Estimation
+
+This endpoint exposes raw aggregation of server logs.
+
+### Proxy Nature
+These signals represent information-seeking behavior (internet searches/page visits), which may not perfectly correlate with clinical influenza burden. Media events or public panic can drive spikes in traffic unrelated to actual disease prevalence.
 
 # The API
 
@@ -61,14 +86,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 | `epidata`             | list of results                                                 | array of objects |
 | `epidata[].location`  | location label                                                  | string           |
 | `epidata[].epiweek`   | epiweek                                                         | integer          |
-| `epidata[].num1`      | number of page hits for 'What You Should Know for the ... Influenza Season'     | integer          |
-| `epidata[].num2`      | number of page hits for 'What To Do If You Get Sick'                            | integer          |
-| `epidata[].num3`      | number of page hits for 'Flu Symptoms & Severity'                               | integer          |
-| `epidata[].num4`      | number of page hits for 'How Flu Spreads'                                       | integer          |
-| `epidata[].num5`      | number of page hits for 'What You Should Know About Flu Antiviral Drugs'        | integer          |
-| `epidata[].num6`      | number of page hits for 'Weekly US Map'                                         | integer          |
-| `epidata[].num7`      | number of page hits for 'Basics'                                                | integer          |
-| `epidata[].num8`      | number of page hits for 'Flu Activity & Surveillance'                           | integer          |
+| `epidata[].num(1-8)`  | number of page hits for specific pages (see [Signal Data Sources](#signal-data-sources)) | integer |
 | `epidata[].total`     | total page hits across all datasources                          | integer          |
 | `epidata[].value`     | computed value (may be null)                                    | float or null    |
 | `message`             | `success` or error message                                      | string           |
