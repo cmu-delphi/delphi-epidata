@@ -37,6 +37,7 @@ General topics not specific to any particular endpoint are discussed in the
 
 
 ### Available Signals
+{: .no_toc}
 
 The following signals are available. Both represent estimated dengue case counts derived from digital data streams.
 
