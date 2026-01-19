@@ -28,7 +28,13 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-### Forecasting Systems
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Forecasting Systems
 
 The following systems are available, representing different forecasting models for ILINet % weighted ILI:
 
@@ -38,14 +44,8 @@ The following systems are available, representing different forecasting models f
 | `eb` | [Empirical Bayes](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004382) | 
 | `ec` | [Epicast](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005248) | 
 | `sp` | [Pinned Spline](http://reports-archive.adm.cs.cmu.edu/anon/cbd/CMU-CB-16-101.pdf#Appendix.1.A) | 
-| `st` | [Delphi-Stat](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006134) 
+| `st` | [Delphi-Stat](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006134) |
 
-
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
 
 # The API
 
