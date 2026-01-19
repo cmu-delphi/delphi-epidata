@@ -27,7 +27,8 @@ nav_order: 3
 
 This data source provides laboratory-confirmed influenza hospitalization rates from the [CDC's Influenza Hospitalization Surveillance Network (FluSurv-NET)](https://www.cdc.gov/fluview/overview/influenza-hospitalization-surveillance.html?CDC_AAref_Val=https://www.cdc.gov/flu/weekly/influenza-hospitalization-surveillance.htm). The data includes age-stratified hospitalization rates and rates by race, sex, and flu type, when available.
 
-> [!NOTE]
+{: .note}
+> **Note:**
 > FluSurv-NET age groups differ from ILINet. `age_0` matches ILINet's 0-4 years; `age_3` matches 50-64 years; `age_4` matches 65+ years.
 
 General topics not specific to any particular endpoint are discussed in the

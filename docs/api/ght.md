@@ -23,16 +23,15 @@ title: Google Health Trends
 
 The `ght` endpoint provides access to Google Health Trends data, which tracks the aggregated volume of search queries related to specific influenza symptoms and treatments.
 
-> [!NOTE]
-> This data source tracks the search interest for specific terms (e.g., "flu symptoms", "thermometer") rather than model estimates. It is distinct from Google Flu Trends (GFT) which provided modeled ILI rates.
+{: .note}
+> **Notes:**
+> - This data source tracks the search interest for specific terms (e.g., "flu symptoms", "thermometer") rather than model estimates. It is distinct from Google Flu Trends (GFT) which provided modeled ILI rates.
+> - Restricted access: This endpoint requires authentication.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
-
-{: .note}
-> **Note:** Restricted access: This endpoint requires authentication.
 
 This data may be useful for real-time monitoring of diseases, as in:
 - Herman Anthony Carneiro, Eleftherios Mylonakis. [Google Trends: A Web-Based Tool for Real-Time Surveillance of Disease Outbreaks](https://doi.org/10.1086/630200). Clinical Infectious Diseases, Volume 49, Issue 10, 15 November 2009, Pages 1557–1564. 

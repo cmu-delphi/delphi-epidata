@@ -71,8 +71,8 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/delphi/>
 | `epidata[].epiweek` | epiweek | integer |
 | `epidata[].forecast` | forecast structure | object |
 | `epidata[].forecast._version` | forecast version | integer |
-| `epidata[].forecast.baselines` | baseline values for each region | object |
-| `epidata[].forecast.baselines.<region>` | CDC %ILI baseline for \<region\> | float |
+| `epidata[].forecast.baselines` | baseline values for each region (see [Note below](#cdc-ili-baseline)) | object |
+| `epidata[].forecast.baselines.<region>` | CDC %ILI baseline for \<region\> (see [Note below](#cdc-ili-baseline)) | float |
 | `epidata[].forecast.data` | forecast data for each region | object |
 | `epidata[].forecast.data.<region>` | forecast data for \<region\> | object |
 | `epidata[].forecast.data.<region>.<distrib>` | distribution for \<distrib\> (`peak`, `peakweek`, `onset`, `x1`, `x2`, `x3`, `x4`) | object |
@@ -88,8 +88,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/delphi/>
 | `epidata[].forecast.year_weeks` | number of weeks in year | integer |
 | `message` | `success` or error message | string |
 
-> [!TIP]
+{: .tip}
 > **What is the CDC ILI Baseline?**
+> {: #cdc-ili-baseline}
 > The baseline marks when flu season begins in a region. It is calculated from historical low-activity periods and represents the expected ILI percentage when influenza is not actively circulating. See [CDC's U.S. Influenza Surveillance](https://www.cdc.gov/fluview/overview/index.html#:~:text=The%20baseline%20is%20developed%20by%20calculating%20the%20mean%20percentage%20of%20patient%20visits%20for%20ILI%20during%20non%2Dinfluenza%20weeks%20for%20the%20most%20recent%20three%20seasons) for more details.
 
 # Example URLs

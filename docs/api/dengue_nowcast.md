@@ -55,10 +55,10 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_nowcast/>
 |-----------------------|-----------------------------------------------------------------|------------------|
 | `result`              | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`             | list of results                                                 | array of objects |
-| `epidata[].location`  | location label                                                  | string           |
-| `epidata[].epiweek`   | epiweek                                                         | integer          |
-| `epidata[].value`     | nowcast value                                                   | float            |
-| `epidata[].std`       | standard deviation                                              | float            |
+| `epidata[].location`  | country or territory code. See [Geographic Codes](geographic_codes.html#countries-and-territories-in-the-americas) | string           |
+| `epidata[].epiweek`   | epiweek (YYYYWW)        | integer          |
+| `epidata[].value`     | nowcast estimate of dengue incidence (cases per 100,000 population) | float            |
+| `epidata[].std`       | standard deviation of the nowcast estimate                      | float            |
 | `message`             | `success` or error message                                      | string           |
 
 # Example URLs

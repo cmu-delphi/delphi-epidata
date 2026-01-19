@@ -24,9 +24,6 @@ title: ECDC ILI
 
 This endpoint provides weekly influenza-like illness (ILI) rates for European countries, as reported by the European Centre for Disease Prevention and Control (ECDC). Data is scraped from `flunewseurope.org`.
 
-> [!WARNING]
-> The scraper may occasionally fail to download all available data due to website responsiveness.
-
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
@@ -37,8 +34,6 @@ General topics not specific to any particular endpoint are discussed in the
 
 1. TOC
 {:toc}
-
-
 
 # The API
 
