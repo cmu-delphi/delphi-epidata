@@ -50,21 +50,21 @@ Historical data were revised as KCDC updated its surveillance reports.
 
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/kcdc_ili/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `regions` | Regions to fetch. See [Geographic Codes](geographic_codes.html#republic-of-korea). | `list` of strings |
 | `epiweeks` | Epiweeks to fetch. Supports [`epirange()`] and defaults to all ("*") dates. | `list` of epiweeks |
 
-### Optional
+#### Optional
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -76,7 +76,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/kcdc_ili/>
 > - If both `issues` and `lag` are specified, only `issues` is used.
 > - If neither is specified, the current issues are used.
 
-## Response
+### Response
 
 | Field                     | Description                                                     | Type             |
 |---------------------------|-----------------------------------------------------------------|------------------|
@@ -90,7 +90,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/kcdc_ili/>
 | `epidata[].ili`           | ILI cases per 1,000 outpatient visits                           | float            |
 | `message`                 | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### KCDC ILI in ROK on 2020w01
 <https://api.delphi.cmu.edu/epidata/kcdc_ili/?regions=ROK&epiweeks=202001>
@@ -112,7 +112,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/kcdc_ili/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch KCDC ILI data for ROK for epiweeks `202001` and `202002`.

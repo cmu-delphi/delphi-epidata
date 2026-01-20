@@ -58,14 +58,14 @@ For more technical details, see the [research paper below](#citing-the-survey).
 *   Highly dependent on Twitter's API access and terms of service, which have changed significantly.
 *   Twitter users are not a representative sample of the general population.
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/twitter/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -77,7 +77,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/twitter/>
 {: .note}
 > **Note:** Only one of `dates` and `epiweeks` is required. If both are provided, `epiweeks` is ignored.
 
-## Response
+### Response
 
 | Field                 | Description                                                     | Type             |
 |-----------------------|-----------------------------------------------------------------|------------------|
@@ -92,7 +92,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/twitter/>
 of tweets in SAMPLE                           | float            |
 | `message`             | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### Twitter on 2015w01 (national)
 <https://api.delphi.cmu.edu/epidata/twitter/?auth=...&locations=nat&epiweeks=201501>
@@ -120,7 +120,7 @@ Researchers who use the Twitter Stream data for research are asked to credit and
 
 
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch Twitter data for national level for epiweek `201501`.

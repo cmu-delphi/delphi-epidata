@@ -54,14 +54,14 @@ Counts are aggregated by hour and then summed to daily or weekly totals. No smoo
 * Information-seeking behaviour does not always correlate perfectly with disease incidence.
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/wiki/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -70,11 +70,11 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/wiki/>
 | `dates` | dates (see [Date Formats](date_formats.html)) | `list` of dates |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 
-#### Available Articles
+##### Available Articles
 
 Articles are categorized by the disease or condition they are most closely related to. Note that some articles (like "fever" or "nausea") may overlap across categories.
 
-##### Influenza (Flu)
+###### Influenza (Flu)
 <details markdown="1">
 <summary>Click to expand</summary>
 
@@ -137,7 +137,7 @@ Articles are categorized by the disease or condition they are most closely relat
 
 </details>
 
-##### Norovirus (Noro)
+###### Norovirus (Noro)
 <details markdown="1">
 <summary>Click to expand</summary>
 
@@ -161,7 +161,7 @@ Articles are categorized by the disease or condition they are most closely relat
 
 </details>
 
-##### Dengue
+###### Dengue
 <details markdown="1">
 <summary>Click to expand</summary>
 
@@ -195,7 +195,7 @@ Articles are categorized by the disease or condition they are most closely relat
 
 
 
-### Optional
+#### Optional
 
 | Parameter | Description | Type                   |
 |-----------|-------------|------------------------|
@@ -207,7 +207,7 @@ Articles are categorized by the disease or condition they are most closely relat
 > - `dates`, `epiweeks`, and `hours` are `None` by default.
 > - `language` is `en` by default.
 
-## Response
+### Response
 
 | Field               | Description                                                     | Type             |
 |---------------------|-----------------------------------------------------------------|------------------|
@@ -222,7 +222,7 @@ Articles are categorized by the disease or condition they are most closely relat
 | `epidata[].value`   | normalized pageview count (pageviews per million total language traffic): `(count / total) * 10^6` | float            |
 | `message`           | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### Wikipedia Access article "influenza" on 2020w01
 <https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks=202001>
@@ -264,7 +264,7 @@ Articles are categorized by the disease or condition they are most closely relat
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch Wikipedia Access data for article "influenza" in English for epiweeks `202001-202010` (10 weeks total) and hours 0 and 12.

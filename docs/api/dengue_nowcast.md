@@ -57,21 +57,21 @@ For details on the methodology, see Jahja et al., ["Kalman Filter, Sensor Fusion
 
 The accuracy of the nowcasts relies on the availability and timeliness of underlying surveillance data from regional health organizations.
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_nowcast/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.md#countries-and-territories-in-the-americas)) |
 
-## Response
+### Response
 
 | Field                 | Description                                                     | Type             |
 |-----------------------|-----------------------------------------------------------------|------------------|
@@ -83,7 +83,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_nowcast/>
 | `epidata[].std`       | standard deviation of the nowcast estimate                      | float            |
 | `message`             | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### Dengue Nowcast on 2015w01 (Puerto Rico)
 <https://api.delphi.cmu.edu/epidata/dengue_nowcast/?locations=pr&epiweeks=201401-202301>
@@ -103,7 +103,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/dengue_nowcast/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch Dengue Nowcast data for Puerto Rico for epiweeks `201401` to `202301`.

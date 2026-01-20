@@ -54,14 +54,14 @@ Outbreak reports are aggregated weekly. No additional smoothing or statistical a
 *   Data is only available for specific lists of participating states. Use the [NoroSTAT Metadata](norostat_meta.md) endpoint to check available locations.
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/norostat/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -69,7 +69,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/norostat/>
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `location` | Location string. Must be an exact match from the `location` field of the [NoroSTAT Metadata](norostat_meta.md) endpoint. | string |
 
-## Response
+### Response
 
 | Field                     | Description                                                     | Type             |
 |---------------------------|-----------------------------------------------------------------|------------------|
@@ -80,7 +80,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/norostat/>
 | `epidata[].value`         | count of norovirus outbreaks                                    | integer          |
 | `message`                 | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### NoroSTAT on 2015w01
 <https://api.delphi.cmu.edu/epidata/norostat/?auth=...&location=Minnesota%2C%20Ohio%2C%20Oregon%2C%20Tennessee%2C%20and%20Wisconsin&epiweeks=201233>
@@ -99,7 +99,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/norostat/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch NoroSTAT data for the most recent available states for epiweek `201501`.

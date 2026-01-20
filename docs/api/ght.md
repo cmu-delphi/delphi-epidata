@@ -52,14 +52,14 @@ Values represent the relative search volume for a specific query or topic within
 <!-- Source code: src/acquisition/ght/ght_update.py -->
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -68,7 +68,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 | `locations` | locations | `list` of state codes (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) and/or `US` |
 | `query` | search query or topic ID (see [Valid Queries](#valid-queries)) | string |
 
-#### Valid Queries
+##### Valid Queries
 
 <details markdown="1">
 <summary>Click to expand full list of valid queries</summary>
@@ -177,7 +177,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 
 </details>
 
-## Response
+### Response
 
 | Field                 | Description                                                     | Type             |
 |-----------------------|-----------------------------------------------------------------|------------------|
@@ -189,7 +189,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 | `epidata[].value`     | search volume                                                   | float            |
 | `message`             | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### Google Health Trends for "how to get over the flu" on 2015w01 (US)
 <https://api.delphi.cmu.edu/epidata/ght/?auth=...&locations=US&epiweeks=201501&query=how%20to%20get%20over%20the%20flu>
@@ -208,7 +208,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch GHT data for "how to get over the flu" in the US for epiweek `201501`.

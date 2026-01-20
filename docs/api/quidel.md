@@ -48,9 +48,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/quidel/>
 
 See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.html) for details on specifying epiweeks, dates, and lists.
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -58,7 +58,7 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `locations` | locations | `list` of `hhs<#>` region labels (see [Geographic Codes](geographic_codes.md#hhs-regions)) |
 
-## Response
+### Response
 
 | Field                 | Description                                                     | Type             |
 |-----------------------|-----------------------------------------------------------------|------------------|
@@ -69,7 +69,7 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 | `epidata[].value`     | average number of test records per unique facility              | float            |
 | `message`             | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### Quidel on 2015w35-2020w01 (HHS Region 1)
 <https://api.delphi.cmu.edu/epidata/quidel/?auth=...&locations=hhs1&epiweeks=201535-202001>
@@ -94,7 +94,7 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch Quidel data for HHS Region 1 for epiweeks `201535-202001`.

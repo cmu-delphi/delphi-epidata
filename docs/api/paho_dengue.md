@@ -57,21 +57,21 @@ No additional smoothing or statistical adjustments are applied by Delphi.
 
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/paho_dengue/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `regions` | regions | `list` of region labels (see [Geographic Codes](geographic_codes.md#paho-dengue)) |
 
-## Response
+### Response
 
 | Field                        | Description                                                     | Type             |
 |------------------------------|-----------------------------------------------------------------|------------------|
@@ -90,7 +90,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/paho_dengue/>
 | `epidata[].incidence_rate`   | incidence rate per 100,000 population                           | float            |
 | `message`                    | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### PAHO Dengue on 2015w01 (Canada)
 <https://api.delphi.cmu.edu/epidata/paho_dengue/?regions=ca&epiweeks=201501>
@@ -117,7 +117,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/paho_dengue/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch PAHO Dengue data for Canada for epiweek `201501`.

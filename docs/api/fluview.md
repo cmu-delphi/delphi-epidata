@@ -66,21 +66,21 @@ The data is preliminary and subject to revision. Participating providers may rep
 
 ILINet is a voluntary system. While it covers all states, the coverage within a state may not be perfectly representative of the entire population. Also, ILI is a syndromic definition, not a laboratory diagnosis. It captures patients with flu-like symptoms, which can be caused by other respiratory pathogens (including SARS-CoV-2 and RSV).
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/fluview/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
-### Optional
+#### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
@@ -93,7 +93,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview/>
 > - If both `issues` and `lag` are specified, only `issues` is used.
 > - If neither is specified, the current issues are used.
 
-## Response
+### Response
 
 | Field                     | Description                                                     | Type             |
 |---------------------------|-----------------------------------------------------------------|---------------------|
@@ -120,7 +120,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview/>
 {: .note}
 > **Note:** Private data (imputed values) is only returned if authorized via a valid `auth` token.
 
-# Example URLs
+## Example URLs
 
 ### FluView on 2015w01 (national)
 <https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501>
@@ -161,7 +161,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview/>
 <https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201453&issues=201501-201510>
 
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch national FluView data for epiweeks `201501-201510`.

@@ -47,21 +47,21 @@ The following systems are available, representing different forecasting models f
 | `st` | [Delphi-Stat](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006134) |
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/delphi/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type                                 |
 |-----------|-------------|--------------------------------------|
 | `system`  | system      | system name (`af`, `eb`, `ec`, `sp`, `st`) |
 | `epiweek` | epiweek (see [Date Formats](date_formats.html))     | epiweek when forecast was made       |
 
-## Response
+### Response
 
 | Field | Description | Type |
 | --- | --- | --- |
@@ -93,7 +93,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/delphi/>
 > {: #cdc-ili-baseline}
 > The baseline marks when flu season begins in a region. It is calculated from historical low-activity periods and represents the expected ILI percentage when influenza is not actively circulating. See [CDC's U.S. Influenza Surveillance](https://www.cdc.gov/fluview/overview/index.html#:~:text=The%20baseline%20is%20developed%20by%20calculating%20the%20mean%20percentage%20of%20patient%20visits%20for%20ILI%20during%20non%2Dinfluenza%20weeks%20for%20the%20most%20recent%20three%20seasons) for more details.
 
-# Example URLs
+## Example URLs
 
 ### Delphi on 2015w01 (EC)
 <https://api.delphi.cmu.edu/epidata/delphi/?system=ec&epiweek=201501>
@@ -176,7 +176,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/delphi/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch Delphi Forecast data for system `ec` on epiweek `201501`.

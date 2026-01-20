@@ -38,20 +38,20 @@ General topics not specific to any particular endpoint are discussed in the
 {:toc}
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/meta_norostat/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `auth` | password | string |
 
-## Response
+### Response
 
 | Field                         | Description                                                     | Type             |
 |-------------------------------|-----------------------------------------------------------------|------------------|
@@ -63,7 +63,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/meta_norostat/>
 | `epidata.releases[].release_date` | date when data was released (YYYY-MM-DD)                    | string           |
 | `message`                     | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### NoroSTAT Metadata
 <https://api.delphi.cmu.edu/epidata/meta_norostat/?auth=...>
@@ -98,7 +98,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/meta_norostat/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch NoroSTAT Metadata.

@@ -50,21 +50,21 @@ Users should be aware of Taiwan's epiweek definition changes in 2009 (see [NIDSS
 
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_dengue/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `locations` | locations | `list` of Taiwan region and/or location labels (see [Geographic Codes](geographic_codes.md#nidss)) |
 
-## Response
+### Response
 
 | Field                | Description                                                     | Type             |
 |----------------------|-----------------------------------------------------------------|------------------|
@@ -75,7 +75,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_dengue/>
 | `epidata[].count`    | number of confirmed dengue cases                             | integer          |
 | `message`            | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### NIDSS Dengue on 2015w01 (nationwide)
 <https://api.delphi.cmu.edu/epidata/nidss_dengue/?locations=nationwide&epiweeks=201501>
@@ -95,7 +95,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_dengue/>
 ```
 
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch national NIDSS Dengue data for epiweeks `201501-201510` (10 weeks total).

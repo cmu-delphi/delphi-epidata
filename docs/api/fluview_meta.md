@@ -35,16 +35,16 @@ General topics not specific to any particular endpoint are discussed in the
 
 Returns information about the [`fluview` endpoint](fluview.md).
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_meta/>
 
 
-## Parameters
+### Parameters
 
 There are no parameters for this endpoint.
 
-## Response
+### Response
 
 | Field                     | Description                                                     | Type             |
 |---------------------------|-----------------------------------------------------------------|------------------|
@@ -55,7 +55,7 @@ There are no parameters for this endpoint.
 | `epidata[].table_rows`    | total number of rows in the table                               | integer          |
 | `message`                 | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### FluView Metadata
 <https://api.delphi.cmu.edu/epidata/fluview_meta/>
@@ -74,7 +74,7 @@ There are no parameters for this endpoint.
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch FluView metadata.

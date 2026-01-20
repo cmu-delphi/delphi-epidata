@@ -41,21 +41,21 @@ Values represent ILI incidence rates (cases per 100,000 population) as reported 
 
 <!-- Source code: src/acquisition/ecdc/ecdc_ili.py, src/acquisition/ecdc/ecdc_db_update.py -->
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `regions` | regions | `list` of European country labels (see [Geographic Codes](geographic_codes.md#european-countries)) |
 
-### Optional
+#### Optional
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -67,7 +67,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
 > - If both `issues` and `lag` are specified, only `issues` is used.
 > - If neither is specified, the current issues are used.
 
-## Response
+### Response
 
 | Field                     | Description                                                     | Type             |
 |---------------------------|-----------------------------------------------------------------|------------------|
@@ -81,7 +81,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
 | `epidata[].incidence_rate`| ILI incidence rate (cases per 100,000 population)              | float            |
 | `message`                 | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### ECDC ILI in Austria on 2020w01
 <https://api.delphi.cmu.edu/epidata/ecdc_ili/?regions=austria&epiweeks=202001>
@@ -103,7 +103,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ecdc_ili/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch ECDC ILI data for Austria for epiweeks `202001` and `202002`.

@@ -56,21 +56,21 @@ The CDC calculates three percentage metrics:
 
 The data is preliminary and subject to revision. Clinical labs may report data late or correct previously reported data. The `issues` and `lag` parameters allow access to historical versions of the data.
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_clinical/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `regions` | regions | `list` of region labels: `nat`, states, `hhs1`-`hhs10`, `cen1`-`cen9` (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
-### Optional
+#### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
@@ -82,7 +82,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_clinical/>
 > - If both `issues` and `lag` are specified, only `issues` is used.
 > - If neither is specified, the current issues are used.
 
-## Response
+### Response
 
 | Field                        | Description                                                     | Type             |
 |------------------------------|-----------------------------------------------------------------|------------------|
@@ -101,7 +101,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_clinical/>
 | `epidata[].percent_b`        | percentage of specimens testing positive for influenza B        | float            |
 | `message`                    | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### FluView Clinical on 2020w01 (national)
 <https://api.delphi.cmu.edu/epidata/fluview_clinical/?regions=nat&epiweeks=202001>
@@ -128,7 +128,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_clinical/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch national FluView Clinical data for epiweeks `201601-201701`.

@@ -62,21 +62,21 @@ Historical values were revised as new data became available or due to the epiwee
 > *   **2009 Epiweek Change:** Taiwan adopted a new epiweek system in 2009. Data for 2009 is shifted by -1 week (e.g., 2009w02 becomes 2009w01) to align with standard US CDC epiweek definitions.
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_flu/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `regions` | regions | `list` of Taiwan region labels (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
 
-### Optional
+#### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
@@ -88,7 +88,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_flu/>
 > - If both `issues` and `lag` are specified, only `issues` is used.
 > - If neither is specified, the current issues are used.
 
-## Response
+### Response
 
 | Field                    | Description                                                     | Type             |
 |--------------------------|-----------------------------------------------------------------|------------------|
@@ -103,7 +103,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_flu/>
 | `epidata[].ili`          | percent ILI                                                     | float            |
 | `message`                | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### NIDSS Flu on 2015w01 (nationwide)
 <https://api.delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501>
@@ -127,7 +127,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_flu/>
 ```
 
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch national NIDSS Flu data for epiweeks `201501-201510` (10 weeks total).

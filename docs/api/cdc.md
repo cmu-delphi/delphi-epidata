@@ -61,14 +61,14 @@ The endpoint consists of page hit counts for specific CDC informational pages.
 ### Proxy Nature
 These signals represent information-seeking behavior (internet searches/page visits), which may not perfectly correlate with clinical influenza burden. Media events or public panic can drive spikes in traffic unrelated to actual disease prevalence.
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -76,7 +76,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `locations` | locations | `list` of location codes: `nat` (national), HHS regions (`hhs1`-`hhs10`), Census divisions (`cen1`-`cen9`), or state codes (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
-## Response
+### Response
 
 | Field                 | Description                                                     | Type             |
 |-----------------------|-----------------------------------------------------------------|------------------|
@@ -89,7 +89,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 | `epidata[].value`     | computed value (may be null)                                    | float or null    |
 | `message`             | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### CDC Page Hits on 2015w01 (national)
 <https://api.delphi.cmu.edu/epidata/cdc/?auth=...&locations=nat&epiweeks=201501>
@@ -117,7 +117,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/cdc/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch `cdc` data at the national level for epiweek `201501`.

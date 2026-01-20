@@ -47,7 +47,7 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
-## Signal Data Sources
+## Data Sources
 
 The endpoint aggregates data from the following sources.
 
@@ -64,14 +64,14 @@ The endpoint aggregates data from the following sources.
 | `arch` | **Archefilter** | Builds an archetype influenza trajectory by splitting, smoothing, centering, and averaging historical wILI trajectories to estimate the current season's curve. | [Reference (Appendix B: The Archefilter)](http://reports-archive.adm.cs.cmu.edu/anon/cbd/CMU-CB-16-101.pdf) |
 
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
@@ -84,13 +84,13 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 > - **Publicly-accessible sensors:** `sar3`, `epic`, `arch` (no `auth` required)
 > - **Private sensors:** `twtr`, `gft`, `ght`, `ghtj`, `cdc`, `quid`, `wiki` (require `auth` token)
 
-### Optional
+#### Optional
 
 | Parameter | Description                                                                        | Type             |
 |-----------|-------------------------------------------------------------------------------------|------------------|
 | `auth`    | sensor authentication tokens (currently restricted to 1); can be global or granular | `list` of string |
 
-## Response
+### Response
 
 | Field                | Description                                                     | Type             |
 |----------------------|-----------------------------------------------------------------|------------------|
@@ -102,7 +102,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 | `epidata[].value`    | signal value (varies by sensor)                  | float            |
 | `message`            | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### Delphi's Digital Surveillance SAR3 Sensor on 2020w01 (national)
 <https://api.delphi.cmu.edu/epidata/sensors/?auth=...&names=sar3&locations=nat&epiweeks=202001>
@@ -123,7 +123,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/sensors/>
 ```
 
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch national Delphi's Digital Surveillance SAR3 Sensor data for epiweeks `201501-202001`.

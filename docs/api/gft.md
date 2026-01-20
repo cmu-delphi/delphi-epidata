@@ -38,21 +38,21 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/gft/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `locations` | Locations to fetch. National, HHS regions, US states (see [US Regions and States](geographic_codes.md#us-regions-and-states)), and select cities (see [Selected US Cities](geographic_codes.md#selected-us-cities)). | `list` of strings |
 | `epiweeks` | Epiweeks to fetch. Supports [`epirange()`] and defaults to all ("*") dates. | `list` of epiweeks |
 
-## Response
+### Response
 
 | Field                | Description                                                     | Type             |
 |----------------------|-----------------------------------------------------------------|------------------|
@@ -63,7 +63,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/gft/>
 | `epidata[].num`      | GFT estimate (estimated ILI cases per 100,000 physician visits) | integer          |
 | `message`            | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### Google Flu Trends on 2015w01 (national)
 <https://api.delphi.cmu.edu/epidata/gft/?locations=nat&epiweeks=201501>
@@ -83,7 +83,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/gft/>
 ```
 
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch Google Flu Trends data for epiweeks `201501-201510`.

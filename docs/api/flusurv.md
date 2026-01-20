@@ -128,21 +128,21 @@ The Delphi API tracks these changes via the `issue` date (inferred from the `loa
 * As with all surveillance data, recent weeks may be subject to significant backfill.
 * Not all strata (e.g., specific age bands or racial groups) may be available for all locations or all historical dates, depending on the data collection practices at the time.
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/flusurv/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
 | `locations` | locations | `list` of location labels (see [Geographic Codes](geographic_codes.html#flusurv-locations)) |
 
-### Optional
+#### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
@@ -154,7 +154,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/flusurv/>
 > - If both `issues` and `lag` are specified, only `issues` is used.
 > - If neither is specified, the current issues are used.
 
-## Response
+### Response
 
 | Field | Description | Type |
 |---|---|---|
@@ -204,7 +204,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/flusurv/>
 >   - flusurv age_3 == fluview age_4  (50-64 years)
 >   - flusurv age_4 == fluview age_5  (65+ years)
 
-# Example URLs
+## Example URLs
 
 ### FluSurv on 2020w01 (CA)
 <https://api.delphi.cmu.edu/epidata/flusurv/?locations=ca&epiweeks=202001>
@@ -254,7 +254,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/flusurv/>
 }
 ```
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch CA FluView Clinical data for epiweeks `201701-201801`.

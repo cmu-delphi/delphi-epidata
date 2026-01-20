@@ -62,21 +62,21 @@ Nowcast estimates were subject to revision as input data (like digital signals) 
 *   These values are estimates (nowcasts), not ground-truth surveillance data. They are subject to modeling errors.
 *   The accuracy of the nowcast depends on the availability and stability of the input signals (Wikipedia, CDC page hits, etc.). Changes in user behavior or platform algorithms can affect these inputs.
 
-# The API
+## The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
 
 
-## Parameters
+### Parameters
 
-### Required
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
 | `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
-## Response
+### Response
 
 | Field                | Description                                                     | Type             |
 |----------------------|-----------------------------------------------------------------|------------------|
@@ -88,7 +88,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
 | `epidata[].std`      | standard deviation of the nowcast estimate                      | float            |
 | `message`            | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### ILI Nearby on 2020w01 (national)
 <https://api.delphi.cmu.edu/epidata/nowcast/?locations=nat&epiweeks=202001>
@@ -109,7 +109,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
 ```
 
 
-# Code Samples
+## Code Samples
 
 Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following samples show how to import the library and fetch national ILI Nearby data for epiweeks `202001-202010` (10 weeks total).
