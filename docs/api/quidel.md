@@ -37,7 +37,9 @@ General topics not specific to any particular endpoint are discussed in the [API
 
 ## Estimation
 
-Data is aggregated from Quidel's network and reports the average number of test records per unique device within the given HHS region and epiweek.
+Data is aggregated from Quidel's network and reports the average number of test records per unique device within the given HHS region and epiweek:
+
+$$Value = \frac{\text{Total Test Records}}{\text{Number of Unique Devices}}$$
 
 {: .important }
 > This metric reflects the average testing volume per device, not the positivity rate.
