@@ -36,6 +36,25 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
+## Estimation
+
+Values are sourced directly from the CDC's NREVSS (National Respiratory and Enteric Virus Surveillance System) clinical laboratories.
+
+The metrics consist of weekly counts of influenza specimens (total tested and total positive for types A and B) and their corresponding positivity rates. Unlike the syndromic ILI data in the [FluView](fluview.html) endpoint, these metrics provide laboratory confirmation of influenza circulation.
+
+### Percentages
+
+The CDC calculates three percentage metrics:
+
+* **`percent_positive`**: Percentage of total specimens that tested positive for influenza (A or B)
+* **`percent_a`**: Percentage of total specimens that tested positive for influenza A
+* **`percent_b`**: Percentage of total specimens that tested positive for influenza B
+
+<!-- Source code: src/acquisition/fluview/fluview_update.py, src/server/endpoints/fluview_clinicial.py -->
+
+## Lag and Backfill
+
+The data is preliminary and subject to revision. Clinical labs may report data late or correct previously reported data. The `issues` and `lag` parameters allow access to historical versions of the data.
 
 # The API
 

@@ -6,7 +6,7 @@ nav_order: 1
 ---
 
 # FluView Metadata
-
+{: .no_toc}
 
 | Attribute | Details |
 | :--- | :--- |
@@ -38,6 +38,8 @@ Returns information about the [`fluview` endpoint](fluview.md).
 # The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/fluview_meta/>
+
+<!-- Source code: src/server/endpoints/fluview_meta.py -->
 
 
 ## Parameters

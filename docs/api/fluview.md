@@ -56,6 +56,8 @@ State-level data was not publicly available from the CDC prior to the 2010-2011 
 
 Private imputed data may require specific authorization via the `auth` parameter.
 
+<!-- Source code: src/acquisition/fluview/fluview_update.py, src/acquisition/fluview/impute_missing_values.py -->
+
 ## Lag and Backfill
 
 The data is preliminary and subject to revision. Participating providers may report data late, or correct previously reported data. The `issues` and `lag` parameters in the API allow you to access historical versions of the data as they were reported on specific dates.
