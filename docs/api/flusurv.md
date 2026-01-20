@@ -61,6 +61,8 @@ The Delphi pipeline scrapes the CDC GRASP API to emulate browser requests.
 * **Duplicate Handling:** In rare instances where the source API provides two differing rates for the same location, epiweek, and demographic group, the pipeline is configured to retain the first value returned by the API.
 * **Seasonality:** Data is processed based on "seasons" defined by the CDC, but is stored and served by Delphi indexed by Epiweek.
 
+<!-- Source code: src/acquisition/flusurv/flusurv_update.py -->
+
 ## Strata Definitions
 
 The signals are broken down into specific demographic groups. The suffix of the signal name corresponds to the groups below.
@@ -212,17 +214,40 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/flusurv/>
   "result": 1,
   "epidata": [
     {
-      "release_date": "2020-04-10",
+      "release_date": "2025-11-03",
       "location": "CA",
-      "issue": 202014,
+      "season": "2019-20",
+      "issue": 202538,
       "epiweek": 202001,
-      "lag": 13,
-      "rate_age_0": 8.4,
+      "lag": 298,
+      "rate_age_0": 8.6,
       "rate_age_1": 0.8,
-      "rate_age_2": 1.6,
-      "rate_age_3": 5.6,
-      "rate_age_4": 16.5,
-      "rate_overall": 4.8
+      "rate_age_2": 1.5,
+      "rate_age_3": 5.7,
+      "rate_age_4": 15.3,
+      "rate_age_5": 11.5,
+      "rate_age_6": 20.4,
+      "rate_age_7": 20.8,
+      "rate_age_0tlt1": 12.6,
+      "rate_age_1t4": 7.6,
+      "rate_age_5t11": 1.1,
+      "rate_age_12t17": 0.4,
+      "rate_age_18t29": 1.2,
+      "rate_age_30t39": 1.6,
+      "rate_age_40t49": 1.8,
+      "rate_age_lt18": 2.9,
+      "rate_age_gte18": 5.1,
+      "rate_age_gte75": 20.5,
+      "rate_race_white": 4.1,
+      "rate_race_black": 8.1,
+      "rate_race_hisp": 4.1,
+      "rate_race_asian": 3.4,
+      "rate_race_natamer": 0.0,
+      "rate_sex_male": 4.7,
+      "rate_sex_female": 4.7,
+      "rate_flu_a": 3.6,
+      "rate_flu_b": 1.0,
+      "rate_overall": 4.7
     }
   ],
   "message": "success"
