@@ -17,6 +17,9 @@ permalink: api/meta_norostat.html
 
 <!-- | **License** | Open Access | -->
 
+## Overview
+{: .no_toc}
+
 This endpoint is a companion data source to the [NoroSTAT](norostat.md) endpoint.
 It describes when the NoroSTAT endpoint was last updated and for which locations.
 
@@ -25,14 +28,23 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
+
 ## Table of contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
 
-{: .note}
-> **Note:** Restricted access: This endpoint requires authentication.
+## Endpoint Description
+
+This endpoint provides administrative metadata about the state of the NoroSTAT database. 
+
+## Lag and Backfill
+
+Historically, this endpoint was updated whenever new NoroSTAT data was acquired by Delphi.
+
 
 # The API
 

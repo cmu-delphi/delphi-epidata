@@ -29,14 +29,30 @@ General topics not specific to any particular endpoint are discussed in the
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
+
 ## Table of contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
 
-{: .note}
-> **Note:** Restricted access: This endpoint requires authentication.
+## Estimation
+
+NoroSTAT data is derived from the CDC's sentinel surveillance system, which tracks norovirus outbreaks in participating states. The `value` field represents raw outbreak counts.
+
+Outbreak reports are aggregated weekly. No additional smoothing or statistical adjustments are applied by Delphi.
+
+## Lag and Backfill
+
+*   **Lag:** Historically, data was released with a lag of several weeks.
+*   **Backfill:**  NoroSTAT data was subject to revisions as new reports were finalized or historical data was updated by participating states. The API tracks these revisions via the `release_date`.
+
+## Limitations
+
+*   Data is only available for specific lists of participating states. Use the [NoroSTAT Metadata](norostat_meta.md) endpoint to check available locations.
+
 
 # The API
 
@@ -51,7 +67,7 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/norostat/>
 | --- | --- | --- |
 | `auth` | password | string |
 | `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
-| `locations` | locations | `string` with specific list of full state names |
+| `location` | Location string. Must be an exact match from the `location` field of the [NoroSTAT Metadata](norostat_meta.md) endpoint. | string |
 
 ## Response
 
