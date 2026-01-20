@@ -42,6 +42,26 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
+## Estimation
+
+This system uses a sensor-fusion approach to estimate the current level of flu activity (ILI%). It combines data sources to produce a single estimate, aiming to provide an early indicator before the official CDC FluView report is finalized.
+
+The endpoint exposes the following signals:
+
+*   **`value`**: The nowcast estimate of the percentage of outpatient visits due to Influenza-Like Illness (ILI).
+*   **`std`**: The standard deviation of the nowcast estimate, providing a measure of uncertainty.
+
+The model combines multiple digital surveillance signals, including Wikipedia access logs (see [Wikipedia Access](wiki.md)) and CDC webpage visits (see [CDC Webpage Visits](cdc.md)), to create a predictive model for the current week's ILI%.
+
+## Lag and Backfill
+
+Nowcast estimates were subject to revision as input data (like digital signals) was updated or backfilled.
+
+## Limitations
+
+*   These values are estimates (nowcasts), not ground-truth surveillance data. They are subject to modeling errors.
+*   The accuracy of the nowcast depends on the availability and stability of the input signals (Wikipedia, CDC page hits, etc.). Changes in user behavior or platform algorithms can affect these inputs.
+
 # The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
