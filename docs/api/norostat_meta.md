@@ -14,8 +14,7 @@ permalink: api/meta_norostat.html
 | **Source Name** | `meta_norostat` |
 | **Data Source** | [CDC NoroSTAT](https://www.cdc.gov/norovirus/php/reporting/norostat-data.html) |
 | **Reporting Cadence** | Inactive - Delphi stopped stopped acquiring data from this data source in November 2020. |
-
-<!-- | **License** | Open Access | -->
+| **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview
 {: .no_toc}

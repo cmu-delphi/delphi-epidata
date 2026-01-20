@@ -16,8 +16,7 @@ title: CDC Webpage Visits
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w03 (2020-01-12) |
 | **Temporal Scope Start** | 2013w02 (2013-01-06) |
-
-<!-- | **License** | Permission by CDC flu division | -->
+| **License** | Permission by CDC flu division |
 
 ## Overview
 {: .no_toc}

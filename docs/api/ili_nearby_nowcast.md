@@ -55,12 +55,12 @@ The model combines multiple digital surveillance signals, including Wikipedia ac
 
 ## Lag and Backfill
 
-Nowcast estimates were subject to revision as input data (like digital signals) was updated or backfilled.
+Nowcast estimates were subject to revision as input data was updated or backfilled.
 
 ## Limitations
 
 *   These values are estimates (nowcasts), not ground-truth surveillance data. They are subject to modeling errors.
-*   The accuracy of the nowcast depends on the availability and stability of the input signals (Wikipedia, CDC page hits, etc.). Changes in user behavior or platform algorithms can affect these inputs.
+*   The accuracy of the nowcast depends on the availability and stability of the input (Wikipedia, CDC page hits, etc.). Changes in user behaviour or platform algorithms can affect these inputs.
 
 ## The API
 

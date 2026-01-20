@@ -16,8 +16,7 @@ title: Quidel
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Reporting Cadence** | Inactive - No longer updated since 2020w15|
 | **Temporal Scope Start** | 2015w35 |
-
-<!-- | **License** | Permission by QuidelOrtho | -->
+| **License** | Permission by QuidelOrtho |
 
 ## Overview
 {: .no_toc}
@@ -43,6 +42,8 @@ $$Value = \frac{\text{Total Test Records}}{\text{Number of Unique Devices}}$$
 
 {: .important }
 > This metric reflects the average testing volume per device, not the positivity rate.
+
+For further details on data processing, lag, and limitations, please refer to the [main endpoint documentation regarding Quidel data](covidcast-signals/quidel.md).
 
 ## The API
 

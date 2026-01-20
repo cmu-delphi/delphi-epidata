@@ -23,7 +23,7 @@ Overview of the current state of the database, including the latest update times
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/meta/>
 
-See [this documentation](date_formats.html) for details on specifying epiweeks, dates, and lists.
+See [this documentation](date_formats.md) for details on specifying epiweeks, dates, and lists.
 
 ## Parameters
 
