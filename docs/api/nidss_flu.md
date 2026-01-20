@@ -25,10 +25,10 @@ This endpoint provides weekly influenza case counts for Taiwan, as reported by t
 
 The data is generally released weekly on Tuesday.
 
-> [!WARNING]
-> This data source contains historical reporting quirks:
-> - **Week 53 (2003-2007):** For years prior to 2008 (excluding 2003), week 53 was reported but is mapped to week 52 in this endpoint to maintain standard epiweek numbering.
-> - **2009 Epiweek Change:** Taiwan adopted a new epiweek system in 2009. Data for 2009 is shifted by -1 week (e.g., 2009w02 becomes 2009w01) to align with standard US CDC epiweek definitions.
+{: .warning}
+> **Historical Reporting Quirks**
+>
+> This data source contains historical reporting quirks. See [Limitations](#limitations) for details.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
@@ -40,6 +40,27 @@ General topics not specific to any particular endpoint are discussed in the
 
 1. TOC
 {:toc}
+
+## Estimation
+
+Data is directly sourced from the Taiwan CDC's National Infectious Disease Statistics System (NIDSS). Delphi does not perform any adjustments or smoothing. The reported metrics include:
+*   **`visits`**: The total number of patients visiting outpatient departments (OPD) and emergency rooms (ER) with influenza-like illness.
+*   **`ili`**: The percentage of visits due to ILI, calculated as `(ILI Visits / Total Visits) * 100`.
+
+<!-- Source code: src/acquisition/nidss/taiwan_nidss.py -->
+
+## Lag and Backfill
+
+Historical values were revised as new data became available or due to the epiweek adjustments described above.
+
+## Limitations
+
+{: .warning}
+> **Historical Reporting Quirks**
+>
+> *   **Week 53 (2003-2007):** For years prior to 2008 (excluding 2003), week 53 was reported but is mapped to week 52 in this endpoint to maintain standard epiweek numbering.
+> *   **2009 Epiweek Change:** Taiwan adopted a new epiweek system in 2009. Data for 2009 is shifted by -1 week (e.g., 2009w02 becomes 2009w01) to align with standard US CDC epiweek definitions.
+
 
 # The API
 
@@ -62,9 +83,10 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_flu/>
 | `issues`  | issues (see [Date Formats](date_formats.html))                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+{: .note}
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
 ## Response
 

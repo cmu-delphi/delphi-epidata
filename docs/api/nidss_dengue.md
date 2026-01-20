@@ -34,6 +34,21 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
+## Estimation
+
+Confirmed dengue cases are aggregated from NIDSS weekly reports, summing across all demographic groups (age/gender) and combining city/county data into six major [hexchotomy regions](geographic_codes.md#nidss).
+
+<!-- Source code: src/acquisition/nidss/taiwan_nidss.py, src/server/endpoints/nidss_dengue.py -->
+
+## Lag and Backfill
+
+Historical data were subject to revisions as new cases were confirmed or reclassified.
+
+## Limitations
+
+Users should be aware of Taiwan's epiweek definition changes in 2009 (see [NIDSS Flu](nidss_flu.md) for similar quirks).
+
+
 
 # The API
 
