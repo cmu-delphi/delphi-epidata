@@ -36,6 +36,19 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
+## Estimation
+
+The data is reported directly by the Korea Centers for Disease Control and Prevention (KCDC) through their infectious disease surveillance system. The `ili` value represents the number of ILI cases per 1,000 outpatient visits.
+
+KCDC reports are scraped and stored directly. No additional smoothing or statistical adjustments are applied by the Delphi group, other than typical data parsing and versioning.
+
+<!-- Source code: src/acquisition/kcdc/kcdc_update.py -->
+
+## Lag and Backfill
+
+Historical data were revised as KCDC updated its surveillance reports.
+
+
 
 # The API
 
