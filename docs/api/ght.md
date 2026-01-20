@@ -45,6 +45,11 @@ This data may be useful for real-time monitoring of diseases, as in:
 1. TOC
 {:toc}
 
+## Estimation
+
+Values represent the relative search volume for a specific query or topic within a geographic region.
+
+<!-- Source code: src/acquisition/ght/ght_update.py -->
 
 
 # The API
@@ -196,7 +201,6 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/ght/>
     {
       "location": "US",
       "epiweek": 201501,
-      "query": "flu",
       "value": 9.113
     }
   ],

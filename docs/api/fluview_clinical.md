@@ -50,7 +50,7 @@ The CDC calculates three percentage metrics:
 * **`percent_a`**: Percentage of total specimens that tested positive for influenza A
 * **`percent_b`**: Percentage of total specimens that tested positive for influenza B
 
-<!-- Source code: src/acquisition/fluview/fluview_update.py, src/server/endpoints/fluview_clinicial.py -->
+<!-- Source code: src/acquisition/fluview/fluview_update.py-->
 
 ## Lag and Backfill
 
