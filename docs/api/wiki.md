@@ -36,6 +36,24 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
+## Estimation
+
+Counts are extracted directly from Wikimedia's public pageviews dumps.
+
+The available indicators include:
+*   **`count`**: The number of pageviews for the specific article in the given language and time period.
+*   **`total`**: The total number of pageviews for all articles in the specified language during the same time period.
+*   **`value`**: The normalized pageview rate, calculated as `(count / total) * 1,000,000` (views per million).
+
+Counts are aggregated by hour and then summed to daily or weekly totals. No smoothing is applied.
+
+<!-- Source code: src/acquisition/wiki/wiki_extract.py -->
+
+## Limitations
+
+* Information-seeking behaviour does not always correlate perfectly with disease incidence.
+
+
 # The API
 
 The base URL is: <https://api.delphi.cmu.edu/epidata/wiki/>

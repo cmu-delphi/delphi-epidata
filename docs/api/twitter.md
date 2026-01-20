@@ -39,18 +39,24 @@ General topics not specific to any particular endpoint are discussed in the
 {:toc}
 
 
-# Methodology
+## Estimation
 
 The classification and processing pipeline involves several stages to transform raw Twitter data into health trends:
 
-1.  Two streams are collected via the Twitter Streaming API: a HEALTH stream (capped at 1% of public tweets) using 269 health-related keywords, and a SAMPLE stream (a random 1% of all public tweets).
-2.  A statistical classifier identifies health-related tweets within the HEALTH stream, designed to balance precision and recall (estimated F1-score of 0.70).
-3.  Health-related tweets are processed to distinguish those reporting an actual influenza infection from general discussion, concerns, or awareness.
-4.  Every identified health tweet and every tweet from the SAMPLE stream is geolocated using Carmen, which identifies the Country, State, County and City using user profile information and geotagged data.
-5.  The volume of identified influenza infections (`num`) is normalized by the total volume of tweets from the same location in the SAMPLE stream (`total`) to provide a relative measure of prevalence (`percent`).
-6.  Gaps in data collection (e.g., due to network interruptions) are filled by estimating missing data based on adjacent days.
+1.  **Data Collection**: Two streams are collected via the Twitter Streaming API:
+    *   **HEALTH Stream**: Capped at 1% of public tweets, filtered using 269 health-related keywords.
+    *   **SAMPLE Stream**: A random 1% sample of all public tweets.
+2.  **Classification**: A statistical classifier identifies health-related tweets within the HEALTH stream (estimated F1-score of 0.70). These are further processed to distinguish actual influenza reports from general awareness or concern.
+3.  **Geolocation**: Every identified health tweet and every tweet from the SAMPLE stream is geolocated using **Carmen**, which resolves location down to the city level using profile data and geotags.
+4.  **Normalization**: The volume of identified influenza infections (`num`) is normalized by the total volume of tweets from the same location in the SAMPLE stream (`total`) to calculate the prevalence (`percent`).
+5.  **Gap Filling**: Missing data (e.g., due to network interruptions) is estimated based on adjacent days.
 
 For more technical details, see the [research paper below](#citing-the-survey).
+
+## Limitations
+
+*   Highly dependent on Twitter's API access and terms of service, which have changed significantly.
+*   Twitter users are not a representative sample of the general population.
 
 # The API
 

@@ -26,14 +26,21 @@ This data source provides influenza testing data from Quidel Corporation, coveri
 
 General topics not specific to any particular endpoint are discussed in the [API overview](https://cmu-delphi.github.io/delphi-epidata/). Such topics include: [contributing](https://cmu-delphi.github.io/delphi-epidata/api/README.html#contributing), [citing](https://cmu-delphi.github.io/delphi-epidata/api/README.html#citing), and [data licensing](https://cmu-delphi.github.io/delphi-epidata/api/README.html#data-licensing).
 
+{: .note}
+> **Note:** Restricted access: This endpoint requires authentication.
+
 ## Table of contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
 
-{: .note}
-> **Note:** Restricted access: This endpoint requires authentication.
+## Estimation
+
+Data is aggregated from Quidel's network and reports the average number of test records per unique device within the given HHS region and epiweek.
+
+{: .important }
+> This metric reflects the average testing volume per device, not the positivity rate.
 
 ## The API
 
@@ -59,7 +66,7 @@ See this [documentation](https://cmu-delphi.github.io/delphi-epidata/api/README.
 | `epidata`             | list of results                                                 | array of objects |
 | `epidata[].location`  | HHS region label                                                | string           |
 | `epidata[].epiweek`   | epiweek for the data point                                      | integer          |
-| `epidata[].value`     | percentage of positive influenza tests                          | float            |
+| `epidata[].value`     | average number of test records per unique facility              | float            |
 | `message`             | `success` or error message                                      | string           |
 
 # Example URLs
