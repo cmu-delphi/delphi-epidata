@@ -23,9 +23,6 @@ title: PAHO Dengue
 
 This endpoint provides weekly dengue case counts for countries and territories in the Americas, as reported by the Pan American Health Organization (PAHO).
 
-> [!IMPORTANT]
-> Data acquisition is performed via web scraping of a Tableau dashboard, which renders the process fragile to website changes.
-
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
@@ -36,6 +33,27 @@ General topics not specific to any particular endpoint are discussed in the
 
 1. TOC
 {:toc}
+
+## Estimation
+
+Data is scraped from PAHO epidemiological reports. The endpoint exposes cumulative counts per calendar year for each country.
+
+The available indicators include:
+*   **`num_dengue`**: Total cumulative cases of dengue.
+*   **`num_severe`**: Cumulative cases of severe dengue.
+*   **`num_deaths`**: Cumulative dengue-related deaths.
+*   **`incidence_rate`**: Incidence rate per 100,000 population, calculated as `(num_dengue / total_pop) * 100` (where `total_pop` is in thousands).
+
+No additional smoothing or statistical adjustments are applied by Delphi.
+
+## Lag and Backfill
+
+*   **Lag:** Historically, data was updated weekly but with varying reporting lags depending on the country or territory.
+*   **Backfill:** Historical values were subject to revisions by PAHO as more laboratory confirmations were finalized. Delphi tracks these via the `issue` and `release_date`.
+
+## Limitations
+
+*   Not all countries report all metrics (e.g., severe cases or deaths) consistently every week.
 
 
 

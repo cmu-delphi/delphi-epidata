@@ -37,14 +37,6 @@ General topics not specific to any particular endpoint are discussed in the
 1. TOC
 {:toc}
 
-## Endpoint Description
-
-This endpoint provides administrative metadata about the state of the NoroSTAT database. 
-
-## Lag and Backfill
-
-Historically, this endpoint was updated whenever new NoroSTAT data was acquired by Delphi.
-
 
 # The API
 
