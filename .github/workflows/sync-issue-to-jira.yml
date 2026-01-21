@@ -1,0 +1,83 @@
+name: Sync GitHub issues to Jira
+on: [issues]
+
+jobs:
+  sync-issues:
+    name: Sync issues to Jira
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the repository name
+        id: repo_name
+        run: echo "REPO_NAME=$(echo ${{ github.repository }} | cut -d '/' -f 2)" >> $GITHUB_OUTPUT
+      - name: Sync issues to Jira
+        env:
+          issue_id: ${{ github.event.issue.html_url }}
+          issue_title: ${{ github.event.issue.title }}
+          issue_body: ${{ github.event.issue.body }}
+          issue_author: ${{ github.event.issue.user.login }}
+        run: |
+          # Add your action code here
+          set -eux
+
+          if [ ${{ github.event_name }} != "issues" ]; then
+            echo "This action only supports the issues event"
+            exit 1
+          fi
+          if [ ${{ github.event.issue.pull_request }} ]; then
+            echo "This action does not support pull requests"
+            exit 0
+          fi
+          # Issue creation with label will trigger 2 events and run twice: one create, one labelled.
+          # let just focus on labelling then for creating issues Jira-side.
+          if [ ${{ github.event_name }} == "issues" ] && [ ${{ github.event.action }} == "opened" ]; then
+            echo "Ignoring creation of issues as a label will trigger a second event."
+            exit 0
+          fi
+          # We only operate on labelled issues or issues that are just unlabeled with our desired label which is 'jira'
+          ## check if one label of labels is our jira label
+          toconsider=${{ contains(github.event.issue.labels.*.name, 'jira') }}
+          if [ "${toconsider}" == false ]; then
+            echo "Our desired label not found on issue or not unlabeled, skipping"
+            exit 0
+          fi
+          # And finally, for the "labeled" event, we are only interested if the new added label is our desired one.
+          if [ ${{ github.event.action }} == "labeled" ] && [ ${{ github.event.label.name }} != 'jira' ]; then
+            echo "Not interested in this action, skipping"
+            exit 0
+          fi
+          
+          # Convert markdown to JIRA using mistletoe package which is available starting with impish.
+          # Since GH runners only have LTS versions it's safe to only check for focal which doesn't have the package.
+          if [ $(lsb_release -c -s) == "focal" ]; then
+            echo "Converting Markdown to JIRA is only possible starting with Ubuntu 22.04 (jammy). Pushing verbatim content to JIRA..."
+          else
+            TMPDIR=$(mktemp -d)
+            trap 'rm -rf -- "$TMPDIR"' EXIT
+
+            sudo apt install -y python3-mistletoe
+            echo ${issue_body} > $TMPDIR/body.md
+            issue_body=$(PYTHONPATH=/usr/share/doc/python3-mistletoe mistletoe -r examples.jira_renderer.JIRARenderer $TMPDIR/body.md)
+          fi
+
+          issue_description="*Issue created by ${issue_author}}*
+          
+          Description: ${issue_body}
+          
+          GitHub URL: ${issue_id}"
+          # Choose Jira action based on event type and action
+          action=""
+          if [ ${{ github.event.action }} == "labeled" ]; then
+            action=Create
+          fi
+
+          echo "PUSHING: $issue_id $action $issue_title $issue_description"
+          # Push to Jira as a json data format
+          data=$(jq -n \
+            --arg id "$issue_id" \
+            --arg title "$issue_title" \
+            --arg description "$issue_description" \
+            --arg action "$action" \
+            --arg project "${{ steps.repo_name.outputs.REPO_NAME }}" \
+            '{data: {id: $id, title: $title, description: $description, action: $action, project: $project}}')
+          curl -X POST -H "Content-Type: application/json" -d "${data}" '${{ secrets.JIRA_WEBHOOK }}'
+        shell: bash  
