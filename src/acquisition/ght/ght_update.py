@@ -247,11 +247,10 @@ LOCATIONS = [
     "WY",
 ]
 
-
 def update(locations, terms, first=None, last=None, countries=["US"]):
     # connect to the database
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     cur = cnx.cursor()
 
     def get_num_rows():

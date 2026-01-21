@@ -45,7 +45,7 @@ from delphi.utils.epidate import EpiDate
 
 def ensure_tables_exist():
     (u, p) = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     try:
         cursor = cnx.cursor()
         cursor.execute(
