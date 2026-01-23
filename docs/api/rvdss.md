@@ -160,9 +160,12 @@ These values are not rounded, so some are not integers.
 Epiweeks end on Saturday, and the data is usually updated the following Thursday or Friday.
 The dashboard where data is currently published states when it was last updated, so we use that date as the version date.
 
-We only started collecting data from this source in xx 2024, so historical data in our system is derived from archived weekly reports.
-To make data prior to that date more useful, we reconstructed the source's version history.
-We defined the version date of a particular data issue to be the date the report webpage was modified.
+The source switched to publishing data in a dashboard in June 2024.
+The dashboard explicitly states when the data was last updated.
+Prior to June 2024, data was published weekly in a report blog post format.
+To make data prior to that date more useful, we reconstructed the source's version history, deriving the version date from metadata included in the weekly report webpages.
+
+We defined the version date of a particular data issue to be the date the report webpage was last modified.
 Historically, page-modified dates were generally 5 days after the end of an epiweek.
 Occasionally, page-modified dates were larger than that -- sometimes much larger (up to a year).
 
@@ -179,7 +182,7 @@ Only Quebec and Ontario report detailed disaggregated (lab-level) data.
 Other provinces may have multiple labs, but don't report them separately.
 If labs or healthcare providers tend to be located in larger cities or cities in general, and it is easier for people in more densely populated areas to have lab tests done than those in rural locations, the data may overrepresent the urban population.
 
-Our assumptions about version date in data prior to xx 2024 may be incorrect.
+Our assumptions about version date in data prior to June 2024 may be incorrect.
 
 ## Missingness
 
