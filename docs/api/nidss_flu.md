@@ -1,57 +1,94 @@
 ---
-title: <i>inactive</i> NIDSS Flu
-parent: Data Sources and Signals
-grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 2
+parent: Inactive Sources (Other)
+grand_parent: Data Sources and Signals
+title: NIDSS Flu
 ---
 
 # NIDSS Flu
+{: .no_toc}
 
-This is the documentation of the API for accessing the Taiwan National Infectious Disease Statistics System Flu (`nidss_flu`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `nidss_flu` |
+| **Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh) |
+| **Geographic Levels** | Taiwan [hexchotomy regions](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
+| **Temporal Scope Start** | 2008w14 |
+| **License** | [Open Access](https://data.gov.tw/license) |
+
+## Overview
+{: .no_toc}
+
+This endpoint provides weekly influenza case counts for Taiwan, as reported by the Taiwan National Infectious Disease Statistics System (NIDSS) via the Taiwan CDC.
+
+The data is generally released weekly on Tuesday.
+
+{: .warning}
+> **Historical Reporting Quirks**
+>
+> This data source contains historical reporting quirks. See [Limitations](#limitations) for details.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## NIDSS Flu Data
+## Table of contents
+{: .no_toc .text-delta}
 
-Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS).
- - Source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh)
- - Temporal Resolution: Weekly* from 2008w14
- - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt))
- - Open access
+1. TOC
+{:toc}
 
-\* Data is usually released on Tuesday
+## Estimation
 
-# The API
+Data is directly sourced from the Taiwan CDC's National Infectious Disease Statistics System (NIDSS). Delphi does not perform any adjustments or smoothing. The reported metrics include:
+*   **`visits`**: The total number of patients visiting outpatient departments (OPD) and emergency rooms (ER) with influenza-like illness.
+*   **`ili`**: The percentage of visits due to ILI, calculated as `(ILI Visits / Total Visits) * 100`.
 
-The base URL is: https://api.delphi.cmu.edu/epidata/nidss_flu/
+<!-- Source code: src/acquisition/nidss/taiwan_nidss.py -->
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
+## Lag and Backfill
 
-## Parameters
+Historical values were revised as new data became available or due to the epiweek adjustments described above.
 
-### Required
+## Limitations
+
+{: .warning}
+> **Historical Reporting Quirks**
+>
+> *   **Week 53 (2003-2007):** For years prior to 2008 (excluding 2003), week 53 was reported but is mapped to week 52 in this endpoint to maintain standard epiweek numbering.
+> *   **2009 Epiweek Change:** Taiwan adopted a new epiweek system in 2009. Data for 2009 is shifted by -1 week (e.g., 2009w02 becomes 2009w01) to align with standard US CDC epiweek definitions.
+
+
+## The API
+
+The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_flu/>
+
+
+### Parameters
+
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `regions` | regions | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) labels |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.html)) | `list` of epiweeks |
+| `regions` | regions | `list` of Taiwan region labels (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
 
-### Optional
+#### Optional
 
 | Parameter | Description                                | Type               |
 |-----------|--------------------------------------------|--------------------|
-| `issues`  | issues                                     | `list` of epiweeks |
+| `issues`  | issues (see [Date Formats](date_formats.html))                                     | `list` of epiweeks |
 | `lag`     | # weeks between each epiweek and its issue | integer            |
 
-Notes:
-- If both `issues` and `lag` are specified, only `issues` is used.
-If neither is specified, the current issues are used.
+{: .note}
+> **Notes:**
+> - If both `issues` and `lag` are specified, only `issues` is used.
+> - If neither is specified, the current issues are used.
 
-## Response
+### Response
 
 | Field                    | Description                                                     | Type             |
 |--------------------------|-----------------------------------------------------------------|------------------|
@@ -66,10 +103,10 @@ If neither is specified, the current issues are used.
 | `epidata[].ili`          | percent ILI                                                     | float            |
 | `message`                | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### NIDSS Flu on 2015w01 (nationwide)
-https://api.delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501
+<https://api.delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501>
 
 ```json
 {
@@ -90,51 +127,107 @@ https://api.delphi.cmu.edu/epidata/nidss_flu/?regions=nationwide&epiweeks=201501
 ```
 
 
-# Code Samples
+## Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch national NIDSS Flu data for epiweeks `201440` and `201501-201510` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch national NIDSS Flu data for epiweeks `201501-201510` (10 weeks total).
 
-### JavaScript (in a web browser)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
 
-````html
-<!-- Imports -->
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  EpidataAsync.nidss_flu('nationwide', [201440, EpidataAsync.range(201501, 201510)]).then((res) => {
-    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
-  });;
-</script>
-````
+  </div>
 
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_nidss_flu(regions=['nationwide'], epiweeks=EpiRange(201501, 201510))
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_nidss_flu(regions = 'nationwide', epiweeks = epirange(201501, 201510))
+print(res)
+```
+  </div>
+
+</div>
+
+### Legacy Clients
+
+We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/), [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R), and [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.js).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.nidss_flu(['nationwide'], [201440, Epidata.range(201501, 201510)])
+res = Epidata.nidss_flu(['nationwide'], Epidata.range(201501, 201510))
 print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$nidss_flu(list('nationwide'), list(201440, Epidata$range(201501, 201510)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```
 
 # Source and Licensing
 
 The full text of the NIDSS Flu license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$nidss_flu(regions = list("nationwide"), epiweeks = Epidata$range(201501, 201510))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.nidss_flu('nationwide', EpidataAsync.range(201501, 201510)).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+  </div>
+
+</div>

@@ -40,7 +40,7 @@ like to cite it, we would gratefully recommend the following copy:
 > Roni Rosenfeld
 > (2015).
 > _Delphi Epidata API_.
-> https://github.com/cmu-delphi/delphi-epidata
+> <https://github.com/cmu-delphi/delphi-epidata>
 
 ## Data Licensing
 
@@ -71,23 +71,16 @@ Please note that our `endpoint` parameters were previously referenced as `source
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/
+The base URL is: <https://api.delphi.cmu.edu/epidata/>
 
 ## Specifying Epiweeks, Dates, and Lists
 
-Epiweeks use the U.S. definition. That is, the first epiweek each year is the
-week, starting on a Sunday, containing January 4. See
-[this page](https://www.cmmcp.org/mosquito-surveillance-data/pages/epi-week-calendars-2008-2020)
-for more information.
-
 Formatting for epiweeks is YYYYWW and for dates is YYYYMMDD.
 
-`list` parameters consist of a comma-separated list of individual values or, for numeric parameters, a hyphenated range of values. Examples include:
- - `param=201530` *(A single epiweek)*
- - `param=201401,201501,201601` *(Several epiweeks)*
- - `param=200501-200552` *(A range of epiweeks)*
- - `param=201440,201501-201510` *(Several epiweeks, including a range)*
- - `param=20070101-20071231` *(A range of dates)*
+See [Date Formats](date_formats.html) for full details on specifying epiweeks, dates, lists, and ranges.
+
+`list` parameters consist of a comma-separated list of individual values or, for numeric parameters, a hyphenated range of values.
+
 
 ## Universal Parameters
 
@@ -111,13 +104,13 @@ The parameters available for each source are documented in each linked source-sp
 
 | Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
-| [`cdc`](cdc.md) | CDC Page Hits | ... <!-- TODO --> | yes |
-| [`delphi`](delphi.md) | Delphi's Forecast | ... <!-- TODO --> | no |
+| [`cdc`](cdc.md) | CDC Page Hits | CDC total and by topic webpage visits. | yes |
+| [`delphi`](delphi.md) | Delphi's Forecast | Delphi's ILINet outpatient doctor visits forecasts. | no |
 | [`ecdc_ili`](ecdc_ili.md) | ECDC ILI | ECDC ILI data from the ECDC website. | no |
 | [`flusurv`](flusurv.md) | FluSurv | FluSurv-NET data (flu hospitaliation rates) from CDC. | no |
 | [`fluview`](fluview.md) | FluView | Influenza-like illness (ILI) from U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet). | no |
 | [`fluview_meta`](fluview_meta.md) | FluView Metadata | Summary data about [`fluview`](fluview.md). | no |
-| [`fluview_clinical`](fluview_clinical.md) | FluView Clinical | ... <!-- TODO --> | no |
+| [`fluview_clinical`](fluview_clinical.md) | FluView Clinical | Clinical flu data. | no |
 | [`gft`](gft.md) | Google Flu Trends | Estimate of influenza activity based on volume of certain search queries. Google has discontinued Flu Trends, and this is now a static endpoint. | no |
 | [`ght`](ght.md) | Google Health Trends | Estimate of influenza activity based on volume of certain search queries. | yes |
 | [`kcdc_ili`](kcdc_ili.md) | KCDC ILI | KCDC ILI data from KCDC website. | no |
@@ -125,7 +118,7 @@ The parameters available for each source are documented in each linked source-sp
 | [`nidss_flu`](nidss_flu.md) | NIDSS Flu | Outpatient ILI from Taiwan's National Infectious Disease Statistics System (NIDSS). | no |
 | [`nowcast`](nowcast.md) | ILI Nearby | A nowcast of U.S. national, regional, and state-level (weighted) percent ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week. | no |
 | [`quidel`](quidel.md) | Quidel | Data provided by Quidel Corp., which contains flu lab test results. | yes |
-| [`sensors`](sensors.md) | Delphi's Digital Surveillance Sensors | ... <!-- TODO --> | no |
+| [`sensors`](sensors.html) | Delphi's Digital Surveillance Sensors | Influenza and dengue digital surveillance sensors. | partially |
 | [`twitter`](twitter.md) | Twitter Stream | Estimate of influenza activity based on analysis of language used in tweets from [HealthTweets](http://HealthTweets.org/). | yes |
 | [`wiki`](wiki.md) | Wikipedia Access Logs | Number of page visits for selected English, Influenza-related wikipedia articles. | no |
 
@@ -133,17 +126,17 @@ The parameters available for each source are documented in each linked source-sp
 
 | Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
-| [`dengue_nowcast`](dengue_nowcast.md) | Delphi's Dengue Nowcast | ... <!-- TODO --> | ... <!-- TODO --> |
-| [`dengue_sensors`](dengue_sensors.md) | Delphi's Dengue Digital Surveillance Sensors | ... <!-- TODO --> | ... <!-- TODO --> |
-| [`nidss_dengue`](nidss_dengue.md) | NIDSS Dengue | Counts of confirmed dengue cases from Taiwan's NIDSS. | no |
-| [`paho_dengue`](paho_dengue.md) | PAHO Dengue | ... <!-- TODO --> | ... <!-- TODO --> |
+| [`dengue_nowcast`](dengue_nowcast.md) | Delphi's Dengue Nowcast | Delphi's PAHO dengue nowcasts (North and South America). | no |
+| [`dengue_sensors`](dengue_sensors.md) | Delphi's Dengue Digital Surveillance Sensors | PAHO dengue digital surveillance sensors (North and South America). | yes |
+| [`nidss_dengue`](nidss_dengue.md) | NIDSS Dengue | NIDSS dengue cases (Taiwan). | no |
+| [`paho_dengue`](paho_dengue.md) | PAHO Dengue | PAHO dengue data (North and South America). | no |
 
 ### Norovirus Data
 
 | Endpoint | Name | Description | Restricted? |
 | --- | --- | --- | --- |
-| [`meta_norostat`](meta_norostat.md) | NoroSTAT Metadata | ... <!-- TODO --> | ... <!-- TODO --> |
-| [`norostat`](norostat.md) | NoroSTAT | Suspected and confirmed norovirus outbreaks reported by state health departments to the CDC. | ... <!-- TODO --> |
+| [`meta_norostat`](meta_norostat.md) | NoroSTAT Metadata | Metadata for the NoroSTAT endpoint. | yes |
+| [`norostat`](norostat.md) | NoroSTAT | CDC NoroSTAT norovirus outbreaks. | yes |
 
 ### Deprecated
 * `ilinet` - replaced by [`fluview`](fluview.md)
@@ -153,7 +146,7 @@ The parameters available for each source are documented in each linked source-sp
 # Example URLs
 
 ### FluView on 2015w01 (national)
-https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
+<https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501>
 
 ```json
 {
@@ -183,7 +176,7 @@ https://api.delphi.cmu.edu/epidata/fluview/?regions=nat&epiweeks=201501
 ```
 
 ### Wikipedia Access article "influenza" on 2020w01
-https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks=202001
+<https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks=202001>
 
 ```json
 {
@@ -204,7 +197,7 @@ https://api.delphi.cmu.edu/epidata/wiki/?language=en&articles=influenza&epiweeks
 
 # Code Samples
 
-To access our Epidata API, visit our [Epidata API Client Libraries)](client_libraries.md). For anyone looking for COVIDCast data in particular, please visit our purpose-built [COVIDCast Libraries](covidcast_clients.md) instead.
+To access our Epidata API, visit our [Epidata API Client Libraries](client_libraries.md). For anyone looking for COVIDCast data in particular, please visit our purpose-built [COVIDCast Libraries](covidcast_clients.md) instead.
 
 # Related Work
 

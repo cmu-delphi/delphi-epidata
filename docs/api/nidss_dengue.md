@@ -1,58 +1,84 @@
 ---
-title: <i>inactive</i> NIDSS Dengue
-parent: Data Sources and Signals
-grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 2
+parent: Inactive Sources (Other)
+grand_parent: Data Sources and Signals
+title: NIDSS Dengue
 ---
 
 # NIDSS Dengue
+{: .no_toc}
 
-This is the documentation of the API for accessing the Taiwan National Infectious Disease Statistics System Dengue (`nidss_dengue`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `nidss_dengue` |
+| **Data Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)|
+| **Geographic Levels** | Taiwan [hexchotomy regions](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) and [cities/counties](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) (see [Geographic Codes](geographic_codes.md#nidss)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
+| **Temporal Scope Start** | 2003w01 |
+| **License** | [Open Access](https://data.gov.tw/license) |
+
+## Overview
+{: .no_toc}
+
+This endpoint reports counts of confirmed dengue cases from the Taiwan National Infectious Disease Statistics System (NIDSS) via the Taiwan CDC.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## NIDSS Dengue Data
+## Table of contents
+{: .no_toc .text-delta}
 
-Counts of confirmed dengue cases from Taiwan's National Infectious Disease Statistics System (NIDSS).
- - Data source: [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)
- - Temporal Resolution: Weekly from 2003w01
- - Spatial Resolution: By [hexchotomy region](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) ([6+1](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt)) and by [city/county](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) ([22](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt))
- - Open access
+1. TOC
+{:toc}
 
-# The API
+## Estimation
 
-The base URL is: https://api.delphi.cmu.edu/epidata/nidss_dengue/
+Confirmed dengue cases are aggregated from NIDSS weekly reports, summing across all demographic groups (age/gender) and combining city/county data into six major [hexchotomy regions](geographic_codes.md#nidss).
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
+<!-- Source code: src/acquisition/nidss/taiwan_nidss.py, src/server/endpoints/nidss_dengue.py -->
 
-## Parameters
+## Lag and Backfill
 
-### Required
+Historical data were subject to revisions as new cases were confirmed or reclassified.
+
+## Limitations
+
+Users should be aware of Taiwan's epiweek definition changes in 2009 (see [NIDSS Flu](nidss_flu.md) for similar quirks).
+
+
+
+## The API
+
+The base URL is: <https://api.delphi.cmu.edu/epidata/nidss_dengue/>
+
+
+### Parameters
+
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_regions.txt) and/or [location](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/nidss_locations.txt) labels |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `locations` | locations | `list` of Taiwan region and/or location labels (see [Geographic Codes](geographic_codes.md#nidss)) |
 
-## Response
+### Response
 
 | Field                | Description                                                     | Type             |
 |----------------------|-----------------------------------------------------------------|------------------|
 | `result`             | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`            | list of results                                                 | array of objects |
-| `epidata[].location` | location                                                        | string           |
+| `epidata[].location` | location (hexchotomy region)                                  | string           |
 | `epidata[].epiweek`  | epiweek during which the data was collected                     | integer          |
-| `epidata[].count`    | number of cases                                                 | integer          |
+| `epidata[].count`    | number of confirmed dengue cases                             | integer          |
 | `message`            | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### NIDSS Dengue on 2015w01 (nationwide)
-https://api.delphi.cmu.edu/epidata/nidss_dengue/?locations=nationwide&epiweeks=201501
+<https://api.delphi.cmu.edu/epidata/nidss_dengue/?locations=nationwide&epiweeks=201501>
 
 ```json
 {
@@ -69,51 +95,107 @@ https://api.delphi.cmu.edu/epidata/nidss_dengue/?locations=nationwide&epiweeks=2
 ```
 
 
-# Code Samples
+## Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch national NIDSS Dengue data for epiweeks `201440` and `201501-201510` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch national NIDSS Dengue data for epiweeks `201501-201510` (10 weeks total).
 
-### JavaScript (in a web browser)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
 
-````html
-<!-- Imports -->
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  EpidataAsync.nidss_dengue('nationwide', [201440, EpidataAsync.range(201501, 201510)]).then((res) => {
-    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
-  });
-</script>
-````
+  </div>
 
-### Python
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_nidss_dengue(locations=['nationwide'], epiweeks=EpiRange(201501, 201510))
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_nidss_dengue(locations = 'nationwide', epiweeks = epirange(201501, 201510))
+print(res)
+```
+  </div>
+
+</div>
+
+### Legacy Clients
+
+We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/), [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R), and [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.js).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
-````bash
+```bash
 pip install delphi-epidata
-````
+```
 
 Otherwise, place `delphi_epidata.py` from this repo next to your python script.
 
-````python
+```python
 # Import
 from delphi_epidata import Epidata
 # Fetch data
-res = Epidata.nidss_dengue(['nationwide'], [201440, Epidata.range(201501, 201510)])
+res = Epidata.nidss_dengue(['nationwide'], Epidata.range(201501, 201510))
 print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$nidss_dengue(list('nationwide'), list(201440, Epidata$range(201501, 201510)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+```
 
 # Source and Licensing
 
 The full text of the NIDSS Dengue license information is available on the Taiwan Digital Development Department's [website](https://data.gov.tw/license).
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$nidss_dengue(regions = list("nationwide"), epiweeks = Epidata$range(201501, 201510))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+
+
+```html
+<!-- Imports -->
+<script src="delphi_epidata.js"></script>
+<!-- Fetch data -->
+<script>
+  EpidataAsync.nidss_dengue('nationwide', EpidataAsync.range(201501, 201510)).then((res) => {
+    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
+  });
+</script>
+```
+  </div>
+
+</div>
