@@ -93,7 +93,7 @@ from epidatpy import EpiDataContext
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pub_fluview_meta()
-print(res)
+print(res.df())
 ```
   </div>
 

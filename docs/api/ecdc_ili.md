@@ -125,11 +125,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
-res = epidata.ecdc_ili(['austria'], [202001, 202002])
-print(res['result'], res['message'], len(res['epidata']))
+res = epidata.pub_ecdc_ili(['austria'], [202001, 202002])
+print(res.df())
 ```
   </div>
 

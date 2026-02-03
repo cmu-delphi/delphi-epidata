@@ -229,11 +229,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext
 # Fetch data
 epidata = EpiDataContext()
-res = epidata.ght('auth_token', ['US'], [201501], 'how to get over the flu')
-print(res['result'], res['message'], len(res['epidata']))
+res = epidata.pvt_ght('auth_token', ['US'], [201501], 'how to get over the flu')
+print(res.df())
 ```
   </div>
 

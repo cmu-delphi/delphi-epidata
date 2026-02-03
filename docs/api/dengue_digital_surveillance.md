@@ -130,11 +130,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
-res = epidata.dengue_sensors('auth_token', ['ght'], ['pr'], [201501])
-print(res['result'], res['message'], len(res['epidata']))
+res = epidata.pvt_dengue_sensors('auth_token', ['ght'], ['pr'], [201501])
+print(res.df())
 ```
   </div>
 

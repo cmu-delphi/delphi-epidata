@@ -120,11 +120,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pvt_norostat(auth='auth_token', locations=['Minnesota, Ohio, Oregon, Tennessee, and Wisconsin'], epiweeks=[201501])
-print(res)
+print(res.df())
 ```
   </div>
 
