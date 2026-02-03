@@ -1,16 +1,20 @@
 ---
-title: <i>inactive</i> SafeGraph
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
+title: SafeGraph
 ---
 
 # SafeGraph
 {: .no_toc}
-* **Source name:** `safegraph`
-* **Available for:** county, MSA, HRR, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `safegraph` |
+| **Data Source** | SafeGraph |
+| **Geographic Levels** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md))|
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Temporal Scope Start** | January 1st, 2019 |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
 using anonymized location data from mobile phones. From June 2020-July 2022,
@@ -25,15 +29,33 @@ surface signals from two such datasets.
 
 ## SafeGraph Social Distancing Metrics
 
-* **Earliest issue available:** June 20, 2020
-* **Number of data revisions since June 23, 2020:** 1
-* **Date of last change:** November 3, 2020
+| Attribute | Details |
+| **Date of last data revision:** | November 3rd, 2020 (see [data revision docs](#changelog-social-distancing-metrics)) |
+| **Reporting Cadence** | Inactive - No longer updated after April 19th, 2021. |
 
-**This dataset is no longer updated after April 19th, 2021.**
+### Changelog (Social Distancing Metrics)
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+#### April 19th, 2021
+
+The Safegraph social distancing metrics are no longer being updated. Weekly patterns are still available.
+
+#### November 3rd, 2020
+
+We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
+
+</details>
+
+### Overview
+{: .no_toc}
 
 Data source based on the [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) data product.  SafeGraph
 provided this data for individual census block groups, using differential
-privacy to protect individual people's data privacy. 
+privacy to protect individual people's data privacy.
 
 Delphi creates features of the SafeGraph data at the census block group level,
 then aggregates these features to the county and state levels. The aggregated
@@ -76,11 +98,28 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 ## SafeGraph Weekly Patterns
 
-* **Earliest issue available:** November 30, 2020
-* **Number of data revisions since June 23, 2020:** 0
-* **Date of last change:** never
+| Attribute | Details |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog-weekly-patterns)) |
+| **Reporting Cadence** | Inactive - No longer updated after May 5th, 2022 |
 
-**This dataset is no longer updated after July 15th, 2022.**
+### Changelog (Weekly Patterns)
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+#### July 15th, 2022
+The Safegraph Weekly Patterns dataset is no longer updated.
+
+#### November 3rd, 2020
+
+We went from a custom geo mapping file (for aggregating from county->state) to a central geo file based on rigorously sourced US census data.
+
+</details>
+
+### Overview
+{: .no_toc}
 
 Data source based on [Weekly
 Patterns](https://docs.safegraph.com/docs/weekly-patterns) dataset. SafeGraph
@@ -130,9 +169,9 @@ COVIDcast API.
 
 ## Limitations
 
-SafeGraph's [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics) 
+SafeGraph's [Social Distancing Metrics](https://docs.safegraph.com/docs/social-distancing-metrics)
 and [Weekly Patterns](https://docs.safegraph.com/docs/weekly-patterns) data products
-are based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public. 
+are based on mobile devices that are members of SafeGraph panels, which is not necessarily the same thing as measuring the general public.
 These counts do not represent absolute counts, and only count visits by members of the panel in that region. This can result in several biases:
 
 * **Geographic bias.** If some regions have a greater density of SafeGraph panel members as a percentage of the population than other regions, comparisons of metrics between regions may be biased. Regions with more SafeGraph panel members will appear to have more visits counted, even if the rate of visits in the general population is the same.

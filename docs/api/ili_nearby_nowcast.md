@@ -1,62 +1,97 @@
 ---
-title: <i>inactive</i> ILI Nearby Nowcast
-parent: Data Sources and Signals
-grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 2
+parent: Inactive Sources (Other)
+grand_parent: Data Sources and Signals
+title: ILI Nearby Nowcast
 permalink: api/nowcast.html
 ---
 
 # ILI Nearby Nowcast
+{: .no_toc}
 
-This is the documentation of the API for accessing the ILI Nearby (`nowcast`) endpoint of
-the [Delphi](https://delphi.cmu.edu/)'s epidemiological data.
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `nowcast` |
+| **Data Source** | [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/) |
+| **Dataset Type** | Predictive (Leading Indicator) |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
+| **Temporal Granularity** | Weekly (Epiweek) |
+| **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
+| **Temporal Scope Start** | 2010w45 |
+| **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
+
+## Overview
+{: .no_toc}
+
+This endpoint provides Delphi's nowcast estimates of the percentage of outpatient visits due to Influenza-Like Illness (ILI).
+
+This system uses a sensor-fusion approach to estimate the current level of flu activity before the official CDC reports are finalized.
+It is available for:
+* **National/Regional:** 7 days before the first official CDC ILINet report for a given date.
+* **State-level:** 5 days before the first official CDC ILINet report for a given date. State values report weighted percent ILI.
 
 General topics not specific to any particular endpoint are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing), [citing](README.md#citing), and
 [data licensing](README.md#data-licensing).
 
-## ILI Nearby Data
 
-A nowcast of U.S. national, regional, and state-level (weighted) %ILI, available seven days (regionally) or five days (state-level) before the first ILINet report for the corresponding week.
- - Source: [Delphi's ILI Nearby system](https://delphi.cmu.edu/nowcast/)
- - Temporal Resolution: Weekly, from 2010w30*
- - Spatial Resolution: National, [HHS regions](http://www.hhs.gov/iea/regional/), [Census divisions](http://www.census.gov/econ/census/help/geography/regions_and_divisions.html) ([1+10+9](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)), and by state/territory ([51](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt))
- - Open access
+# Table of contents
+{: .no_toc .text-delta}
 
-\* Data is usually released on Friday and updated on Sunday and Monday
+1. TOC
+{:toc}
 
-# The API
+## Estimation
 
-The base URL is: https://api.delphi.cmu.edu/epidata/nowcast/
+This system uses a sensor-fusion approach to estimate the current level of flu activity (ILI%). It combines data sources to produce a single estimate, aiming to provide an early indicator before the official CDC FluView report is finalized.
 
-See [this documentation](README.md) for details on specifying epiweeks, dates, and lists.
+The endpoint exposes the following signals:
 
-## Parameters
+*   **`value`**: The nowcast estimate of the percentage of outpatient visits due to Influenza-Like Illness (ILI).
+*   **`std`**: The standard deviation of the nowcast estimate, providing a measure of uncertainty.
 
-### Required
+The model combines multiple digital surveillance signals, including Wikipedia access logs (see [Wikipedia Access](wiki.md)) and CDC webpage visits (see [CDC Webpage Visits](cdc.md)), to create a predictive model for the current week's ILI%.
+
+## Lag and Backfill
+
+Nowcast estimates were subject to revision as input data was updated or backfilled.
+
+## Limitations
+
+*   These values are estimates (nowcasts), not ground-truth surveillance data. They are subject to modeling errors.
+*   The accuracy of the nowcast depends on the availability and stability of the input (Wikipedia, CDC page hits, etc.). Changes in user behaviour or platform algorithms can affect these inputs.
+
+## The API
+
+The base URL is: <https://api.delphi.cmu.edu/epidata/nowcast/>
+
+
+### Parameters
+
+#### Required
 
 | Parameter | Description | Type |
 | --- | --- | --- |
-| `epiweeks` | epiweeks | `list` of epiweeks |
-| `locations` | locations | `list` of [region](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/regions.txt)/[state](https://github.com/cmu-delphi/delphi-epidata/blob/main/labels/states.txt) labels |
+| `epiweeks` | epiweeks (see [Date Formats](date_formats.md)) | `list` of epiweeks |
+| `locations` | locations | `list` of location codes: `nat`, HHS regions, Census divisions, or state codes (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 
-## Response
+### Response
 
 | Field                | Description                                                     | Type             |
 |----------------------|-----------------------------------------------------------------|------------------|
 | `result`             | result code: 1 = success, 2 = too many results, -2 = no results | integer          |
 | `epidata`            | list of results                                                 | array of objects |
-| `epidata[].location` |                                                                 | string           |
-| `epidata[].epiweek`  |                                                                 | integer          |
-| `epidata[].value`    |                                                                 | float            |
-| `epidata[].std`      |                                                                 | float            |
+| `epidata[].location` | location identifier (e.g., 'nat', state code, HHS region, census division) | string           |
+| `epidata[].epiweek`  | epiweek for the nowcast estimate                                | integer          |
+| `epidata[].value`    | nowcast estimate of %ILI (percentage of outpatient visits due to ILI) | float            |
+| `epidata[].std`      | standard deviation of the nowcast estimate                      | float            |
 | `message`            | `success` or error message                                      | string           |
 
-# Example URLs
+## Example URLs
 
 ### ILI Nearby on 2020w01 (national)
-https://api.delphi.cmu.edu/epidata/nowcast/?locations=nat&epiweeks=202001
+<https://api.delphi.cmu.edu/epidata/nowcast/?locations=nat&epiweeks=202001>
 
 ```json
 {
@@ -74,47 +109,103 @@ https://api.delphi.cmu.edu/epidata/nowcast/?locations=nat&epiweeks=202001
 ```
 
 
-# Code Samples
+## Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
-The following samples show how to import the library and fetch national ILI Nearby data for epiweeks `201940` and `202001-202010` (11 weeks total).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+The following samples show how to import the library and fetch national ILI Nearby data for epiweeks `202001-202010` (10 weeks total).
 
-### JavaScript (in a web browser)
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
 
-````html
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_nowcast(locations=['nat'], epiweeks=EpiRange(202001, 202010))
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_nowcast(locations = 'nat', epiweeks = epirange(202001, 202010))
+print(res)
+```
+  </div>
+
+</div>
+
+### Legacy Clients
+
+We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/), [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R), and [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.js).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Optionally install the package using pip(env):
+```bash
+pip install delphi-epidata
+```
+
+Otherwise, place `delphi_epidata.py` from this repo next to your python script.
+
+```python
+# Import
+from delphi_epidata import Epidata
+# Fetch data
+res = Epidata.nowcast(['nat'], Epidata.range(202001, 202010))
+print(res['result'], res['message'], len(res['epidata']))
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$nowcast(locations = list("nat"), epiweeks = Epidata$range(202001, 202010))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+  <div class="tab-content" data-tab="js" markdown="1">
+
+
+
+```html
 <!-- Imports -->
 <script src="delphi_epidata.js"></script>
 <!-- Fetch data -->
 <script>
-  EpidataAsync.nowcast('nat', [201940, EpidataAsync.range(202001, 202010)]).then((res) => {
+  EpidataAsync.nowcast('nat', [EpidataAsync.range(201501, 201510)]).then((res) => {
     console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
   });
 </script>
-````
+```
+  </div>
 
-### Python
-
-Optionally install the package using pip(env):
-````bash
-pip install delphi-epidata
-````
-
-Otherwise, place `delphi_epidata.py` from this repo next to your python script.
-
-````python
-# Import
-from delphi_epidata import Epidata
-# Fetch data
-res = Epidata.nowcast(['nat'], [201940, Epidata.range(202001, 202010)])
-print(res['result'], res['message'], len(res['epidata']))
-````
-
-### R
-
-````R
-# Import
-source('delphi_epidata.R')
-# Fetch data
-res <- Epidata$nowcast(list('nat'), list(201940, Epidata$range(202001, 202010)))
-cat(paste(res$result, res$message, length(res$epidata), "\n"))
-````
+</div>

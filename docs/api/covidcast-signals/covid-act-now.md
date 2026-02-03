@@ -1,20 +1,35 @@
 ---
-title: <i>inactive</i> COVID Act Now
-parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
-nav_order: 2
+parent: Inactive Sources
+grand_parent: Data Sources and Signals
+title: COVID Act Now
 ---
 
 # COVID Act Now (CAN)
 {: .no_toc}
 
-* **Source name:** `covid-act-now`
-* **Earliest issue available:** 2021-03-25
-* **Number of data revisions since 19 May 2020:** 0
-* **Date of last change:** Never
-* **Available for:** county, hrr, msa, state, hhs, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial)
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `covid-act-now` |
+| **Data Source** | COVID Act Now |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2021-12-02 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
+| **Temporal Scope Start** | 2020-03-01 |
+| **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
+
+## Changelog
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+No changes so far.
+
+</details>
+
+## Overview
 
 The [COVID Act Now (CAN)](https://covidactnow.org/) data source provides COVID-19 testing statistics, such as positivity rates and total tests performed.
 The county-level positivity rates and test totals are pulled directly from CAN using [their API](https://covidactnow.org/data-api).
@@ -41,7 +56,7 @@ We receive county-level positivity rate and total tests from CAN, originating fr
 These quantiles are based on the counts of PCR specimens tested.
 They are also already smoothed with a 7-day-average.
 
-For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$ denote the number of PCR specimens 
+For a fixed location $$i$$ and time $$t$$, let $$Y_{it}$$ denote the number of PCR specimens
 tested that have a positive result. Let $$N_{it}$$ denote the total number of PCR specimens tested.
 Let $$p_{it}$$ be the PCR-specimen positivity rate as a binomial proportion.
 
@@ -53,7 +68,7 @@ $$
 $$
 
 Let $$G$$ be a set of counties with associated population weights $$w_i$$ for each county $$i \in G$$.
-At other geographical levels, the total number of tests $$N_{Gt}$$ 
+At other geographical levels, the total number of tests $$N_{Gt}$$
 and our estimate of the positivity rate $$\hat{p}_{Gt}$$ is:
 
 $$
@@ -93,7 +108,7 @@ Ideally we would aggregate raw values
 then smooth, but the raw values are not accessible in this case.
 
 The reported test positivity rate should not be interpreted as the population positivity rate as
-the testing performed are typically not randomly sampled, especially for early data 
+the testing performed are typically not randomly sampled, especially for early data
 with lower testing volumes.
 
 A few counties, most notably in California, are also not covered by this data source.
@@ -104,13 +119,13 @@ no tests were performed for the day.
 ## Lag and Backfill
 
 The lag for these signals varies depending on the reporting patterns of individual counties.
-Most counties have their latest data report with a lag of 2 days, while others can take 9 days 
+Most counties have their latest data report with a lag of 2 days, while others can take 9 days
 or more, as is the case with California counties.
 
 Revisions are sometimes made to the data. For example, backlogged test results can get assigned to past dates.
 The majority of recent test positivity rates do not change substantially with backfill (having a median delta of close to 0).
 However, the majority of recent total tests performed is expected to increase in later data revisions (having a median increase of 7%).
-Values more than 5 days in the past are expected to remain fairly static (with total tests performed 
+Values more than 5 days in the past are expected to remain fairly static (with total tests performed
 having a median increase of 1% of less), as most major revisions have already occurred.
 
 ## Source and Licensing

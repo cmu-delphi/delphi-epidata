@@ -8,25 +8,50 @@ nav_order: 1
 # Quidel
 {: .no_toc}
 
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `quidel` |
+| **Data Source** | QuidelOrtho Corp. |
+| **Geographic Levels** | **COVID-19 Tests:** National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA)<br>**Flu Tests:** State, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
+| **Reporting Cadence** | **COVID-19 Tests:** Daily<br>**Flu Tests:** Inactive |
+| **Temporal Scope Start** | **COVID-19 Tests:** 2020-05-26<br>**Flu Tests:** 2020-01-31 |
+| **Date of last data revision:** | **COVID-19 Tests:** October 22, 2020<br>**Flu Tests:** Never (see [data revision docs](#changelog-covid-19-tests)) |
+| **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
+
 ## Table of Contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
 
-## Accessibility: Delphi-internal only
+> **Note:** This source is now only accessible to internal Delphi users.
+{: .note }
 
 ## Quidel COVID-19 Tests
+{: .no_toc}
 
-* **Source name:** `quidel`
-* **Earliest issue available:** July 29, 2020
-* **Number of data revisions since May 19, 2020:** 1
-* **Date of last change:** October 22, 2020
-* **Available for:** county, hrr, msa, state, HHS, nation (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
-* **License:** [CC BY](../covidcast_licensing.md#creative-commons-attribution)
+| Attribute | Details |
+| :--- | :--- |
+| **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Reporting Cadence** | Daily |
+| **Date of last data revision:** | October 22, 2020 (see [data revision docs](#changelog-covid-19-tests)) |
+| **Temporal Scope Start** | 2020-05-26 |
+
+### Changelog COVID-19 Tests
+
+<details markdown="1">
+<summary>Click to expand</summary>
+
+See [COVIDcast Signal Changes](../covidcast_changelog.md) for general information about how we track changes to signals.
+
+#### October 22, 2020
+We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
+</details>
 
 ### Overview
+{: .no_toc}
 
 Data source based on COVID-19 Antigen tests, provided to us by Quidel, Inc. When
 a patient (whether at a doctor’s office, clinic, or hospital) has COVID-like
@@ -54,7 +79,7 @@ meaningful levels starting May 26, 2020.
 | `covid_ag_smoothed_pct_positive_age_65plus` | Percentage of antigen tests that were positive for COVID-19 (ages 65+), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
 | `covid_ag_smoothed_pct_positive_age_0_17` | Percentage of antigen tests that were positive for COVID-19 (ages 0-17), smoothed by pooling together the last 7 days of tests. <br/> **Earliest date available:** 2020-05-26 |
 
-### Estimation
+## Estimation
 
 The source data from which we derive our estimates contains a number of features
 for every test, including localization at 5-digit Zip Code level, a TestDate and
@@ -80,32 +105,32 @@ We estimate p across 6 temporal-spatial aggregation schemes:
 - daily, at the HHS level;
 - daily, at the US national level.
 
-#### Standard Error
+### Standard Error
 
 We assume the estimates for each time point follow a binomial distribution. The
 estimated standard error then is:
 
 $$
-\text{se} = 100 \sqrt{ \frac{\frac{p}{100}(1- \frac{p}{100})}{N} } 
+\text{se} = 100 \sqrt{ \frac{\frac{p}{100}(1- \frac{p}{100})}{N} }
 $$
 
-#### Smoothing
+### Smoothing
 
 We add two kinds of smoothing to the smoothed signals:
 
-##### Temporal Smoothing
+#### Temporal Smoothing
 Smoothed estimates are formed by pooling data over time. That is, daily, for
 each location, we first pool all data available in that location over the last 7
-days, and we then recompute everything described in the two subsections above. 
+days, and we then recompute everything described in the two subsections above.
 
-Pooling in this way makes estimates available in more geographic areas, as many areas 
+Pooling in this way makes estimates available in more geographic areas, as many areas
 report very few tests per day, but have enough data to report when 7 days are considered.
 
-##### Geographical Smoothing
+#### Geographical Smoothing
 
-**County, MSA and HRR levels**: In a given County, MSA or HRR, suppose $$N$$ COVID tests 
+**County, MSA and HRR levels**: In a given County, MSA or HRR, suppose $$N$$ COVID tests
 are taken in a certain time period, $$X$$ is the number of tests taken with positive
-results. 
+results.
 
 
 For smoothed signals, after taking the temporal pooling,
@@ -116,14 +141,14 @@ $$
 - if $$25 \leq N < 50$$, we lend $$50 - N$$ fake samples from its parent state to shrink the
 estimate to the state's mean, which means:
 $$
-p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \right) 
+p = 100 \left( \frac{N}{50} \frac{X}{N} + \frac{50 - N}{50}  \frac{X_s}{N_s} \right)
 $$
 where $$N_s, X_s$$ are the number of COVID tests and the number of COVID tests
 taken with positive results taken in its parent state in the same time period.
-A parent state is defined as the state with the largest proportion of the population 
+A parent state is defined as the state with the largest proportion of the population
 in this county/MSA/HRR.
 
-Counties with sample sizes smaller than 50 are merged into megacounties for 
+Counties with sample sizes smaller than 50 are merged into megacounties for
 the raw signals; counties with sample sizes smaller than 25 are merged into megacounties for
 the smoothed signals.
 
@@ -148,7 +173,7 @@ June 14th and subsequently revised on June 16th.
 
 ### Limitations
 
-This data source is based on data provided to us by a lab testing company. They can report on a portion of United States COVID-19 Antigen tests, but not all of them, and so this source only represents those tests known to them. Their coverage may vary across the United States. The coverage of the signals for some age groups (e.g. age 0-4 and age 65+) are extremely limited at HRR and MSA level, and can even be limited at state level on weekends. 
+This data source is based on data provided to us by a lab testing company. They can report on a portion of United States COVID-19 Antigen tests, but not all of them, and so this source only represents those tests known to them. Their coverage may vary across the United States. The coverage of the signals for some age groups (e.g. age 0-4 and age 65+) are extremely limited at HRR and MSA level, and can even be limited at state level on weekends.
 
 ### Missingness
 
@@ -157,7 +182,7 @@ reported for that area on that day; an API query for all reported states on that
 day will not include it.
 
 When fewer than 50 tests are reported in a county, HRR or MSA on a specific day, and
-not enough samples can be filled in from the parent state for smoothed signals specifically, 
+not enough samples can be filled in from the parent state for smoothed signals specifically,
 no data is reported for that area on that day; an API query for all reported geographic areas on
 that day will not include it.
 
@@ -165,15 +190,25 @@ that day will not include it.
 
 These signals are inactive. They were updated until May 19, 2020.
 
-* **Source name:** `quidel`
-* **Earliest issue available:** April 29, 2020
-* **Last issued:** May 19, 2020
-* **Number of data revisions since May 19, 2020:** 0
-* **Date of last change:** Never
-* **Available for:** msa, state (see [geography coding docs](../covidcast_geography.md))
-* **Time type:** day (see [date format docs](../covidcast_times.md))
+| Attribute | Details |
+| :--- | :--- |
+| **Geographic Levels** | State, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
+| **Reporting Cadence** | Inactive - No longer updated since 2020-05-01 |
+| **Date of last data revision:** | Never (see [data revision docs](#changelog-flu-tests)) |
+| **Temporal Scope Start** | 2020-01-31 |
+
+### Changelog Flu Tests
+
+<details>
+<summary>Click to expand</summary>
+
+#### October 22, 2020
+We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
+
+</details>
 
 ### Overview
+{: .no_toc}
 
 Data source based on flu lab tests, provided to us by Quidel, Inc. When a
 patient (whether at a doctor’s office, clinic, or hospital) has COVID-like

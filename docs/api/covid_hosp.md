@@ -1,17 +1,27 @@
 ---
-title: <i>inactive</i> COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
-parent: Data Sources and Signals
-grand_parent: Other Endpoints (COVID-19 and Other Diseases)
-nav_order: 2
+parent: Inactive Sources (Other)
+grand_parent: Data Sources and Signals
+title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
 ---
 
 # COVID-19 Hospitalization by State
+{: .no_toc}
 
-This data source is a mirror of the "COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries" and "COVID-19 Reported Patient Impact and
-Hospital Capacity by State" datasets provided by the US Department of
-Health & Human Services via healthdata.gov. The latter provides more frequent updates,
-so it is combined with the former to create a single dataset which is as recent as possible.
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `covid_hosp_state_timeseries` |
+| **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) |
+| **Geographic Levels** | US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) |
+| **Temporal Granularity** | Daily |
+| **Reporting Cadence** | Inactive - No longer updated since 2024-04-27 |
+| **Temporal Scope Start** | 2020-01-01 |
+| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+
+## Overview
+{: .no_toc}
+
+This dataset provides daily surveys of hospital COVID-19 capacity and patient impact, as reported by US hospitals. Data is acquired from HealthData.gov. It is a mirror of the "COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries" and "COVID-19 Reported Patient Impact and Hospital Capacity by State" datasets provided by HHS via healthdata.gov. The latter provides more frequent updates, so it is combined with the former to create a single dataset which is as recent as possible.
 
 HHS performs up to four days of forward-fill for missing values in the
 [facility-level data](covid_hosp_facility.md) which are aggregated to make this
@@ -34,23 +44,16 @@ General topics not specific to any particular data source are discussed in the
 [API overview](README.md). Such topics include:
 [contributing](README.md#contributing) and [citing](README.md#citing).
 
-## Metadata
+## Table of contents
+{: .no_toc .text-delta}
 
-This data source provides various measures of COVID-19 burden on patients and healthcare in the US.
-- Data source: US Department of Health & Human Services (HHS) [COVID-19 Reported Patient Impact and
-Hospital Capacity by State Timeseries](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) (published weekly)
-  and [COVID-19 Reported Patient Impact and Hospital Capacity by State](https://healthdata.gov/dataset/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/6xf2-c3ie) (published on an irregular schedule, every 1-6 days)
-- Temporal Resolution: Daily, starting 2020-01-01
-- Spatial Resolution: US States plus DC, PR, and VI
-- Open Access: [Public Domain US Government](https://www.usa.gov/government-works)
-- Versioned by Delphi according to "issue" date, which is the date that the
-dataset was published by HHS.
+1. TOC
+{:toc}
 
 # The API
 
-The base URL is: https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/
+The base URL is: <https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/>
 
-See [this documentation](README.md) for details on specifying locations and dates.
 
 ## Parameters
 
@@ -58,14 +61,14 @@ See [this documentation](README.md) for details on specifying locations and date
 
 | Parameter | Description                    | Type                           |
 |-----------|--------------------------------|--------------------------------|
-| `states`  | two-letter state abbreviations | `list` of states               |
-| `dates`   | dates                          | `list` of dates or date ranges |
+| `states`  | two-letter state abbreviations (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) | `list` of states               |
+| `dates`   | dates (see [Date Formats](date_formats.md)) | `list` of dates or date ranges |
 
 ### Optional
 
 | Parameter | Description | Type                                   |
 |-----------|-------------|----------------------------------------|
-| `issues`  | issues      | `list` of "issue" dates or date ranges |
+| `issues`  | issues (see [Date Formats](date_formats.md))      | `list` of "issue" dates or date ranges |
 
 If `issues` is not specified, then the most recent issue is used by default.
 
@@ -84,7 +87,7 @@ If `issues` is not specified, then the most recent issue is used by default.
 # Example URLs
 
 ### MA on 2020-05-10 (per most recent issue)
-https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=20200510
+<https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=20200510>
 
 ```json
 {
@@ -218,11 +221,56 @@ https://api.delphi.cmu.edu/epidata/covid_hosp_state_timeseries/?states=MA&dates=
 
 # Code Samples
 
-Libraries are available for [JavaScript](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js), [Python](https://pypi.org/project/delphi-epidata/), and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
 The following sample shows how to import the library and fetch MA on 2020-05-10
 (per most recent issue).
 
-### Python
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+Install the package using pip:
+```bash
+pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
+```
+
+```python
+# Import
+from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+# Fetch data
+epidata = EpiDataContext()
+res = epidata.pub_covid_hosp(states="MA", dates=20200510)
+print(res)
+```
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+# Fetch data
+res <- pub_covid_hosp_state_timeseries(states = "MA", dates = 20200510)
+print(res)
+```
+  </div>
+
+</div>
+
+### Legacy Clients
+
+We recommend using the modern client libraries mentioned above. Legacy clients are also available for [Python](https://pypi.org/project/delphi-epidata/) and [R](https://github.com/cmu-delphi/delphi-epidata/blob/dev/src/client/delphi_epidata.R).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
 
 Optionally install the package using pip(env):
 ```bash
@@ -260,3 +308,19 @@ The following issues were repaired:
 These issues had been imported using the wrong column order due to an imprecise
 database migration. If you pulled these issues before January 22, you will want
 to discard that data.
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+Place `delphi_epidata.R` from this repo next to your R script.
+
+```R
+source("delphi_epidata.R")
+# Fetch data
+res <- Epidata$covid_hosp(states = list("MA"), dates = list(20200510))
+print(res$message)
+print(length(res$epidata))
+```
+  </div>
+
+</div>

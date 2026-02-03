@@ -10,7 +10,7 @@ nav_order: 5
 The survey's individual response files contain respondent weights calculated
 by Facebook. These weights are also used to produce our
 [public contingency tables](./contingency-tables.md) and the geographic aggregates
-[in the COVIDcast Epidata API](../api/covidcast-signals/fb-survey.md).
+[in the COVIDcast Epidata API](../api/covidcast-signals/covid-trends-and-impact-survey.md).
 
 Facebook has developed a [User Guide for the CTIS
 Weights](https://dataforgood.facebook.com/dfg/resources/user-guide-for-ctis-weights)

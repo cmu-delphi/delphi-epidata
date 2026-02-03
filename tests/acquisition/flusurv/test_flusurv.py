@@ -379,7 +379,7 @@ class FunctionTests(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "Ageid cannot be 6"):
             api_fetcher._groupid_to_name(6, 0, 0, 0)
-        with self.assertRaisesRegex(ValueError, "Expect at least three of four group ids to be 0"):
+        with self.assertWarnsRegex(Warning, "We expect an obs to represent only a single demographic group at a time"):
             api_fetcher._groupid_to_name(1, 1, 0, 0)
             api_fetcher._groupid_to_name(0, 1, 1, 0)
             api_fetcher._groupid_to_name(1, 1, 1, 1)

@@ -1,0 +1,64 @@
+// Code Tabs Styling
+.code-tabs {
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+
+    .tab-header {
+        display: flex;
+        background-color: #f6f8fa;
+        border-bottom: 1px solid var(--border-color);
+
+        button {
+            background: none;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 0.9rem;
+            color: var(--body-text);
+            border-right: 1px solid transparent;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+
+            &:hover {
+                color: #005F95;
+                background-color: rgba(0, 123, 192, 0.05);
+            }
+
+            &.active {
+                color: #002676;
+                font-weight: 600;
+                background-color: #fff;
+                border-bottom: 2px solid #002676;
+                border-right: 1px solid var(--border-color);
+                margin-bottom: -1px;
+            }
+
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+
+    .tab-content {
+        display: none;
+        padding: 1rem;
+        background-color: #fff;
+
+        &.active {
+            display: block;
+        }
+
+        div[class*="language-"] {
+            margin: 0;
+            border-radius: 0;
+        }
+
+        pre {
+            margin: 0;
+            border: none;
+        }
+    }
+}
