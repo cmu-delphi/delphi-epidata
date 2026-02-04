@@ -266,8 +266,9 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     if overwrite_weeks:
         week_ends = [datetime.strptime(date_string, "%Y-%m-%d") for date_string in table['time_value']]
         table["week"] = [Week.fromdate(d).week for d in week_ends]
+        
 
-    # Change order of column names so tthey start with stubbnames
+    # Change order of column names so they start with stubbnames
     table  = table.rename(columns=lambda x: ' '.join(x.split(' ')[::-1])) #
     stubnames= virus_prefix+['tests']
     table= pd.wide_to_long(table, stubnames, i=['week','time_value','issue'],
@@ -279,9 +280,14 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
     # make sure weeks 1-9 have leading 0 when creating epiweek
     table['week'] = pd.to_numeric(table['week'],downcast="integer")
     
+    # some tables have correct weeks but incorrect time_values - derive time_value from week in this case
+    if table.duplicated(['time_value']).any():
+        table['time_value'] = [get_report_date(week, start_year,epi=False) for week in table['week']]
+        
     table=table.rename(columns={'week':"epiweek"})
     table['epiweek'] = [get_report_date(week, start_year,epi=True) for week in table['epiweek']]
-
+    
+    
     table['geo_value']= [abbreviate_geo(g) for g in table['geo_value']]
     geo_types = [create_geo_types(g,"lab") for g in table['geo_value']]
     table.insert(3,"geo_type",geo_types)
