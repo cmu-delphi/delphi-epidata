@@ -33,8 +33,9 @@ No changes so far.
 
 The U.S. Department of Health & Human Services (HHS) publishes several
 datasets on patient impact and hospital capacity. The data is made available
-to HHS through the CDC’s National Healthcare Safety Network (NHSN). One of these
-datasets is mirrored in Epidata at the following endpoint:
+to HHS through the CDC’s National Healthcare Safety Network (NHSN). 
+See [NHSN Respiratory Hospitalizations](nhsn.md) for the current data source.
+One of these datasets is mirrored in Epidata at the following endpoint:
 
 * [COVID-19 Hospitalization: States](../covid_hosp.md) - daily resolution, state aggregates
 
