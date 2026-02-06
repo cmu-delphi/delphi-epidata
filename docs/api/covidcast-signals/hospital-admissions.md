@@ -39,8 +39,8 @@ hospital admissions, provided to us by health system partners. We use this
 inpatient data to estimate the percentage of new hospital admissions with a
 COVID-associated diagnosis code in a given location, on a given day.
 
-See also our [Health & Human Services](hhs.md) data source for official COVID
-hospitalization reporting from the Department of Health & Human Services.
+See also our [NHSN Respiratory Hospitalizations](nhsn.md) data source for current official COVID
+hospitalization reporting from the CDC. (Previously this was reported by [Health & Human Services](hhs.md).)
 
 **Active Signals.** These signals are currently updated.
 

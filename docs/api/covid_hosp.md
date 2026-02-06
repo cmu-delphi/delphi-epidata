@@ -23,6 +23,9 @@ title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeserie
 
 This dataset provides daily surveys of hospital COVID-19 capacity and patient impact, as reported by US hospitals. Data is acquired from HealthData.gov. It is a mirror of the "COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries" and "COVID-19 Reported Patient Impact and Hospital Capacity by State" datasets provided by HHS via healthdata.gov. The latter provides more frequent updates, so it is combined with the former to create a single dataset which is as recent as possible.
 
+> **Note:** Administration of this dataset has moved to the National Healthcare Safety Network (NHSN). See [NHSN Respiratory Hospitalizations](covidcast-signals/nhsn.md) for the current data source.
+{: .note }
+
 HHS performs up to four days of forward-fill for missing values in the
 [facility-level data](covid_hosp_facility.md) which are aggregated to make this
 state-level dataset. This sometimes results in repeated values in the state-level data.

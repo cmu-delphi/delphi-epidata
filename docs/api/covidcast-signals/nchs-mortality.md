@@ -54,7 +54,7 @@ as additional death certificates from recent weeks are received and tabulated.
 | `deaths_covid_and_pneumonia_notflu_incidence_prop`| Number of weekly new deaths involving COVID-19 and Pneumonia, excluding Influenza, per 100,000 population <br/> **Earliest date available:** Epiweek 05 2020 |
 |`deaths_pneumonia_or_flu_or_covid_incidence_num`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19 <br/> **Earliest date available:** Epiweek 05 2020 |
 |`deaths_pneumonia_or_flu_or_covid_incidence_prop`| Number of weekly new deaths involving Pneumonia, Influenza, or COVID-19, per 100,000 population <br/> **Earliest date available:** Epiweek 05 2020 |
-|`deaths_percent_of_expected`| Number of weekly new deaths for all causes in 2020 compared to the average number across the same week in 2017–2019 <br/> **Earliest date available:** Epiweek 05 2020 |
+|`deaths_percent_of_expected`| Number of weekly new deaths for all causes compared to the average number across the same week in 2017–2019 <br/> **Earliest date available:** Epiweek 05 2020 |
 
 ## Table of contents
 {: .no_toc .text-delta}
