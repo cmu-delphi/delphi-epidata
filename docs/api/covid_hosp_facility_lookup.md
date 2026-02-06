@@ -145,11 +145,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pub_covid_hosp_facility_lookup(city="southlake")
-print(res)
+print(res.df())
 ```
   </div>
 

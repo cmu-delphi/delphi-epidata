@@ -274,11 +274,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pub_flusurv(locations="CA", epiweeks=EpiRange(201701, 201801))
-print(res)
+print(res.df())
 ```
   </div>
 
