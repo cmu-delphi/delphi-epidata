@@ -13,7 +13,7 @@ title: Google Symptom Search Trends
 | **Data Source** | Google |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated after November 16th, 2025 |
+| **Reporting Cadence** | Inactive - No longer updated after November 16th, 2025 (see [Symptom sets](#symptom-sets) for details) |
 | **Date of last data revision:** | March 14th, 2025 (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | February 13th, 2020, with some variation depending on geographic area|
 | **License** | [Google Terms of Service](https://policies.google.com/terms) |
@@ -70,30 +70,30 @@ This symptom set can be used as a negative control.
 
 Until January 20, 2022, we had separate signals for symptoms Anosmia, Ageusia, and their sum.
 
-| Signal | Description |
-| --- | --- |
-| `s01_raw_search` | The average of Google search volume for related searches of symptom set _s01_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `s01_smoothed_search` | The average of Google search volume for related searches of symptom set _s01_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `s02_raw_search` | The average of Google search volume for related searches of symptom set _s02_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `s02_smoothed_search` | The average of Google search volume for related searches of symptom set _s02_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `s03_raw_search` | The average of Google search volume for related searches of symptom set _s03_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `s03_smoothed_search` | The average of Google search volume for related searches of symptom set _s03_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `s04_raw_search` | The average of Google search volume for related searches of symptom set _s04_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `s04_smoothed_search` | The average of Google search volume for related searches of symptom set _s04_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `s05_raw_search` | The average of Google search volume for related searches of symptom set _s05_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `s05_smoothed_search` | The average of Google search volume for related searches of symptom set _s05_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `s06_raw_search` | The average of Google search volume for related searches of symptom set _s06_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `s06_smoothed_search` | The average of Google search volume for related searches of symptom set _s06_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `s07_raw_search` | The average of Google search volume for related searches of symptom set _s07_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `s07_smoothed_search` | The average of Google search volume for related searches of symptom set _s07_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `scontrol_raw_search` | The average of Google search volume for related searches of symptom set _scontrol_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
-| `scontrol_smoothed_search` | The average of Google search volume for related searches of symptom set _scontrol_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
-| `anosmia_raw_search` |  Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users. _This signal is no longer updated as of 20 January, 2022._ <br/> **Earliest date available:** 2020-02-13 |
-| `anosmia_smoothed_search` | Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average. _This signal is no longer updated as of 20 January, 2022._ <br/> **Earliest date available:** 2020-02-20 |
-| `ageusia_raw_search` | Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users. _This signal is no longer updated as of 20 January, 2022._ <br/> **Earliest date available:** 2020-02-13 |
-| `ageusia_smoothed_search` |  Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average. _This signal is no longer updated as of 20 January, 2022._ <br/> **Earliest date available:** 2020-02-20 |
-| `sum_anosmia_ageusia_raw_search` | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users. _This signal is no longer updated as of 20 January, 2022._ <br/> **Earliest date available:** 2020-02-13 |
-| `sum_anosmia_ageusia_smoothed_search` | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. _This signal is no longer updated as of 20 January, 2022._ <br/> **Earliest date available:** 2020-02-20 |
+| Signal | Status | Description |
+| --- | --- | --- |
+| `s01_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s01_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `s01_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s01_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `s02_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s02_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `s02_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s02_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `s03_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s03_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `s03_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s03_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `s04_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s04_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `s04_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s04_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `s05_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s05_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `s05_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s05_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `s06_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s06_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `s06_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s06_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `s07_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s07_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `s07_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _s07_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `scontrol_raw_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _scontrol_, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2017-08-15 |
+| `scontrol_smoothed_search` | Ended Nov 2025 | The average of Google search volume for related searches of symptom set _scontrol_, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2017-08-21 |
+| `anosmia_raw_search` | Ended Jan 2022 | Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-02-13 |
+| `anosmia_smoothed_search` | Ended Jan 2022 | Google search volume for anosmia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-02-20 |
+| `ageusia_raw_search` | Ended Jan 2022 | Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-02-13 |
+| `ageusia_smoothed_search` | Ended Jan 2022 | Google search volume for ageusia-related searches, in arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-02-20 |
+| `sum_anosmia_ageusia_raw_search` | Ended Jan 2022 | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users. <br/> **Earliest date available:** 2020-02-13 |
+| `sum_anosmia_ageusia_smoothed_search` | Ended Jan 2022 | The sum of Google search volume for anosmia and ageusia related searches, in an arbitrary units that are normalized for overall search users, smoothed by 7-day average. <br/> **Earliest date available:** 2020-02-20 |
 
 
 ## Table of Contents
