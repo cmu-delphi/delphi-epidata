@@ -94,6 +94,9 @@ Multiple endpoints use standard US geographic codes. These include the national 
 |---|---|
 | `nat` | United States (National) |
 
+{: .note}
+> **Note:** All endpoints that contain US data use `nat` to access it, whereas [`ght`](ght.md) and other endpoints that contain data for countries in the Americas use `us`.
+
 ### HHS Regions
 
 The US Department of Health and Human Services divides the country into 10 regions.
