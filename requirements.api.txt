@@ -5,7 +5,7 @@ Flask-Limiter==3.3.0
 more_itertools==8.4.0
 mysqlclient==2.1.1
 orjson==3.9.15
-pandas==1.2.3
+pandas==1.5.1
 python-dotenv==0.15.0
 pyyaml
 redis==3.5.3
