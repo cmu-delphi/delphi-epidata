@@ -200,17 +200,8 @@ print(res)
 ```
   </div>
 
-  <div class="tab-content" data-tab="js" markdown="1">
-
-The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
-
-```html
-<!-- Imports -->
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  EpidataAsync.fluview('nat', [EpidataAsync.range(201501, 201510)]).then((res) => {
 </div>
+
 
 ### Legacy Clients
 
@@ -220,6 +211,7 @@ We recommend using the modern client libraries mentioned above. Legacy clients a
   <div class="tab-header">
     <button class="active" data-tab="python">Python</button>
     <button data-tab="r">R</button>
+    <button data-tab="js">JavaScript</button>
   </div>
 
   <div class="tab-content active" data-tab="python" markdown="1">
