@@ -285,11 +285,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pub_wiki(articles=['influenza'], time_values=EpiRange(202001, 202010), time_type='week', language='en', hours=[0, 12])
-print(res)
+print(res.df())
 ```
   </div>
 

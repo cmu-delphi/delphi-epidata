@@ -274,11 +274,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pub_flusurv(locations="CA", epiweeks=EpiRange(201701, 201801))
-print(res)
+print(res.df())
 ```
   </div>
 
@@ -292,21 +292,7 @@ print(res)
 ```
   </div>
 
-  <div class="tab-content" data-tab="js" markdown="1">
 
-The JavaScript client is available [here](https://github.com/cmu-delphi/delphi-epidata/blob/main/src/client/delphi_epidata.js).
-
-```html
-<!-- Imports -->
-<script src="delphi_epidata.js"></script>
-<!-- Fetch data -->
-<script>
-  EpidataAsync.flusurv('CA', [EpidataAsync.range(201701, 201801)]).then((res) => {
-    console.log(res.result, res.message, res.epidata != null ? res.epidata.length : 0);
-  });
-</script>
-```
-  </div>
 
 </div>
 

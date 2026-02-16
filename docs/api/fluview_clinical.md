@@ -149,10 +149,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
-res = Epidata.fluview_clinical(['nat'], [Epidata.range(201601, 201701)])
-print(res['result'], res['message'], len(res['epidata']))
+epidata = EpiDataContext()
+res = epidata.pub_fluview_clinical(regions=['nat'], epiweeks=EpiRange(201601, 201701))
+print(res.df())
 ```
   </div>
 

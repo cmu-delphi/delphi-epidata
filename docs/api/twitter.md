@@ -141,11 +141,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pvt_twitter(auth='auth_token', locations=['nat'], time_type="week", time_values=[201501])
-print(res)
+print(res.df())
 ```
   </div>
 

@@ -125,11 +125,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
-res = epidata.dengue_nowcast(['pr'], EpiRange(201401, 202301))
-print(res['result'], res['message'], len(res['epidata']))
+res = epidata.pub_dengue_nowcast(['pr'], EpiRange(201401, 202301))
+print(res.df())
 ```
   </div>
 

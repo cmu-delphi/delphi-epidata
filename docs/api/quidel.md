@@ -118,11 +118,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pvt_quidel(auth='auth_token', locations=['hhs1'], epiweeks=EpiRange(201535, 202001))
-print(res)
+print(res.df())
 ```
   </div>
 
