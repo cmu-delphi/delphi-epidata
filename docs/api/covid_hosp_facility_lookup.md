@@ -23,6 +23,10 @@ title: COVID-19 Reported Patient Impact and Hospital Capacity - Facility lookup
 {: .no_toc}
 
 This endpoint is a companion to the [`covid_hosp_facility` endpoint](covid_hosp_facility.md). It provides a way to find unique identifiers and other metadata for facilities of interest.
+
+> **Note:** Administration of this dataset has moved to the National Healthcare Safety Network (NHSN). See [NHSN Respiratory Hospitalizations](covidcast-signals/nhsn.md) for the current data source.
+{: .note }
+
 A total of 4922 facilities are included.
 
 Metadata is derived from the "COVID-19 Reported Patient Impact and Hospital Capacity by Facility" dataset provided by HHS via healthdata.gov.
