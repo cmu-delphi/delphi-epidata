@@ -95,7 +95,7 @@ Multiple endpoints use standard US geographic codes. These include the national 
 | `nat` | United States (National) |
 
 {: .note}
-> **Note:** All endpoints that contain US data use `nat` to access it, whereas [`ght`](ght.md) and other endpoints that contain data for countries in the Americas use `us`.
+> **Note:** All endpoints that contain US-only data use `nat` to access national-level data, whereas [`ght`](ght.md) and other endpoints that contain data for multiple countries use `us`.
 
 ### HHS Regions
 
