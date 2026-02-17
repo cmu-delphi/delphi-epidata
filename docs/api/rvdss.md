@@ -26,19 +26,12 @@ This data source of respiratory virus detections in Canada is collected by the [
 
 > **Note:** Human coronovirus (HCoV) refers to seasonal coronovirus, which differs from SARS-CoV-2, the novel pandemic coronovirus that causes COVID-19. SARS-CoV-2 (COVID-19) was not reported until the start of the 2022-2023 season.
 {: .note }
+                                                                              
+## Table of contents
+{: .no_toc .text-delta}
 
-## Table Keys
-
-These are the meta-data columns used to uniquely identify data rows/points.
-
-| Key          | Description                                                                                                                     |
-|--------------|---------------------------------------------------------------------------------------------------------------------------------|
-| `geo_value`  | The geographical location (see [Geography](#geography))                                                                         |
-| `geo_type`   | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` |
-| `time_value` | The date corresponding to the last day (Saturday) of `epiweek`          |
-| `time_type`  | Type of time value, only `week` available                                                                                       |
-| `epiweek`    | Epidemiological week (Sunday-Saturday) data is being reported for           |
-| `issue`      | Issue/version date of the data (see [Data Versioning](#version) for full details)                                               |
+1. TOC
+{:toc}
 
 ## Signals
 
@@ -82,13 +75,7 @@ These are the meta-data columns used to uniquely identify data rows/points.
 | `hcov_tests`                   | Number of human coronavirus (HCoV) laboratory tests. <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
 | `hcov_positive_tests`          | Number of positive HCoV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                   |
 | `hcov_pct_positive`            | Percentage of HCoV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                      |
-| `year`                         | Year of reference date (`epiweek`) <br/> **Earliest Date Available:** 2023-09-02                                                                                                                               |
-
-## Table of contents
-
-{: .no_toc .text-delta}
-
-1.  TOC {:toc}
+| `year`                         | Year of reference date (`epiweek`) <br/> **Earliest Date Available:** 2023-09-02  
 
 ## Geography {#geography}
 
@@ -175,10 +162,34 @@ If labs or healthcare providers tend to be located in larger cities or cities in
 
 Our reconstruction of version dates prior to June 2024 may be based on incorrect assumptions.
 
+
+## The API
+
+The base URL is: <https://api.delphi.cmu.edu/epidata/rvdss/>
+
+### Parameters
+
+#### Required
+
+| Key | Description | Type |
+| :--- | :--- | :--- |
+| `geo_value` | The geographical location (see [Geography](#geography)) | string |
+| `geo_type` | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` | string |
+| `time_value` | The date corresponding to the last day (Saturday) of `epiweek` | date |
+| `time_type` | Type of time value, only `week` available | string |
+| `epiweek` | Epidemiological week (Sunday-Saturday) data is being reported for | integer |
+
+#### Optional
+
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `as_of` | issue date of the data (see [Data Versioning](#version)). Mutually exclusive with `issues`. | epiweek |
+| `issues` | list of issue dates (see [Date Formats](date_formats.md)). Mutually exclusive with `as_of`. | `list` of epiweeks |
+
+
 ## Source and Licensing {#source-and-licensing}
 
 This source is derived from PHAC's Respiratory Virus Detection Data, originally reported in [weekly reports](https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada.html), and currently reported in a [dynamic dashboard](https://health-infobase.canada.ca/respiratory-virus-surveillance/?source=rvdss).
-
 The data is made available under the [Open Government Licence - Canada](https://open.canada.ca/en/open-government-licence-canada).
 
 ## Additional Resources
