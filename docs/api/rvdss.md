@@ -173,11 +173,10 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/rvdss/>
 
 | Key | Description | Type |
 | :--- | :--- | :--- |
-| `geo_value` | The geographical location (see [Geography](#geography)) | string |
+| `geo_values` | The geographical location (see [Geography](#geography)) | string |
 | `geo_type` | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` | string |
-| `time_value` | The date corresponding to the last day (Saturday) of `epiweek` | date |
+| `time_values` | The date corresponding to the last day (Saturday) of `epiweek` | date |
 | `time_type` | Type of time value, only `week` available | string |
-| `epiweek` | Epidemiological week (Sunday-Saturday) data is being reported for | integer |
 
 #### Optional
 
@@ -197,10 +196,8 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/rvdss/>
 | `epidata[].region` | region identifier | string |
 | `epidata[].time_type` | type of time value (`week`) | string |
 | `epidata[].epiweek` | epiweek for which data is reported (YYYYWW) | integer |
-| `epidata[].time_value` | date corresponding to the epiweek | string |
+| `epidata[].time_value` | date corresponding to the epiweek | integer |
 | `epidata[].issue` | issue/version date of the data | integer |
-| `epidata[].week` | week number | integer |
-| `epidata[].weekorder` | week order | integer |
 | `epidata[].year` | year | integer |
 | `epidata[].*` | various signal fields (see [Signals](#signals)) | float |
 | `message` | `success` or error message | string |
@@ -226,13 +223,13 @@ Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Pyth
   <div class="tab-content active" data-tab="python" markdown="1">
 
 ```python
-from epidatpy import EpiDataContext
+from epidatpy import EpiDataContext, EpiRange
 
 epidata = EpiDataContext()
 res = epidata.pub_rvdss(
     geo_type="nation",
     geo_values="ca",
-    time_values="202301-202310"
+    time_values=EpiRange(202301, 202310)
 )
 print(res.df())
 ```
@@ -247,7 +244,7 @@ library(epidatr)
 res <- pub_rvdss(
     geo_type = "nation",
     geo_values = "ca",
-    time_values = "202301-202310"
+    time_values = epirange(202301, 202310)
 )
 print(res)
 ```
