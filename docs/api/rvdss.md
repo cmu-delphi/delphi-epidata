@@ -21,19 +21,20 @@ nav_order: 1
 
 This data source of respiratory virus detections in Canada is collected by the [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) and published by the Public Health Agency of Canada (PHAC). Laboratory tests for various respiratory illnesses are reported on a weekly basis by sentinel laboratories across Canada to the [Centre for Immunization and Respiratory Infectious Diseases (CIRID)](https://www.canada.ca/en/public-health/services/infectious-diseases/centre-immunization-respiratory-infectious-diseases-cirid.html), a subsidiary of PHAC. The data was originally reported in weekly online reports, but since June 2024, has changed to being reported through a dynamic dashboard.
 
-**NOTE**: Human coronovirus (HCoV) refers to seasonal coronovirus, which differs from SARS-CoV-2, the novel pandemic coronovirus that causes COVID-19. SARS-CoV-2 (COVID-19) was not reported until the start of the 2022-2023 season.
+> **Note:** Human coronovirus (HCoV) refers to seasonal coronovirus, which differs from SARS-CoV-2, the novel pandemic coronovirus that causes COVID-19. SARS-CoV-2 (COVID-19) was not reported until the start of the 2022-2023 season.
+{: .note }
 
 ## Table Keys
 
-There are the meta-data columns used to uniquely identify data rows/points.
+These are the meta-data columns used to uniquely identify data rows/points.
 
 | Key          | Description                                                                                                                     |
 |--------------|---------------------------------------------------------------------------------------------------------------------------------|
 | `geo_value`  | The geographical location (see [Geography](#geography))                                                                         |
 | `geo_type`   | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` |
-| `time_value` | The end of the epiweek                                                                                                          |
+| `time_value` | The date corresponding to the last day (Saturday) of `epiweek`          |
 | `time_type`  | Type of time value, only `week` available                                                                                       |
-| `epiweek`    | Epidemiological week                                                                                                            |
+| `epiweek`    | Epidemiological week (Sunday-Saturday) data is being reported for           |
 | `issue`      | Issue/version date of the data (see [Data Versioning](#version) for full details)                                               |
 
 ## Signals
@@ -119,7 +120,8 @@ The provinces and territories are also reported aggregated into six geographic r
 -   `qc`: Quebec
 -   `bc`: British Columbia
 
-**NOTE**: Ontario, Quebec, and British Columbia are single-province regions, so data for these provinces is the same whether using `geo_type = region` or `geo_type = province`.
+> **Note:** Ontario, Quebec, and British Columbia are single-province regions, so data for these provinces is the same whether using `geo_type = region` or `geo_type = province`.
+{: .note }
 
 ### Geo type `nation`
 
@@ -129,17 +131,18 @@ ISO 3166-1 alpha-2 [country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alph
 
 The laboratories reporting lab tests. Only Ontario, Quebec, and occasionally Saskatchewan report counts for individual lab facilities.
 
-**NOTE**: Over time, some laboratory networks were expanded and the responsible laboratories were renamed:
-
--   Children's Hospital of Eastern Ontario (CHEO) -\> Eastern Ontario Regional Laboratory Association (EORLA)
--   Sunnybrook Women’s College Health Sciences Centre -\> Shared Hospital Laboratory
--   Toronto Medical Laboratory -\> University Health Network/Mount Sinai Hospital
+> **Note:** Over time, some laboratory networks were expanded and the responsible laboratories were renamed:
+>
+> -   Children's Hospital of Eastern Ontario (CHEO) -\> Eastern Ontario Regional Laboratory Association (EORLA)
+> -   Sunnybrook Women’s College Health Sciences Centre -\> Shared Hospital Laboratory
+> -   Toronto Medical Laboratory -\> University Health Network/Mount Sinai Hospital
+{: .note }
 
 ## Calculation of Percent Positive Lab Tests
 
-For each respiratory virus, the number of lab tests and number of positive lab tests are reported. For convenience, we calculate the percentage of positive tests for a given virus as:
+For each respiratory virus, the number of total lab tests performed and number of positive lab tests are reported. For convenience, we calculate the percentage of positive tests for a given virus as:
 
-$$\text{Percent Positive Lab Tests} = \frac{\text{Number of Positive Tests}}{\text{Number of Tests}} \times 100$$
+$$\text{Percent Positive Lab Tests} = \frac{\text{Number of Positive Tests}}{\text{Number of Total Tests}} \times 100$$
 
 Percent positive lab tests ranges from 0-100%. For HPIV, total HPIV positive tests are not always reported, so we manually calculate them by summing up the positive tests for all HPIV subtypes:
 
@@ -147,42 +150,13 @@ $$
 \text{HPIV Positive Tests} = \sum\text{HPIV}_\text{subtype}
 $$
 
-for subtype = 1,2,3,4 and other
+for subtype = 1, 2, 3, 4, and other
 
 Prior to the end of the 2023-2024 season, total tests and percent positivity were reported, but number of positive tests was not explicitly reported. For convenience, we manually calculated number of positive tests when only percent positive lab tests and number of lab tests were available.
 
-$$\text{Number Positive Lab Tests} = \frac{\text{Percent Positive Lab Tests}}{100} \times \text{Number of Tests}$$
+$$\text{Number Positive Lab Tests} = \frac{\text{Percent Positive Lab Tests}}{100} \times \text{Number of Total Tests}$$
 
 These values are not rounded, so some are not integers.
-
-## Data Versioning {#version}
-
-Epiweeks end on Saturday, and the data is usually updated the following Thursday or Friday.
-The dashboard where data is currently published states when it was last updated, so we use that date as the version date.
-
-The source switched to publishing data in a dashboard in June 2024.
-The dashboard explicitly states when the data was last updated.
-Prior to June 2024, data was published weekly in a report blog post format.
-To make data prior to that date more useful, we reconstructed the source's version history, deriving the version date from metadata included in the weekly report webpages.
-
-We defined the version date of a particular data issue to be the date the report webpage was last modified.
-Historically, page-modified dates were generally 5 days after the end of an epiweek.
-Occasionally, page-modified dates were larger than that -- sometimes much larger (up to a year).
-
-Our understanding is that weekly reports were not modified after the fact and expect later modified dates to indicate changes in the text on the page rather than changes to the data.
-With that in mind, if the page-modified date was more than 14 days after the epiweek being reported, we set the version date to be 5 days after the end of epiweek being reported,
-This should only be a consideration for the historic reports, as the new dashboard states when it was last updated.
-
-## Limitations
-
-This data reports the results of laboratory testing of respiratory viruses, which only represents a subset of people who may be sick. People with mild symptoms may be excluded, and there may be a delay between someone developing symptoms and getting a lab test.
-
-Data comes from labs across Canada, and some provinces only have one reporting lab, with no further information about, for example, location of individual labs.
-Only Quebec and Ontario report detailed disaggregated (lab-level) data.
-Other provinces may have multiple labs, but don't report them separately.
-If labs or healthcare providers tend to be located in larger cities or cities in general, and it is easier for people in more densely populated areas to have lab tests done than those in rural locations, the data may overrepresent the urban population.
-
-Our assumptions about version date in data prior to June 2024 may be incorrect.
 
 ## Missingness
 
@@ -194,23 +168,54 @@ The source uses multiple terms used to denote missing data:
 -   Not tested
 
 We were unable to find detailed guidance about the difference between these categories.
-For convenience, we treat all these as NA, but there may be subtle differences.
+For convenience, we treat all these as missing (`NA`), but there may be subtle differences.
 
 For epiweeks 5 and 47 of the 2019-2020 season, the reports are empty, so data from these weeks are missing.
 
 ## Lag and Backfill
 
-Data is reported around \~5 days after the end of an epiweek. For June-August 2025, the dashboard containing the data was updated every two weeks, so the lag during that period was larger.
+Data is reported about 5 days after the end of an epiweek. For June-August 2025, the dashboard containing the data was updated every two weeks, so the lag during that period was larger.
+
+### Data Versioning {#version}
+
+Epiweeks end on Saturday, and the data is usually updated the following Thursday or Friday.
+The dashboard where data is currently published states when it was last updated, so we use that date as the version date.
+
+The dashboard has only been used to publish data since June 2024.
+Prior to that, data was published weekly in blog post format.
+To make this older data more useful, we reconstructed the source's version history, deriving the version date from metadata included in the weekly report webpages.
+
+We defined the version date of a particular data issue to be the date the report webpage was last modified.
+Historically, page-last-modified dates were usually 5 days after the end of the epiweek data was being reported for ("reference date").
+Occasionally, page-last-modified dates were later than that -- sometimes much later, up to a year after the reference date.
+
+Our understanding is that data in weekly reports were not modified after being published. Thus, we expect page-last-modified dates falling more than about a week after the reference date to indicate changes in the text on the page rather than changes to the data.
+With that in mind, if the page-last-modified date was _more_ than 14 days after the reference date, we set the version date to be 5 days after the end of epiweek being reported. This matches the more common behavior seen.
+
+### Revisions
 
 The data experiences backfill as counts are finalized in subsequent weeks. The amount and impact of revisions depends on the virus.
 
-Across all indicators, most (99%) observations have less than 3 revisions. `hpiv1_*`,`hpiv2_*`,`hpiv3_*` and `hpiv4_*` indicators have revisions even more rarely.
+Across all indicators, most (99%) observations have less than 3 revisions. `hpiv1_*`,`hpiv2_*`,`hpiv3_*`, and `hpiv4_*` indicators have revisions even more rarely.
 
-Across all indicators, the top 10% of observations (unique location-date pairs) with the largest relative spread have had values revised by 25-33% or more. However, 90% of observations with revisions are revised to within 20% of their final value (and stay within that 20% range) 1-3 weeks after the date an observation is being reported for. And 95% of observations with revisions are finalized within 3-4 weeks. So revisions that greatly impact a reported value happen soon after an observation is first reported.
+Across all indicators, the top 10% of observations (unique location-date pairs) with the largest relative spread have had values revised by 25-33% or more. However, revisions that greatly impact a reported value happen soon after an observation is first reported.
+90% of observations with revisions are revised to within 20% of their final value (and stay within that 20% range) 1-3 weeks after the date an observation is being reported for.
+And 95% of observations with revisions are finalized within 3-4 weeks.
 
 Looking at the revision speed of specific indicators, `sarscov2_*` and `flub_*` indicators are finalized fairly fast (95% finalized after 12 days). `fluah3_positive_tests` and `adv_*` indicators are finalized fairly slowly (95% finalized after 30-40 days).
 
-`flu_pct_positive`, `flua_pct_positive`, `fluah1n1pdm09_positive_tests` and related indicators have larger spread than other indicators. That is, \~70-90% of observations have more than 10% relative spread vs 20-30% in other indicators.
+`flu_pct_positive`, `flua_pct_positive`, `fluah1n1pdm09_positive_tests` and related indicators have larger spread than other indicators. That is, about 70-90% of observations have more than 10% relative spread vs 20-30% in other indicators.
+
+## Limitations
+
+This data reports the results of laboratory testing of respiratory viruses, which only represents a subset of people who may be sick. People with mild symptoms may be excluded, and there may be a delay between someone developing symptoms and getting a lab test.
+
+Data comes from labs across Canada, and some provinces only have one reporting lab, with no further information about, for example, location of individual labs, if any.
+Only Quebec and Ontario report detailed disaggregated (lab-level) data.
+Other provinces may have multiple labs, but don't report them separately.
+If labs or healthcare providers tend to be located in larger cities or cities in general, and it is easier for people in more densely populated areas to have lab tests done than those in rural locations, the data may overrepresent the urban population.
+
+Our reconstruction of version dates prior to June 2024 may be based on incorrect assumptions.
 
 ## Source and Licensing {#source-and-licensing}
 
