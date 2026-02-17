@@ -2,7 +2,7 @@
 parent: Data Sources and Signals
 grand_parent: Other Endpoints (COVID-19 and Other Diseases)
 title: Respiratory Virus Detections in Canada
-nav_order: 1
+nav_order: 4
 ---
 
 # Respiratory Virus Detections in Canada
@@ -13,11 +13,14 @@ nav_order: 1
 | :--- | :--- |
 | **Source Name** | `rvdss` |
 | **Data Source** | [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) from the Public Health Agency of Canada |
-| **Geographic Levels** | province, lab, region, nation (see [Geography](#geography)) |
-| **Temporal Granularity** | Weekly (Epiweek) (see [date format docs](../covidcast_times.md)) |
+| **Geographic Levels** | Nation, region, province, individual laboratories (see [Geographic Codes](geographic_codes.md#canada)) |
+| **Temporal Granularity** | Weekly (Epiweek) (see [date formats docs](date_formats.md)) |
 | **Reporting Cadence** | Weekly, typically the Thursday or Friday after the end of an epiweek |
 | **Temporal Scope Start** | Epiweek 36 2013 (2013-09-07) |
 | **License** | [Open Government Licence - Canada](#source-and-licensing) |
+
+## Overview
+{: .no_toc}
 
 This data source of respiratory virus detections in Canada is collected by the [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) and published by the Public Health Agency of Canada (PHAC). Laboratory tests for various respiratory illnesses are reported on a weekly basis by sentinel laboratories across Canada to the [Centre for Immunization and Respiratory Infectious Diseases (CIRID)](https://www.canada.ca/en/public-health/services/infectious-diseases/centre-immunization-respiratory-infectious-diseases-cirid.html), a subsidiary of PHAC. The data was originally reported in weekly online reports, but since June 2024, has changed to being reported through a dynamic dashboard.
 
@@ -89,56 +92,11 @@ These are the meta-data columns used to uniquely identify data rows/points.
 
 ## Geography {#geography}
 
-Unlike most other sources in the Delphi Epidata API, this data source reports data for Canada. This source is available for several geographic types, as follows. Specific regions can be requested using the `geo_value` parameter.
+This data source reports data for Canada at the `nation`, `region`, `province`, and `lab` levels. For a complete list of valid geographic codes for each type, see the [Canada section in Geographic Codes](geographic_codes.md#canada).
 
-### Geo type `province`
+## Estimation
 
-One of the 10 provinces or three territories, abbreviated using [standard 2-letter alpha codes](https://www.canada.ca/en/government/system/digital-government/digital-government-innovations/enabling-interoperability/gc-enterprise-data-reference-standards/data-reference-standard-canadian-provinces-territories.html).
-
--   `nl`: Newfoundland and Labrador
--   `pe`: Prince Edward Island
--   `ns`: Nova Scotia
--   `nb`: New Brunswick
--   `qc`: Quebec
--   `on`: Ontario
--   `mb`: Manitoba
--   `sk`: Saskatchewan
--   `ab`: Alberta
--   `bc`: British Columbia
--   `yt`: Yukon
--   `nt`: Northwest Territories
--   `nu`: Nunavut
-
-### Geo type `region`
-
-The provinces and territories are also reported aggregated into six geographic regions:
-
--   `atlantic`: Newfoundland and Labrador, Prince Edward Island, Nova Scotia, and New Brunswick
--   `prairies`: Manitoba, Saskatchewan, and Alberta
--   `territories`: Nunavut, Northwest Territories, and Yukon
--   `on`: Ontario
--   `qc`: Quebec
--   `bc`: British Columbia
-
-> **Note:** Ontario, Quebec, and British Columbia are single-province regions, so data for these provinces is the same whether using `geo_type = region` or `geo_type = province`.
-{: .note }
-
-### Geo type `nation`
-
-ISO 3166-1 alpha-2 [country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). The only nation we have data on is Canada, abbreviated to `ca`.
-
-### Geo type `lab`
-
-The laboratories reporting lab tests. Only Ontario, Quebec, and occasionally Saskatchewan report counts for individual lab facilities.
-
-> **Note:** Over time, some laboratory networks were expanded and the responsible laboratories were renamed:
->
-> -   Children's Hospital of Eastern Ontario (CHEO) -\> Eastern Ontario Regional Laboratory Association (EORLA)
-> -   Sunnybrook Women’s College Health Sciences Centre -\> Shared Hospital Laboratory
-> -   Toronto Medical Laboratory -\> University Health Network/Mount Sinai Hospital
-{: .note }
-
-## Calculation of Percent Positive Lab Tests
+### Calculation of Percent Positive Lab Tests
 
 For each respiratory virus, the number of total lab tests performed and number of positive lab tests are reported. For convenience, we calculate the percentage of positive tests for a given virus as:
 
