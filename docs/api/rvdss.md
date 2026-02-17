@@ -186,10 +186,79 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/rvdss/>
 | `as_of` | issue date of the data (see [Data Versioning](#version)). Mutually exclusive with `issues`. | epiweek |
 | `issues` | list of issue dates (see [Date Formats](date_formats.md)). Mutually exclusive with `as_of`. | `list` of epiweeks |
 
+### Response
+
+| Field | Description | Type |
+| --- | --- | --- |
+| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
+| `epidata` | list of results | array of objects |
+| `epidata[].geo_type` | geographical location type (`nation`, `region`, `province`, `lab`) | string |
+| `epidata[].geo_value` | geographical location identifier | string |
+| `epidata[].region` | region identifier | string |
+| `epidata[].time_type` | type of time value (`week`) | string |
+| `epidata[].epiweek` | epiweek for which data is reported (YYYYWW) | integer |
+| `epidata[].time_value` | date corresponding to the epiweek | string |
+| `epidata[].issue` | issue/version date of the data | integer |
+| `epidata[].week` | week number | integer |
+| `epidata[].weekorder` | week order | integer |
+| `epidata[].year` | year | integer |
+| `epidata[].*` | various signal fields (see [Signals](#signals)) | float |
+| `message` | `success` or error message | string |
+
+## Example URLs
+
+### RVDSS at the National Level for a range of epiweeks
+<https://api.delphi.cmu.edu/epidata/rvdss/?geo_type=nation&geo_values=ca&time_values=202301-202310>
+
+### RVDSS for a specific province and specific issue
+<https://api.delphi.cmu.edu/epidata/rvdss/?geo_type=province&geo_values=on&time_values=202340&as_of=202341>
+
+## Code Samples
+
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+```python
+from epidatpy import EpiDataContext
+
+epidata = EpiDataContext()
+res = epidata.pub_rvdss(
+    geo_type="nation",
+    geo_values="ca",
+    time_values="202301-202310"
+)
+print(res.df())
+```
+
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+
+res <- pub_rvdss(
+    geo_type = "nation",
+    geo_values = "ca",
+    time_values = "202301-202310"
+)
+print(res)
+```
+
+  </div>
+</div>
 
 ## Source and Licensing {#source-and-licensing}
 
 This source is derived from PHAC's Respiratory Virus Detection Data, originally reported in [weekly reports](https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada.html), and currently reported in a [dynamic dashboard](https://health-infobase.canada.ca/respiratory-virus-surveillance/?source=rvdss).
+
 The data is made available under the [Open Government Licence - Canada](https://open.canada.ca/en/open-government-licence-canada).
 
 ## Additional Resources
