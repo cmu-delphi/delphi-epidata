@@ -1,76 +1,5 @@
 from datetime import datetime
 
-# The dataset calls the same viruses, provinces, regions (province groups),
-# and country by multiple names. Map each of those to a common abbreviation.
-VIRUSES = {
-    "parainfluenza": "hpiv",
-    "piv": "hpiv",
-    "para": "hpiv",
-    "adenovirus": "adv",
-    "adeno": "adv",
-    "human metapneumovirus": "hmpv",
-    "enterovirus_rhinovirus": "evrv",
-    "rhinovirus": "evrv",
-    "rhv": "evrv",
-    "entero_rhino": "evrv",
-    "rhino":"evrv",
-    "ev_rv":"evrv",
-    "coronavirus":"hcov",
-    "coron":"hcov",
-    "coro":"hcov",
-    "respiratory syncytial virus":"rsv",
-    "influenza":"flu",
-    "sars-cov-2":"sarscov2",
-}
-
-GEOS = {
-    "newfoundland": "nl",
-    "newfoundland and labrador": "nl",
-    "prince edward island":"pe",
-    "nova scotia":"ns",
-    "new brunswick":"nb",
-    "québec":"qc",
-    "quebec":"qc",
-    "ontario":"on",
-    "manitoba" : "mb",
-    "saskatchewan":"sk",
-    "alberta": "ab",
-    "british columbia" :"bc",
-    "yukon" : "yt",
-    "northwest territories" : "nt",
-    "nunavut" : "nu",
-    "canada":"ca",
-    "can":"ca" ,
-    "at":"atlantic",
-    "atl":"atlantic",
-    "pr" :"prairies" ,
-    "terr" :"territories",
-    "uhn sinai hospital":"uhn mount sinai hospital",
-    "cheo hee0 ottawa": "cheo ottawa",
-    "phol hamilton": "hamilton phl",
-    "kingston":"kingston phl", 
-    "phol kingston":"kingston phl",
-    "phol london": "london phl",
-    "phol orillia":"orillia phl",
-    "phol ottawa":"ottawa phl",
-    "phol peterborough":"peterborough phl",
-    "sault ste marie": "sault ste marie phl", 
-    "phol sault ste marie": "sault ste marie phl",
-    "st josephs healthcare hamilton":"st josephs hamilton",
-    "phol sudbury":"sudbury phl",
-    "thunder bay":"thunder bay phl",
-    "phol thunder bay":"thunder bay phl",
-    "timmins":"timmins phl",
-    "phol timmins":"timmins phl",
-    "phol toronto": "cphl toronto"
- }
-
-# Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
-REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province of ontario','ontario','on',
-            'prairies', 'pr', "british columbia",'bc',"territories",'terr']
-NATION = ["canada","can",'ca']
-
-PROVINCES = ['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu']
 
 # Construct dashboard and data report URLS.
 DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
@@ -133,3 +62,76 @@ FIRST_WEEK_OF_YEAR = 35
 
 UPDATE_DATES_FILE = "update_dates.txt"
 NOW = datetime.now()
+
+
+# The dataset calls the same viruses, provinces, regions (province groups),
+# and country by multiple names. Map each of those to a common abbreviation.
+VIRUSES = {
+    "parainfluenza": "hpiv",
+    "piv": "hpiv",
+    "para": "hpiv",
+    "adenovirus": "adv",
+    "adeno": "adv",
+    "human metapneumovirus": "hmpv",
+    "enterovirus_rhinovirus": "evrv",
+    "rhinovirus": "evrv",
+    "rhv": "evrv",
+    "entero_rhino": "evrv",
+    "rhino":"evrv",
+    "ev_rv":"evrv",
+    "coronavirus":"hcov",
+    "coron":"hcov",
+    "coro":"hcov",
+    "respiratory syncytial virus":"rsv",
+    "influenza":"flu",
+    "sars-cov-2":"sarscov2",
+}
+
+GEOS = {
+    "newfoundland": "nl",
+    "newfoundland and labrador": "nl",
+    "prince edward island":"pe",
+    "nova scotia":"ns",
+    "new brunswick":"nb",
+    "québec":"qc",
+    "quebec":"qc",
+    "ontario":"on",
+    "manitoba" : "mb",
+    "saskatchewan":"sk",
+    "alberta": "ab",
+    "british columbia" :"bc",
+    "yukon" : "yt",
+    "northwest territories" : "nt",
+    "nunavut" : "nu",
+    "canada":"ca",
+    "can":"ca" ,
+    "at":"atlantic",
+    "atl":"atlantic",
+    "pr" :"prairies" ,
+    "terr" :"territories",
+    "uhn sinai hospital":"uhn mount sinai hospital",
+    "cheo hee0 ottawa": "cheo ottawa",
+    "phol hamilton": "hamilton phl",
+    "kingston":"kingston phl",
+    "phol kingston":"kingston phl",
+    "phol london": "london phl",
+    "phol orillia":"orillia phl",
+    "phol ottawa":"ottawa phl",
+    "phol peterborough":"peterborough phl",
+    "sault ste marie": "sault ste marie phl",
+    "phol sault ste marie": "sault ste marie phl",
+    "st josephs healthcare hamilton":"st josephs hamilton",
+    "phol sudbury":"sudbury phl",
+    "thunder bay":"thunder bay phl",
+    "phol thunder bay":"thunder bay phl",
+    "timmins":"timmins phl",
+    "phol timmins":"timmins phl",
+    "phol toronto": "cphl toronto"
+ }
+
+# Regions are groups of provinces that are geographically close together. Some single provinces are reported as their own region (e.g. Québec, Ontario).
+REGIONS = ['atlantic','atl','at','province of québec','québec','qc','province of ontario','ontario','on',
+            'prairies', 'pr', "british columbia",'bc',"territories",'terr']
+NATION = ["canada","can",'ca']
+
+PROVINCES = ['nl','pe','ns','nb','qc','on','mb','sk','ab','bc','yt','nt','nu']
