@@ -13,7 +13,7 @@ well-being. This may help improve our local and national responses to the
 pandemic and our understanding of how it has affected society.
 
 [High-level aggregates](../api/covidcast.md) of select survey items are
-publicly available in the [COVIDcast API](../api/covidcast-signals/fb-survey.md).
+publicly available in the [COVIDcast API](../api/covidcast-signals/covid-trends-and-impact-survey.md).
 [Finer aggregates](./contingency-tables.md) grouped by various demographic
 characteristics are available for download.
 

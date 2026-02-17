@@ -83,6 +83,7 @@ class DataSignal:
     link: List[WebLink] = field(default_factory=list)
     compute_from_base: bool = False
     time_type: TimeType = TimeType.day
+    typical_reporting_lag: str = ""
 
     def __post_init__(self):
         self.link = _fix_links(self.link)
@@ -118,6 +119,8 @@ class DataSignal:
             self.value_label = base.category if base else SignalCategory.other
         if not self.high_values_are:
             self.high_values_are = base.high_values_are if base else HighValuesAre.neutral
+        if not self.typical_reporting_lag:
+            self.typical_reporting_lag = base.typical_reporting_lag if base else ""
 
         self._replace_placeholders(base, source)
 

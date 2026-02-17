@@ -40,7 +40,7 @@ If you have questions about the survey or getting access to data, contact us at
 The [survey results dashboard](https://delphi.cmu.edu/covidcast/survey-results/)
 provides a high-level summary of survey results. Geographically aggregated data
 from this survey is publicly available through the [COVIDcast API](../api/covidcast.md)
-as the [`fb-survey` data source](../api/covidcast-signals/fb-survey.md). Demographic breakdowns of survey
+as the [`fb-survey` data source](../api/covidcast-signals/covid-trends-and-impact-survey.md). Demographic breakdowns of survey
 data are publicly available as [downloadable contingency tables](contingency-tables.md).
 
 CTIS data has been used in [numerous peer-reviewed publications](publications.md).
