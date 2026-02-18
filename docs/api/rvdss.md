@@ -26,7 +26,7 @@ This data source of respiratory virus detections in Canada is collected by the [
 
 > **Note:** Human coronovirus (HCoV) refers to seasonal coronovirus, which differs from SARS-CoV-2, the novel pandemic coronovirus that causes COVID-19. SARS-CoV-2 (COVID-19) was not reported until the start of the 2022-2023 season.
 {: .note }
-                                                                              
+
 ## Table of contents
 {: .no_toc .text-delta}
 
@@ -75,7 +75,6 @@ This data source of respiratory virus detections in Canada is collected by the [
 | `hcov_tests`                   | Number of human coronavirus (HCoV) laboratory tests. <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
 | `hcov_positive_tests`          | Number of positive HCoV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                   |
 | `hcov_pct_positive`            | Percentage of HCoV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                      |
-| `year`                         | Year of reference date (`epiweek`) <br/> **Earliest Date Available:** 2023-09-02  
 
 ## Geography {#geography}
 
@@ -107,10 +106,10 @@ These values are not rounded, so some are not integers.
 
 The source uses multiple terms used to denote missing data:
 
--   NC : Not collected
--   NR : Data not reported for current week
--   NA : Not available
--   Not tested
+- `NC` : Not collected
+- `NR` : Data not reported for current week
+- `NA` : Not available
+- Not tested
 
 We were unable to find detailed guidance about the difference between these categories.
 For convenience, we treat all these as missing (`NA`), but there may be subtle differences.
@@ -196,9 +195,9 @@ The base URL is: <https://api.delphi.cmu.edu/epidata/rvdss/>
 | `epidata[].region` | region identifier | string |
 | `epidata[].time_type` | type of time value (`week`) | string |
 | `epidata[].epiweek` | epiweek for which data is reported (YYYYWW) | integer |
-| `epidata[].time_value` | date corresponding to the epiweek | integer |
+| `epidata[].time_value` | date corresponding to the last day (Saturday) of the epiweek | integer |
 | `epidata[].issue` | issue/version date of the data | integer |
-| `epidata[].year` | year | integer |
+| `epidata[].year` | year for which data is reported (YYYY) | integer |
 | `epidata[].*` | various signal fields (see [Signals](#signals)) | float |
 | `message` | `success` or error message | string |
 
@@ -260,4 +259,4 @@ The data is made available under the [Open Government Licence - Canada](https://
 
 ## Additional Resources
 
-For a more detailed overview of respiratory surveillance in Canada, see this [page](https://www.canada.ca/en/public-health/services/diseases/flu-influenza/influenza-surveillance/about-fluwatch.html).
+PHAC provides a more [detailed overview of respiratory surveillance in Canada](https://www.canada.ca/en/public-health/services/diseases/flu-influenza/influenza-surveillance/about-fluwatch.html).
