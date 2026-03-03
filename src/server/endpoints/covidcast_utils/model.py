@@ -167,6 +167,7 @@ class DataSource:
     license: Optional[str] = None
     link: List[WebLink] = field(default_factory=list)
     dua: Optional[str] = None
+    original_data_provider: Optional[str] = None
 
     signals: List[DataSignal] = field(default_factory=list)
 
