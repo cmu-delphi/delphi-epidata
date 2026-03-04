@@ -138,11 +138,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pub_paho_dengue(regions=['ca'], epiweeks=[201501])
-print(res)
+print(res.df())
 ```
   </div>
 

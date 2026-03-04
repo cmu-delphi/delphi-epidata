@@ -36,6 +36,9 @@ No changes so far.
 [The National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) is the nation’s most widely used healthcare-associated infection tracking system.
 This dataset reports preliminary and finalized weekly hospital respiratory data and metrics aggregated to national and state/territory levels reported to the CDC’s National Health Safety Network (NHSN). Values are available for reference dates beginning August 2020.
 
+> **Note:** This data source is the continuation of the [HHS Hospitalizations](hhs.md) data source. In late 2023, the administration of this dataset moved from HHS Protect to the National Healthcare Safety Network (NHSN).
+{: .note }
+
 Each signal below is derived from one of the two following datasets:
 
 - Main: [Weekly Hospital Respiratory Data (HRD) Metrics by Jurisdiction, National Healthcare Safety Network (NHSN)](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data)

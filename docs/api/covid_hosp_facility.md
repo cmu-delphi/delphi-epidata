@@ -23,6 +23,9 @@ title: COVID-19 Reported Patient Impact and Hospital Capacity by Facility
 
 This dataset provides facility-level daily surveys of hospital COVID-19 capacity and patient impact. Data is acquired from HealthData.gov. It is a mirror of the "COVID-19 Reported Patient Impact and Hospital Capacity by Facility" dataset provided by HHS via healthdata.gov.
 
+> **Note:** Administration of this dataset has moved to the National Healthcare Safety Network (NHSN). See [NHSN Respiratory Hospitalizations](covidcast-signals/nhsn.md) for the current data source.
+{: .note }
+
 HHS performs up to four days of forward-fill for missing values.
 
 Starting October 1, 2022, some facilities are only required to report annually.
@@ -227,11 +230,11 @@ pip install -e "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ```python
 # Import
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 # Fetch data
 epidata = EpiDataContext()
 res = epidata.pub_covid_hosp_facility(hospital_pks="390119", collection_weeks=EpiRange(20201201, 20201207))
-print(res)
+print(res.df())
 ```
   </div>
 
