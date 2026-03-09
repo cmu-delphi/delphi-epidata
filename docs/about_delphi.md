@@ -10,6 +10,6 @@ The Delphi Group's mission is to develop the theory and practice of epidemic det
 
 Our vision is to make this technology as useful as weather forecasting is today. 
 
-Find out more about the Delphi Research Group on our <a href="https://delphi.cmu.edu" target="_blank">offical webpage</a>.
+Find out more about the Delphi Group on our <a href="https://delphi.cmu.edu" target="_blank">offical webpage</a>.
 Please read our <a href="https://delphi.cmu.edu/blog" target="_blank">blog</a> for additional news, findings, and musings from the team.
 
