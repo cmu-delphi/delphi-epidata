@@ -8,7 +8,7 @@ import redis
 from src.server.admin.models import default_date_now
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 LAST_USED_KEY_PATTERN = "*LAST_USED*"
 
 

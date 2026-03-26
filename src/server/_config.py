@@ -91,7 +91,7 @@ ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
 REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 
 # mode to reduce number of required requests to hit rate limit while running tests,
 # by default is set to False
