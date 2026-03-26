@@ -22,17 +22,21 @@ association_table = Table(
     Column("role_id", ForeignKey("user_role.id")),
 )
 
-def _default_date_now():
+
+def default_date_now():
     return dtime.strftime(dtime.now(), "%Y-%m-%d")
+
 
 class User(Base):
     __tablename__ = "api_user"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    roles = relationship("UserRole", secondary=association_table, lazy="joined") # last arg does an eager load of this property from foreign tables
+    roles = relationship(
+        "UserRole", secondary=association_table, lazy="joined"
+    )  # last arg does an eager load of this property from foreign tables
     api_key = Column(String(50), unique=True, nullable=False)
     email = Column(String(320), unique=True, nullable=False)
-    created = Column(Date, default=_default_date_now)
-    last_time_used = Column(Date, default=_default_date_now)
+    created = Column(Date, default=default_date_now)
+    last_time_used = Column(Date, default=default_date_now)
 
     def __init__(self, api_key: str, email: str = None) -> None:
         self.api_key = api_key
@@ -46,7 +50,7 @@ class User(Base):
             "email": self.email,
             "roles": set(role.name for role in self.roles),
             "created": self.created,
-            "last_time_used": self.last_time_used
+            "last_time_used": self.last_time_used,
         }
 
     def has_role(self, required_role: str) -> bool:
@@ -54,13 +58,17 @@ class User(Base):
 
     @staticmethod
     def _assign_roles(user: "User", roles: Optional[Set[str]], session) -> None:
-        get_structured_logger("api_user_models").info("setting roles", roles=roles, user_id=user.id, api_key=user.api_key)
+        get_structured_logger("api_user_models").info(
+            "setting roles", roles=roles, user_id=user.id, api_key=user.api_key
+        )
         db_user = session.query(User).filter(User.id == user.id).first()
         # TODO: would it be sufficient to use the passed-in `user` instead of looking up this `db_user`?
         #       or even use this as a bound method instead of a static??
         #       same goes for `update_user()` and `delete_user()` below...
         if roles:
-            db_user.roles = session.query(UserRole).filter(UserRole.name.in_(roles)).all()
+            db_user.roles = (
+                session.query(UserRole).filter(UserRole.name.in_(roles)).all()
+            )
         else:
             db_user.roles = []
         session.commit()
@@ -88,7 +96,9 @@ class User(Base):
         new_user = User(api_key=api_key, email=email)
         session.add(new_user)
         session.commit()
-        redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD).set(f"LAST_USED/{api_key}", "1970-01-01")
+        redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD).set(
+            f"LAST_USED/{api_key}", default_date_now()
+        )
         return User._assign_roles(new_user, user_roles, session)
 
     @staticmethod
