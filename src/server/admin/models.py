@@ -126,8 +126,11 @@ class User(Base):
     @default_session(WriteSession)
     def delete_user(user_id: int, session) -> None:
         get_structured_logger("api_user_models").info("deleting user", user_id=user_id)
+        user = session.query(User).filter(User.id == user_id).first()
         session.execute(delete(User).where(User.id == user_id))
         session.commit()
+        if user:
+            redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD).delete(f"LAST_USED/{user.api_key}")
 
 
 class UserRole(Base):
