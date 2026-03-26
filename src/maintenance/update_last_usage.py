@@ -11,15 +11,21 @@ LAST_USED_KEY_PATTERN = "*LAST_USED*"
 
 
 def main():
-    redis_cli = redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD, decode_responses=True)
+    redis_cli = redis.Redis(
+        host=REDIS_HOST, password=REDIS_PASSWORD, decode_responses=True
+    )
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(database="epidata", user=u, password=p, host=secrets.db.host)
+    cnx = mysql.connector.connect(
+        database="epidata", user=u, password=p, host=secrets.db.host
+    )
     cur = cnx.cursor()
 
     redis_keys = redis_cli.keys(pattern=LAST_USED_KEY_PATTERN)
-    today_date = dtime.today().date()
     for key in redis_keys:
-        api_key, last_time_used = str(key).split("/")[1], dtime.strptime(str(redis_cli.get(key)), "%Y-%m-%d").date()
+        api_key, last_time_used = (
+            str(key).split("/")[1],
+            dtime.strptime(str(redis_cli.get(key)), "%Y-%m-%d").date(),
+        )
         cur.execute(
             f"""
             UPDATE
@@ -28,7 +34,18 @@ def main():
             WHERE api_key = "{api_key}" AND (last_time_used < "{last_time_used}" OR last_time_used IS NULL)
         """
         )
-        redis_cli.delete(key)
+    # migrate any keys not already in redis over
+    redis_key_set = {str(key).split("/")[1] for key in redis_keys}
+    cur.execute("SELECT api_key, last_time_used FROM api_user")
+    for api_key, last_time_used in cur.fetchall():
+        if api_key not in redis_key_set:
+            date_str = (
+                dtime.strftime(last_time_used, "%Y-%m-%d")
+                if last_time_used
+                else "1970-01-01"
+            )
+            redis_cli.set(f"LAST_USED/{api_key}", date_str)
+
     cur.close()
     cnx.commit()
     cnx.close()

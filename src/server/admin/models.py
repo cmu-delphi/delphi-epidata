@@ -3,7 +3,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from copy import deepcopy
 
+import redis
+
 from .._db import Session, WriteSession, default_session
+from .._config import REDIS_HOST, REDIS_PASSWORD
 from delphi_utils import get_structured_logger
 
 from typing import Set, Optional, List
@@ -85,6 +88,7 @@ class User(Base):
         new_user = User(api_key=api_key, email=email)
         session.add(new_user)
         session.commit()
+        redis.Redis(host=REDIS_HOST, password=REDIS_PASSWORD).set(f"LAST_USED/{api_key}", "1970-01-01")
         return User._assign_roles(new_user, user_roles, session)
 
     @staticmethod
