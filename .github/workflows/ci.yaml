@@ -84,7 +84,7 @@ jobs:
 
       - name: Run Integration Tests
         run: |
-          docker run --rm --network delphi-net delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
+          docker run --rm --network delphi-net --env "REDIS_HOST=delphi_redis" --env "REDIS_PASSWORD=1234" delphi_web_python python -m pytest --import-mode importlib repos/delphi/delphi-epidata/integrations
 
       - name: Clean Up
         run: |
