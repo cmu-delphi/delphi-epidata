@@ -86,7 +86,7 @@ REGION_TO_STATE = {
 NATION_REGION = "nat"
 
 # password needed for the admin application if not set the admin routes won't be available
-ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
+ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD")
 # secret for the google form to give to the admin/register endpoint
 REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
 
