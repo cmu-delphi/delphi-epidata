@@ -71,7 +71,7 @@ jobs:
           base: main
           title: Release Delphi Epidata ${{ steps.version.outputs.next_tag }}
           labels: chore
-          reviewers: melange396
-          assignees: melange396
+          reviewers: nolangormley
+          assignees: nolangormley
           body: |
             Releasing Delphi Epidata ${{ steps.version.outputs.next_tag }}.
