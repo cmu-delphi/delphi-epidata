@@ -171,7 +171,7 @@ jobs:
           base: dev
           title: "chore: sync main->dev"
           labels: chore
-          reviewers: melange396
-          assignees: melange396
+          reviewers: nolangormley
+          assignees: nolangormley
           body: |
             Syncing Main->Dev.
