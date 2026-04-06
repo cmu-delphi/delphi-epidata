@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "4.1.41"
+VERSION = "4.1.42"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
@@ -86,12 +86,12 @@ REGION_TO_STATE = {
 NATION_REGION = "nat"
 
 # password needed for the admin application if not set the admin routes won't be available
-ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD", "abc")
+ADMIN_PASSWORD = os.environ.get("API_KEY_ADMIN_PASSWORD")
 # secret for the google form to give to the admin/register endpoint
 REGISTER_WEBHOOK_TOKEN = os.environ.get("API_KEY_REGISTER_WEBHOOK_TOKEN")
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
-REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", "1234")
+REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 
 # mode to reduce number of required requests to hit rate limit while running tests,
 # by default is set to False
