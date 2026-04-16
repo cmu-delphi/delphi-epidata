@@ -5,8 +5,6 @@ import delphi.operations.secrets as secrets
 import mysql.connector
 import redis
 
-from src.server.admin.models import default_date_now
-
 REDIS_HOST = os.environ.get("REDIS_HOST", "delphi_redis")
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 LAST_USED_KEY_PATTERN = "*LAST_USED*"
@@ -44,7 +42,7 @@ def main():
             date_str = (
                 dtime.strftime(last_time_used, "%Y-%m-%d")
                 if last_time_used
-                else default_date_now()
+                else dtime.strftime(dtime.now(), "%Y-%m-%d")
             )
             redis_cli.set(f"LAST_USED/{api_key}", date_str)
 
