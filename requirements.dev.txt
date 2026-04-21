@@ -6,7 +6,7 @@ docker==6.0.1
 dropbox==11.36.0
 freezegun==1.2.2
 invoke>=1.4.1
-lxml==4.9.1
+lxml==6.1.0
 matplotlib==3.6.2
 mypy>=0.790
 mysql-connector==2.2.9
