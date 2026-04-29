@@ -25,7 +25,7 @@ def update_current_data(logger):
     already_updated = check_most_recent_update_date(update_date,UPDATE_DATES_FILE)
 
     if not already_updated:
-        with open(UPDATE_DATES_FILE, 'a') as testfile:
+        with open(UPDATE_DATES_FILE, 'a+') as testfile:
             testfile.write(update_date+ "\n")
 
         data = fetch_current_dashboard_data(DASHBOARD_BASE_URL)
@@ -113,7 +113,7 @@ def patch_seasons(season_start_years,logger):
             
             #update database
             update(data,logger)
-        logger.info("Finished patching in {season[0]}-{season[1]} season")
+        logger.info(f"Finished patching in {start}-{end} season")
     logger.info("Finished Patching in Seasons")
 
 def main():
