@@ -11,7 +11,7 @@ import numpy as np
 
 from delphi.epidata.acquisition.rvdss.constants import (
         VIRUSES, GEOS, REGIONS, NATION,PROVINCES,
-        DASHBOARD_DATA_FILE
+        DASHBOARD_DATA_FILE, DASHBOARD_UPDATE_DATE_FILE
     )
 
  #%% Functions
@@ -82,7 +82,7 @@ def convert_date_to_int(date_string):
 
 def get_dashboard_update_date(base_url,headers):
     # Get update date
-    update_date_url =  base_url + "RVD_UpdateDate.csv"
+    update_date_url =  base_url + DASHBOARD_UPDATE_DATE_FILE
     update_date_url_response = requests.get(update_date_url, headers=headers)
     
     pattern1= re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}")
