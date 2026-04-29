@@ -406,11 +406,7 @@ def fetch_archived_dashboard_data(url):
         # "count": None, # Dashboards don't contain this data.
     }
 
-def fetch_current_dashboard_data(url):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
-    }
-
+def fetch_current_dashboard_data(url,headers):
     update_date = get_dashboard_update_date(url, headers)
     detections_data = get_detections_data(url,headers,update_date)
     return(detections_data)

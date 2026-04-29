@@ -28,7 +28,7 @@ def update_current_data(logger):
         with open(UPDATE_DATES_FILE, 'a+') as testfile:
             testfile.write(update_date+ "\n")
 
-        data = fetch_current_dashboard_data(DASHBOARD_BASE_URL)
+        data = fetch_current_dashboard_data(DASHBOARD_BASE_URL,headers)
         
         # current dashboard only needs one table
         new_data = expand_detections_columns(data)

@@ -489,6 +489,7 @@ class TestUtils:
     @mock.patch("requests.get")    
     def test_fetch_current_dashboard_data(self,mock_requests):
         url = "testurl.ca"
+        headers={}
         
         s = requests.Session()
         s.mount('file://', FileAdapter())
@@ -505,7 +506,7 @@ class TestUtils:
         detections_resp = s.get('file://'+ str(TEST_DIR) + "/testdata/acquisition/rvdss/RVD_CurrentWeekTable.csv") 
         
         mock_requests.side_effect=update_date_resp, detections_resp
-        dat_mocked = fetch_current_dashboard_data(url)
+        dat_mocked = fetch_current_dashboard_data(url,headers)
 
         assert dat_mocked.equals(expected_detection_data)
         
