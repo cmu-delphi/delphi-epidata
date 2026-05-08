@@ -5,7 +5,7 @@ from datetime import datetime
 DASHBOARD_BASE_URL = "https://health-infobase.canada.ca/src/data/respiratory-virus-detections/"
 DASHBOARD_W_DATE_URL = DASHBOARD_BASE_URL + "archive/{date}/"
 
-# May not need this since we write a function for this in pull_historic
+# Archived Dashboard Dates
 DASHBOARD_BASE_URLS_2023_2024_SEASON = [
     DASHBOARD_W_DATE_URL.format(date = date) for date in
     (
@@ -37,8 +37,6 @@ DASHBOARD_ARCHIVED_DATES_URL= "https://health-infobase.canada.ca/src/js/respirat
 # data (for dates on or before June 8, 2024) only.
 HISTORIC_SEASON_URLS = (HISTORIC_SEASON_REPORTS_URL.format(year_range = year_range) for year_range in
     (
-        "2013-2014",
-        "2014-2015",
         "2015-2016",
         "2016-2017",
         "2017-2018",
