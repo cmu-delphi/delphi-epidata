@@ -94,7 +94,6 @@ def check_most_recent_update_date(date,date_file):
     with open(date_file,"a+") as file:
         current_date = date
         contents = file.read()
-        print(contents)
 
     already_updated = current_date in contents
     return(already_updated)
