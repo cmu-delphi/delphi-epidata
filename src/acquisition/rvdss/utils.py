@@ -60,18 +60,13 @@ def create_geo_types(geo,default_geo):
     return(geo_type)
 
 def check_date_format(date_string):
-    if not re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}",date_string):
-        if re.search(r"/",date_string):
-            new_date = re.sub(r"/","-",date_string)
-            new_date = datetime.strptime(new_date,"%d-%m-%Y").strftime("%Y-%m-%d")
-        elif re.search("[0-9]{2}-[0-9]{2}-[0-9]{4}",date_string):
-            new_date = datetime.strptime(date_string,"%d-%m-%Y").strftime("%Y-%m-%d")
-        else:
-            raise AssertionError("Unrecognised date format")
-    else:
-        new_date=date_string
+    for fmt in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y'):
+        try:
+            return datetime.strptime(date_string, fmt).strftime('%Y-%m-%d')
+        except ValueError:
+            pass
+    raise ValueError('Unrecognised date format')
 
-    return(new_date)
 
 def convert_date_to_int(date_string):
     if re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}",str(date_string)):

@@ -349,7 +349,7 @@ class TestUtils:
         assert check_date_format("2015-09-05") == "2015-09-05"
         assert check_date_format("01/10/2020") == "2020-10-01" # change d/m/Y to Y-m-d
         assert check_date_format("02-11-2013") == "2013-11-02" # change d-m-Y to Y-m-d
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             check_date_format("02-2005-10") # Invalid date format raises error
     
     @mock.patch("requests.get")
