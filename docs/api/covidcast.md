@@ -1,7 +1,7 @@
 ---
 title: Main Endpoint (COVIDcast)
 has_children: true
-nav_order: 2
+nav_order: 3
 ---
 
 # Main Epidata API
