@@ -1,0 +1,2001 @@
+region,province,week,weekorder,year,date,virus,tests,detections,percentpositive
+Prairies,Alberta,35,1,2024,2024-08-31,SARS-CoV-2,3141,320,10.2
+Prairies,Alberta,36,2,2024,2024-09-07,SARS-CoV-2,3290,393,11.9
+Prairies,Alberta,37,3,2024,2024-09-14,SARS-CoV-2,3571,415,11.6
+Prairies,Alberta,38,4,2024,2024-09-21,SARS-CoV-2,4070,497,12.2
+Prairies,Alberta,39,5,2024,2024-09-28,SARS-CoV-2,5249,632,12.0
+Prairies,Alberta,40,6,2024,2024-10-05,SARS-CoV-2,5212,634,12.2
+Prairies,Alberta,41,7,2024,2024-10-12,SARS-CoV-2,5535,812,14.7
+Prairies,Alberta,42,8,2024,2024-10-19,SARS-CoV-2,5606,770,13.7
+Prairies,Alberta,43,9,2024,2024-10-26,SARS-CoV-2,5854,730,12.5
+Prairies,Alberta,44,10,2024,2024-11-02,SARS-CoV-2,6108,706,11.6
+Prairies,Alberta,45,11,2024,2024-11-09,SARS-CoV-2,6069,699,11.5
+Prairies,Alberta,46,12,2024,2024-11-16,SARS-CoV-2,6166,684,11.1
+Prairies,Alberta,47,13,2024,2024-11-23,SARS-CoV-2,5930,680,11.5
+Prairies,Alberta,48,14,2024,2024-11-30,SARS-CoV-2,6049,595,9.8
+Prairies,Alberta,49,15,2024,2024-12-07,SARS-CoV-2,6240,573,9.2
+Prairies,Alberta,50,16,2024,2024-12-14,SARS-CoV-2,6410,565,8.8
+Prairies,Alberta,51,17,2024,2024-12-21,SARS-CoV-2,6811,586,8.6
+Prairies,Alberta,52,18,2024,2024-12-28,SARS-CoV-2,6974,464,6.7
+Prairies,Alberta,1,19,2025,2025-01-04,SARS-CoV-2,7390,460,6.2
+Prairies,Alberta,2,20,2025,2025-01-11,SARS-CoV-2,7066,361,5.1
+Prairies,Alberta,3,21,2025,2025-01-18,SARS-CoV-2,6479,325,5.0
+Prairies,Alberta,4,22,2025,2025-01-25,SARS-CoV-2,6035,201,3.3
+Prairies,Alberta,5,23,2025,2025-02-01,SARS-CoV-2,5931,138,2.3
+Prairies,Alberta,6,24,2025,2025-02-08,SARS-CoV-2,5795,115,2.0
+Prairies,Alberta,7,25,2025,2025-02-15,SARS-CoV-2,5706,101,1.8
+Atlantic,Atlantic,35,1,2024,2024-08-31,SARS-CoV-2,2933,518,17.7
+Atlantic,Atlantic,36,2,2024,2024-09-07,SARS-CoV-2,2903,503,17.3
+Atlantic,Atlantic,37,3,2024,2024-09-14,SARS-CoV-2,3185,542,17.0
+Atlantic,Atlantic,38,4,2024,2024-09-21,SARS-CoV-2,3522,599,17.0
+Atlantic,Atlantic,39,5,2024,2024-09-28,SARS-CoV-2,3858,629,16.3
+Atlantic,Atlantic,40,6,2024,2024-10-05,SARS-CoV-2,3825,580,15.2
+Atlantic,Atlantic,41,7,2024,2024-10-12,SARS-CoV-2,3644,469,12.9
+Atlantic,Atlantic,42,8,2024,2024-10-19,SARS-CoV-2,3619,416,11.5
+Atlantic,Atlantic,43,9,2024,2024-10-26,SARS-CoV-2,3781,444,11.7
+Atlantic,Atlantic,44,10,2024,2024-11-02,SARS-CoV-2,3348,350,10.5
+Atlantic,Atlantic,45,11,2024,2024-11-09,SARS-CoV-2,3580,344,9.6
+Atlantic,Atlantic,46,12,2024,2024-11-16,SARS-CoV-2,3280,281,8.6
+Atlantic,Atlantic,47,13,2024,2024-11-23,SARS-CoV-2,3389,228,6.7
+Atlantic,Atlantic,48,14,2024,2024-11-30,SARS-CoV-2,3263,197,6.0
+Atlantic,Atlantic,49,15,2024,2024-12-07,SARS-CoV-2,3125,201,6.4
+Atlantic,Atlantic,50,16,2024,2024-12-14,SARS-CoV-2,3437,222,6.5
+Atlantic,Atlantic,51,17,2024,2024-12-21,SARS-CoV-2,3681,299,8.1
+Atlantic,Atlantic,52,18,2024,2024-12-28,SARS-CoV-2,3379,240,7.1
+Atlantic,Atlantic,1,19,2025,2025-01-04,SARS-CoV-2,4367,284,6.5
+Atlantic,Atlantic,2,20,2025,2025-01-11,SARS-CoV-2,4376,291,6.6
+Atlantic,Atlantic,3,21,2025,2025-01-18,SARS-CoV-2,3771,243,6.4
+Atlantic,Atlantic,4,22,2025,2025-01-25,SARS-CoV-2,3894,195,5.0
+Atlantic,Atlantic,5,23,2025,2025-02-01,SARS-CoV-2,3899,203,5.2
+Atlantic,Atlantic,6,24,2025,2025-02-08,SARS-CoV-2,4188,193,4.6
+Atlantic,Atlantic,7,25,2025,2025-02-15,SARS-CoV-2,4352,190,4.4
+British Columbia,British Columbia,35,1,2024,2024-08-31,SARS-CoV-2,2571,484,18.8
+British Columbia,British Columbia,36,2,2024,2024-09-07,SARS-CoV-2,2807,535,19.1
+British Columbia,British Columbia,37,3,2024,2024-09-14,SARS-CoV-2,2919,551,18.9
+British Columbia,British Columbia,38,4,2024,2024-09-21,SARS-CoV-2,3075,531,17.3
+British Columbia,British Columbia,39,5,2024,2024-09-28,SARS-CoV-2,3446,637,18.5
+British Columbia,British Columbia,40,6,2024,2024-10-05,SARS-CoV-2,3588,630,17.6
+British Columbia,British Columbia,41,7,2024,2024-10-12,SARS-CoV-2,3613,641,17.7
+British Columbia,British Columbia,42,8,2024,2024-10-19,SARS-CoV-2,3828,615,16.1
+British Columbia,British Columbia,43,9,2024,2024-10-26,SARS-CoV-2,3485,458,13.1
+British Columbia,British Columbia,44,10,2024,2024-11-02,SARS-CoV-2,3567,453,12.7
+British Columbia,British Columbia,45,11,2024,2024-11-09,SARS-CoV-2,3471,303,8.7
+British Columbia,British Columbia,46,12,2024,2024-11-16,SARS-CoV-2,3670,273,7.4
+British Columbia,British Columbia,47,13,2024,2024-11-23,SARS-CoV-2,3428,206,6.0
+British Columbia,British Columbia,48,14,2024,2024-11-30,SARS-CoV-2,3413,160,4.7
+British Columbia,British Columbia,49,15,2024,2024-12-07,SARS-CoV-2,3621,151,4.2
+British Columbia,British Columbia,50,16,2024,2024-12-14,SARS-CoV-2,4020,230,5.7
+British Columbia,British Columbia,51,17,2024,2024-12-21,SARS-CoV-2,4392,237,5.4
+British Columbia,British Columbia,52,18,2024,2024-12-28,SARS-CoV-2,4238,217,5.1
+British Columbia,British Columbia,1,19,2025,2025-01-04,SARS-CoV-2,4718,225,4.8
+British Columbia,British Columbia,2,20,2025,2025-01-11,SARS-CoV-2,4983,222,4.5
+British Columbia,British Columbia,3,21,2025,2025-01-18,SARS-CoV-2,4893,178,3.6
+British Columbia,British Columbia,4,22,2025,2025-01-25,SARS-CoV-2,4699,116,2.5
+British Columbia,British Columbia,5,23,2025,2025-02-01,SARS-CoV-2,5318,124,2.3
+British Columbia,British Columbia,6,24,2025,2025-02-08,SARS-CoV-2,5663,142,2.5
+British Columbia,British Columbia,7,25,2025,2025-02-15,SARS-CoV-2,5954,118,2.0
+Canada,Canada,35,1,2024,2024-08-31,SARS-CoV-2,27090,4824,17.8
+Canada,Canada,36,2,2024,2024-09-07,SARS-CoV-2,27160,4971,18.3
+Canada,Canada,37,3,2024,2024-09-14,SARS-CoV-2,30651,5704,18.6
+Canada,Canada,38,4,2024,2024-09-21,SARS-CoV-2,32453,6121,18.9
+Canada,Canada,39,5,2024,2024-09-28,SARS-CoV-2,34324,5839,17.0
+Canada,Canada,40,6,2024,2024-10-05,SARS-CoV-2,35015,5634,16.1
+Canada,Canada,41,7,2024,2024-10-12,SARS-CoV-2,35035,5246,15.0
+Canada,Canada,42,8,2024,2024-10-19,SARS-CoV-2,35253,5488,15.6
+Canada,Canada,43,9,2024,2024-10-26,SARS-CoV-2,35717,5382,15.1
+Canada,Canada,44,10,2024,2024-11-02,SARS-CoV-2,34370,4734,13.8
+Canada,Canada,45,11,2024,2024-11-09,SARS-CoV-2,34318,4305,12.5
+Canada,Canada,46,12,2024,2024-11-16,SARS-CoV-2,32822,3605,11.0
+Canada,Canada,47,13,2024,2024-11-23,SARS-CoV-2,32831,3357,10.2
+Canada,Canada,48,14,2024,2024-11-30,SARS-CoV-2,32364,3129,9.7
+Canada,Canada,49,15,2024,2024-12-07,SARS-CoV-2,33179,3059,9.2
+Canada,Canada,50,16,2024,2024-12-14,SARS-CoV-2,35031,3510,10.0
+Canada,Canada,51,17,2024,2024-12-21,SARS-CoV-2,37302,3625,9.7
+Canada,Canada,52,18,2024,2024-12-28,SARS-CoV-2,35916,3219,9.0
+Canada,Canada,1,19,2025,2025-01-04,SARS-CoV-2,43185,3971,9.2
+Canada,Canada,2,20,2025,2025-01-11,SARS-CoV-2,44413,3743,8.4
+Canada,Canada,3,21,2025,2025-01-18,SARS-CoV-2,40045,2734,6.8
+Canada,Canada,4,22,2025,2025-01-25,SARS-CoV-2,38918,2293,5.9
+Canada,Canada,5,23,2025,2025-02-01,SARS-CoV-2,41725,2153,5.2
+Canada,Canada,6,24,2025,2025-02-08,SARS-CoV-2,42923,1943,4.5
+Canada,Canada,7,25,2025,2025-02-15,SARS-CoV-2,43667,1750,4.0
+Prairies,Manitoba,35,1,2024,2024-08-31,SARS-CoV-2,1095,188,17.2
+Prairies,Manitoba,36,2,2024,2024-09-07,SARS-CoV-2,1136,215,18.9
+Prairies,Manitoba,37,3,2024,2024-09-14,SARS-CoV-2,1118,183,16.4
+Prairies,Manitoba,38,4,2024,2024-09-21,SARS-CoV-2,1105,199,18.0
+Prairies,Manitoba,39,5,2024,2024-09-28,SARS-CoV-2,1327,259,19.5
+Prairies,Manitoba,40,6,2024,2024-10-05,SARS-CoV-2,1350,265,19.6
+Prairies,Manitoba,41,7,2024,2024-10-12,SARS-CoV-2,1277,212,16.6
+Prairies,Manitoba,42,8,2024,2024-10-19,SARS-CoV-2,1243,231,18.6
+Prairies,Manitoba,43,9,2024,2024-10-26,SARS-CoV-2,1510,292,19.3
+Prairies,Manitoba,44,10,2024,2024-11-02,SARS-CoV-2,1514,324,21.4
+Prairies,Manitoba,45,11,2024,2024-11-09,SARS-CoV-2,1349,243,18.0
+Prairies,Manitoba,46,12,2024,2024-11-16,SARS-CoV-2,1330,226,17.0
+Prairies,Manitoba,47,13,2024,2024-11-23,SARS-CoV-2,1228,160,13.0
+Prairies,Manitoba,48,14,2024,2024-11-30,SARS-CoV-2,1124,123,10.9
+Prairies,Manitoba,49,15,2024,2024-12-07,SARS-CoV-2,1132,130,11.5
+Prairies,Manitoba,50,16,2024,2024-12-14,SARS-CoV-2,1103,88,8.0
+Prairies,Manitoba,51,17,2024,2024-12-21,SARS-CoV-2,1119,87,7.8
+Prairies,Manitoba,52,18,2024,2024-12-28,SARS-CoV-2,1258,80,6.4
+Prairies,Manitoba,1,19,2025,2025-01-04,SARS-CoV-2,1164,59,5.1
+Prairies,Manitoba,2,20,2025,2025-01-11,SARS-CoV-2,1615,69,4.3
+Prairies,Manitoba,3,21,2025,2025-01-18,SARS-CoV-2,1544,52,3.4
+Prairies,Manitoba,4,22,2025,2025-01-25,SARS-CoV-2,1425,44,3.1
+Prairies,Manitoba,5,23,2025,2025-02-01,SARS-CoV-2,1538,39,2.5
+Prairies,Manitoba,6,24,2025,2025-02-08,SARS-CoV-2,1532,49,3.2
+Prairies,Manitoba,7,25,2025,2025-02-15,SARS-CoV-2,1663,29,1.7
+Atlantic,New Brunswick,35,1,2024,2024-08-31,SARS-CoV-2,1073,180,16.8
+Atlantic,New Brunswick,36,2,2024,2024-09-07,SARS-CoV-2,1064,176,16.5
+Atlantic,New Brunswick,37,3,2024,2024-09-14,SARS-CoV-2,1158,198,17.1
+Atlantic,New Brunswick,38,4,2024,2024-09-21,SARS-CoV-2,1272,204,16.0
+Atlantic,New Brunswick,39,5,2024,2024-09-28,SARS-CoV-2,1348,212,15.7
+Atlantic,New Brunswick,40,6,2024,2024-10-05,SARS-CoV-2,1194,167,14.0
+Atlantic,New Brunswick,41,7,2024,2024-10-12,SARS-CoV-2,1110,133,12.0
+Atlantic,New Brunswick,42,8,2024,2024-10-19,SARS-CoV-2,1156,121,10.5
+Atlantic,New Brunswick,43,9,2024,2024-10-26,SARS-CoV-2,1203,132,11.0
+Atlantic,New Brunswick,44,10,2024,2024-11-02,SARS-CoV-2,1122,114,10.2
+Atlantic,New Brunswick,45,11,2024,2024-11-09,SARS-CoV-2,1083,96,8.9
+Atlantic,New Brunswick,46,12,2024,2024-11-16,SARS-CoV-2,1024,91,8.9
+Atlantic,New Brunswick,47,13,2024,2024-11-23,SARS-CoV-2,1098,92,8.4
+Atlantic,New Brunswick,48,14,2024,2024-11-30,SARS-CoV-2,1058,92,8.7
+Atlantic,New Brunswick,49,15,2024,2024-12-07,SARS-CoV-2,1059,72,6.8
+Atlantic,New Brunswick,50,16,2024,2024-12-14,SARS-CoV-2,1201,71,5.9
+Atlantic,New Brunswick,51,17,2024,2024-12-21,SARS-CoV-2,1331,94,7.1
+Atlantic,New Brunswick,52,18,2024,2024-12-28,SARS-CoV-2,1234,73,5.9
+Atlantic,New Brunswick,1,19,2025,2025-01-04,SARS-CoV-2,1486,63,4.2
+Atlantic,New Brunswick,2,20,2025,2025-01-11,SARS-CoV-2,1458,75,5.1
+Atlantic,New Brunswick,3,21,2025,2025-01-18,SARS-CoV-2,1146,69,6.0
+Atlantic,New Brunswick,4,22,2025,2025-01-25,SARS-CoV-2,1463,48,3.3
+Atlantic,New Brunswick,5,23,2025,2025-02-01,SARS-CoV-2,1478,39,2.6
+Atlantic,New Brunswick,6,24,2025,2025-02-08,SARS-CoV-2,1818,51,2.8
+Atlantic,New Brunswick,7,25,2025,2025-02-15,SARS-CoV-2,1793,40,2.2
+Atlantic,Newfoundland and Labrador,35,1,2024,2024-08-31,SARS-CoV-2,523,69,13.2
+Atlantic,Newfoundland and Labrador,36,2,2024,2024-09-07,SARS-CoV-2,511,74,14.5
+Atlantic,Newfoundland and Labrador,37,3,2024,2024-09-14,SARS-CoV-2,566,89,15.7
+Atlantic,Newfoundland and Labrador,38,4,2024,2024-09-21,SARS-CoV-2,775,101,13.0
+Atlantic,Newfoundland and Labrador,39,5,2024,2024-09-28,SARS-CoV-2,789,103,13.1
+Atlantic,Newfoundland and Labrador,40,6,2024,2024-10-05,SARS-CoV-2,776,97,12.5
+Atlantic,Newfoundland and Labrador,41,7,2024,2024-10-12,SARS-CoV-2,777,76,9.8
+Atlantic,Newfoundland and Labrador,42,8,2024,2024-10-19,SARS-CoV-2,794,79,9.9
+Atlantic,Newfoundland and Labrador,43,9,2024,2024-10-26,SARS-CoV-2,879,86,9.8
+Atlantic,Newfoundland and Labrador,44,10,2024,2024-11-02,SARS-CoV-2,841,71,8.4
+Atlantic,Newfoundland and Labrador,45,11,2024,2024-11-09,SARS-CoV-2,1015,87,8.6
+Atlantic,Newfoundland and Labrador,46,12,2024,2024-11-16,SARS-CoV-2,882,83,9.4
+Atlantic,Newfoundland and Labrador,47,13,2024,2024-11-23,SARS-CoV-2,975,37,3.8
+Atlantic,Newfoundland and Labrador,48,14,2024,2024-11-30,SARS-CoV-2,859,29,3.4
+Atlantic,Newfoundland and Labrador,49,15,2024,2024-12-07,SARS-CoV-2,717,19,2.6
+Atlantic,Newfoundland and Labrador,50,16,2024,2024-12-14,SARS-CoV-2,827,30,3.6
+Atlantic,Newfoundland and Labrador,51,17,2024,2024-12-21,SARS-CoV-2,789,49,6.2
+Atlantic,Newfoundland and Labrador,52,18,2024,2024-12-28,SARS-CoV-2,570,22,3.9
+Atlantic,Newfoundland and Labrador,1,19,2025,2025-01-04,SARS-CoV-2,846,42,5.0
+Atlantic,Newfoundland and Labrador,2,20,2025,2025-01-11,SARS-CoV-2,966,59,6.1
+Atlantic,Newfoundland and Labrador,3,21,2025,2025-01-18,SARS-CoV-2,872,57,6.5
+Atlantic,Newfoundland and Labrador,4,22,2025,2025-01-25,SARS-CoV-2,786,52,6.6
+Atlantic,Newfoundland and Labrador,5,23,2025,2025-02-01,SARS-CoV-2,605,40,6.6
+Atlantic,Newfoundland and Labrador,6,24,2025,2025-02-08,SARS-CoV-2,574,43,7.5
+Atlantic,Newfoundland and Labrador,7,25,2025,2025-02-15,SARS-CoV-2,545,42,7.7
+Territories,Northwest Territories,35,1,2024,2024-08-31,SARS-CoV-2,26,8,30.8
+Territories,Northwest Territories,36,2,2024,2024-09-07,SARS-CoV-2,42,10,23.8
+Territories,Northwest Territories,37,3,2024,2024-09-14,SARS-CoV-2,37,7,18.9
+Territories,Northwest Territories,38,4,2024,2024-09-21,SARS-CoV-2,47,6,12.8
+Territories,Northwest Territories,39,5,2024,2024-09-28,SARS-CoV-2,40,1,2.5
+Territories,Northwest Territories,40,6,2024,2024-10-05,SARS-CoV-2,38,2,5.3
+Territories,Northwest Territories,41,7,2024,2024-10-12,SARS-CoV-2,54,1,1.9
+Territories,Northwest Territories,42,8,2024,2024-10-19,SARS-CoV-2,46,9,19.6
+Territories,Northwest Territories,43,9,2024,2024-10-26,SARS-CoV-2,45,5,11.1
+Territories,Northwest Territories,44,10,2024,2024-11-02,SARS-CoV-2,22,3,13.6
+Territories,Northwest Territories,45,11,2024,2024-11-09,SARS-CoV-2,25,3,12.0
+Territories,Northwest Territories,46,12,2024,2024-11-16,SARS-CoV-2,41,3,7.3
+Territories,Northwest Territories,47,13,2024,2024-11-23,SARS-CoV-2,38,3,7.9
+Territories,Northwest Territories,48,14,2024,2024-11-30,SARS-CoV-2,25,2,8.0
+Territories,Northwest Territories,49,15,2024,2024-12-07,SARS-CoV-2,25,3,12.0
+Territories,Northwest Territories,50,16,2024,2024-12-14,SARS-CoV-2,34,3,8.8
+Territories,Northwest Territories,51,17,2024,2024-12-21,SARS-CoV-2,30,0,0.0
+Territories,Northwest Territories,52,18,2024,2024-12-28,SARS-CoV-2,17,0,0.0
+Territories,Northwest Territories,1,19,2025,2025-01-04,SARS-CoV-2,27,1,3.7
+Territories,Northwest Territories,2,20,2025,2025-01-11,SARS-CoV-2,23,0,0.0
+Territories,Northwest Territories,3,21,2025,2025-01-18,SARS-CoV-2,38,2,5.3
+Territories,Northwest Territories,4,22,2025,2025-01-25,SARS-CoV-2,60,1,1.7
+Territories,Northwest Territories,5,23,2025,2025-02-01,SARS-CoV-2,61,2,3.3
+Territories,Northwest Territories,6,24,2025,2025-02-08,SARS-CoV-2,57,0,0.0
+Territories,Northwest Territories,7,25,2025,2025-02-15,SARS-CoV-2,61,0,0.0
+Atlantic,Nova Scotia,35,1,2024,2024-08-31,SARS-CoV-2,1198,247,20.6
+Atlantic,Nova Scotia,36,2,2024,2024-09-07,SARS-CoV-2,1205,228,18.9
+Atlantic,Nova Scotia,37,3,2024,2024-09-14,SARS-CoV-2,1331,239,18.0
+Atlantic,Nova Scotia,38,4,2024,2024-09-21,SARS-CoV-2,1339,279,20.8
+Atlantic,Nova Scotia,39,5,2024,2024-09-28,SARS-CoV-2,1560,286,18.3
+Atlantic,Nova Scotia,40,6,2024,2024-10-05,SARS-CoV-2,1659,294,17.7
+Atlantic,Nova Scotia,41,7,2024,2024-10-12,SARS-CoV-2,1585,236,14.9
+Atlantic,Nova Scotia,42,8,2024,2024-10-19,SARS-CoV-2,1461,167,11.4
+Atlantic,Nova Scotia,43,9,2024,2024-10-26,SARS-CoV-2,1440,186,12.9
+Atlantic,Nova Scotia,44,10,2024,2024-11-02,SARS-CoV-2,1217,149,12.2
+Atlantic,Nova Scotia,45,11,2024,2024-11-09,SARS-CoV-2,1340,146,10.9
+Atlantic,Nova Scotia,46,12,2024,2024-11-16,SARS-CoV-2,1211,89,7.3
+Atlantic,Nova Scotia,47,13,2024,2024-11-23,SARS-CoV-2,1209,92,7.6
+Atlantic,Nova Scotia,48,14,2024,2024-11-30,SARS-CoV-2,1200,68,5.7
+Atlantic,Nova Scotia,49,15,2024,2024-12-07,SARS-CoV-2,1222,102,8.3
+Atlantic,Nova Scotia,50,16,2024,2024-12-14,SARS-CoV-2,1273,119,9.3
+Atlantic,Nova Scotia,51,17,2024,2024-12-21,SARS-CoV-2,1409,153,10.9
+Atlantic,Nova Scotia,52,18,2024,2024-12-28,SARS-CoV-2,1419,140,9.9
+Atlantic,Nova Scotia,1,19,2025,2025-01-04,SARS-CoV-2,1817,167,9.2
+Atlantic,Nova Scotia,2,20,2025,2025-01-11,SARS-CoV-2,1720,148,8.6
+Atlantic,Nova Scotia,3,21,2025,2025-01-18,SARS-CoV-2,1558,107,6.9
+Atlantic,Nova Scotia,4,22,2025,2025-01-25,SARS-CoV-2,1438,87,6.1
+Atlantic,Nova Scotia,5,23,2025,2025-02-01,SARS-CoV-2,1569,113,7.2
+Atlantic,Nova Scotia,6,24,2025,2025-02-08,SARS-CoV-2,1508,83,5.5
+Atlantic,Nova Scotia,7,25,2025,2025-02-15,SARS-CoV-2,1688,86,5.1
+Territories,Nunavut,35,1,2024,2024-08-31,SARS-CoV-2,107,5,4.7
+Territories,Nunavut,36,2,2024,2024-09-07,SARS-CoV-2,91,5,5.5
+Territories,Nunavut,37,3,2024,2024-09-14,SARS-CoV-2,97,9,9.3
+Territories,Nunavut,38,4,2024,2024-09-21,SARS-CoV-2,111,10,9.0
+Territories,Nunavut,39,5,2024,2024-09-28,SARS-CoV-2,126,11,8.7
+Territories,Nunavut,40,6,2024,2024-10-05,SARS-CoV-2,73,4,5.5
+Territories,Nunavut,41,7,2024,2024-10-12,SARS-CoV-2,125,7,5.6
+Territories,Nunavut,42,8,2024,2024-10-19,SARS-CoV-2,92,12,13.0
+Territories,Nunavut,43,9,2024,2024-10-26,SARS-CoV-2,140,15,10.7
+Territories,Nunavut,44,10,2024,2024-11-02,SARS-CoV-2,84,6,7.1
+Territories,Nunavut,45,11,2024,2024-11-09,SARS-CoV-2,100,1,1.0
+Territories,Nunavut,46,12,2024,2024-11-16,SARS-CoV-2,106,8,7.5
+Territories,Nunavut,47,13,2024,2024-11-23,SARS-CoV-2,122,8,6.6
+Territories,Nunavut,48,14,2024,2024-11-30,SARS-CoV-2,83,1,1.2
+Territories,Nunavut,49,15,2024,2024-12-07,SARS-CoV-2,75,6,8.0
+Territories,Nunavut,50,16,2024,2024-12-14,SARS-CoV-2,128,18,14.1
+Territories,Nunavut,51,17,2024,2024-12-21,SARS-CoV-2,147,5,3.4
+Territories,Nunavut,52,18,2024,2024-12-28,SARS-CoV-2,87,2,2.3
+Territories,Nunavut,1,19,2025,2025-01-04,SARS-CoV-2,100,3,3.0
+Territories,Nunavut,2,20,2025,2025-01-11,SARS-CoV-2,163,6,3.7
+Territories,Nunavut,3,21,2025,2025-01-18,SARS-CoV-2,148,4,2.7
+Territories,Nunavut,4,22,2025,2025-01-25,SARS-CoV-2,144,2,1.4
+Territories,Nunavut,5,23,2025,2025-02-01,SARS-CoV-2,162,10,6.2
+Territories,Nunavut,6,24,2025,2025-02-08,SARS-CoV-2,149,4,2.7
+Territories,Nunavut,7,25,2025,2025-02-15,SARS-CoV-2,157,1,0.6
+Ontario,Ontario,35,1,2024,2024-08-31,SARS-CoV-2,6459,995,15.4
+Ontario,Ontario,36,2,2024,2024-09-07,SARS-CoV-2,5813,956,16.4
+Ontario,Ontario,37,3,2024,2024-09-14,SARS-CoV-2,7089,1298,18.3
+Ontario,Ontario,38,4,2024,2024-09-21,SARS-CoV-2,7047,1301,18.5
+Ontario,Ontario,39,5,2024,2024-09-28,SARS-CoV-2,7281,1095,15.0
+Ontario,Ontario,40,6,2024,2024-10-05,SARS-CoV-2,8161,1273,15.6
+Ontario,Ontario,41,7,2024,2024-10-12,SARS-CoV-2,8624,1240,14.4
+Ontario,Ontario,42,8,2024,2024-10-19,SARS-CoV-2,8899,1549,17.4
+Ontario,Ontario,43,9,2024,2024-10-26,SARS-CoV-2,8918,1620,18.2
+Ontario,Ontario,44,10,2024,2024-11-02,SARS-CoV-2,8525,1377,16.2
+Ontario,Ontario,45,11,2024,2024-11-09,SARS-CoV-2,8761,1368,15.6
+Ontario,Ontario,46,12,2024,2024-11-16,SARS-CoV-2,7491,941,12.6
+Ontario,Ontario,47,13,2024,2024-11-23,SARS-CoV-2,8053,999,12.4
+Ontario,Ontario,48,14,2024,2024-11-30,SARS-CoV-2,7963,1075,13.5
+Ontario,Ontario,49,15,2024,2024-12-07,SARS-CoV-2,8325,1099,13.2
+Ontario,Ontario,50,16,2024,2024-12-14,SARS-CoV-2,9071,1324,14.6
+Ontario,Ontario,51,17,2024,2024-12-21,SARS-CoV-2,9745,1328,13.6
+Ontario,Ontario,52,18,2024,2024-12-28,SARS-CoV-2,8744,1257,14.4
+Ontario,Ontario,1,19,2025,2025-01-04,SARS-CoV-2,11846,1718,14.5
+Ontario,Ontario,2,20,2025,2025-01-11,SARS-CoV-2,12293,1650,13.4
+Ontario,Ontario,3,21,2025,2025-01-18,SARS-CoV-2,10696,1172,11.0
+Ontario,Ontario,4,22,2025,2025-01-25,SARS-CoV-2,10294,1001,9.7
+Ontario,Ontario,5,23,2025,2025-02-01,SARS-CoV-2,11307,903,8.0
+Ontario,Ontario,6,24,2025,2025-02-08,SARS-CoV-2,10753,738,6.9
+Ontario,Ontario,7,25,2025,2025-02-15,SARS-CoV-2,10438,687,6.6
+Prairies,Prairies,35,1,2024,2024-08-31,SARS-CoV-2,5508,657,11.9
+Prairies,Prairies,36,2,2024,2024-09-07,SARS-CoV-2,5738,776,13.5
+Prairies,Prairies,37,3,2024,2024-09-14,SARS-CoV-2,6180,788,12.8
+Prairies,Prairies,38,4,2024,2024-09-21,SARS-CoV-2,6799,944,13.9
+Prairies,Prairies,39,5,2024,2024-09-28,SARS-CoV-2,8196,1155,14.1
+Prairies,Prairies,40,6,2024,2024-10-05,SARS-CoV-2,8456,1208,14.3
+Prairies,Prairies,41,7,2024,2024-10-12,SARS-CoV-2,8725,1383,15.9
+Prairies,Prairies,42,8,2024,2024-10-19,SARS-CoV-2,8770,1313,15.0
+Prairies,Prairies,43,9,2024,2024-10-26,SARS-CoV-2,9341,1388,14.9
+Prairies,Prairies,44,10,2024,2024-11-02,SARS-CoV-2,9490,1316,13.9
+Prairies,Prairies,45,11,2024,2024-11-09,SARS-CoV-2,9272,1213,13.1
+Prairies,Prairies,46,12,2024,2024-11-16,SARS-CoV-2,9337,1112,11.9
+Prairies,Prairies,47,13,2024,2024-11-23,SARS-CoV-2,8842,995,11.3
+Prairies,Prairies,48,14,2024,2024-11-30,SARS-CoV-2,8811,836,9.5
+Prairies,Prairies,49,15,2024,2024-12-07,SARS-CoV-2,9152,835,9.1
+Prairies,Prairies,50,16,2024,2024-12-14,SARS-CoV-2,9220,770,8.4
+Prairies,Prairies,51,17,2024,2024-12-21,SARS-CoV-2,9669,804,8.3
+Prairies,Prairies,52,18,2024,2024-12-28,SARS-CoV-2,10273,671,6.5
+Prairies,Prairies,1,19,2025,2025-01-04,SARS-CoV-2,10782,652,6.0
+Prairies,Prairies,2,20,2025,2025-01-11,SARS-CoV-2,10991,544,4.9
+Prairies,Prairies,3,21,2025,2025-01-18,SARS-CoV-2,10087,434,4.3
+Prairies,Prairies,4,22,2025,2025-01-25,SARS-CoV-2,9673,308,3.2
+Prairies,Prairies,5,23,2025,2025-02-01,SARS-CoV-2,9768,228,2.3
+Prairies,Prairies,6,24,2025,2025-02-08,SARS-CoV-2,9573,202,2.1
+Prairies,Prairies,7,25,2025,2025-02-15,SARS-CoV-2,9516,167,1.8
+Atlantic,Prince Edward Island,35,1,2024,2024-08-31,SARS-CoV-2,139,22,15.8
+Atlantic,Prince Edward Island,36,2,2024,2024-09-07,SARS-CoV-2,123,25,20.3
+Atlantic,Prince Edward Island,37,3,2024,2024-09-14,SARS-CoV-2,130,16,12.3
+Atlantic,Prince Edward Island,38,4,2024,2024-09-21,SARS-CoV-2,136,15,11.0
+Atlantic,Prince Edward Island,39,5,2024,2024-09-28,SARS-CoV-2,161,28,17.4
+Atlantic,Prince Edward Island,40,6,2024,2024-10-05,SARS-CoV-2,196,22,11.2
+Atlantic,Prince Edward Island,41,7,2024,2024-10-12,SARS-CoV-2,172,24,14.0
+Atlantic,Prince Edward Island,42,8,2024,2024-10-19,SARS-CoV-2,208,49,23.6
+Atlantic,Prince Edward Island,43,9,2024,2024-10-26,SARS-CoV-2,259,40,15.4
+Atlantic,Prince Edward Island,44,10,2024,2024-11-02,SARS-CoV-2,168,16,9.5
+Atlantic,Prince Edward Island,45,11,2024,2024-11-09,SARS-CoV-2,142,15,10.6
+Atlantic,Prince Edward Island,46,12,2024,2024-11-16,SARS-CoV-2,163,18,11.0
+Atlantic,Prince Edward Island,47,13,2024,2024-11-23,SARS-CoV-2,107,7,6.5
+Atlantic,Prince Edward Island,48,14,2024,2024-11-30,SARS-CoV-2,146,8,5.5
+Atlantic,Prince Edward Island,49,15,2024,2024-12-07,SARS-CoV-2,127,8,6.3
+Atlantic,Prince Edward Island,50,16,2024,2024-12-14,SARS-CoV-2,136,2,1.5
+Atlantic,Prince Edward Island,51,17,2024,2024-12-21,SARS-CoV-2,152,3,2.0
+Atlantic,Prince Edward Island,52,18,2024,2024-12-28,SARS-CoV-2,156,5,3.2
+Atlantic,Prince Edward Island,1,19,2025,2025-01-04,SARS-CoV-2,218,12,5.5
+Atlantic,Prince Edward Island,2,20,2025,2025-01-11,SARS-CoV-2,232,9,3.9
+Atlantic,Prince Edward Island,3,21,2025,2025-01-18,SARS-CoV-2,195,10,5.1
+Atlantic,Prince Edward Island,4,22,2025,2025-01-25,SARS-CoV-2,207,8,3.9
+Atlantic,Prince Edward Island,5,23,2025,2025-02-01,SARS-CoV-2,247,11,4.5
+Atlantic,Prince Edward Island,6,24,2025,2025-02-08,SARS-CoV-2,288,16,5.6
+Atlantic,Prince Edward Island,7,25,2025,2025-02-15,SARS-CoV-2,326,22,6.7
+Quebec,Quebec,35,1,2024,2024-08-31,SARS-CoV-2,9440,2147,22.7
+Quebec,Quebec,36,2,2024,2024-09-07,SARS-CoV-2,9733,2180,22.4
+Quebec,Quebec,37,3,2024,2024-09-14,SARS-CoV-2,11088,2496,22.5
+Quebec,Quebec,38,4,2024,2024-09-21,SARS-CoV-2,11802,2724,23.1
+Quebec,Quebec,39,5,2024,2024-09-28,SARS-CoV-2,11332,2307,20.4
+Quebec,Quebec,40,6,2024,2024-10-05,SARS-CoV-2,10840,1936,17.9
+Quebec,Quebec,41,7,2024,2024-10-12,SARS-CoV-2,10199,1499,14.7
+Quebec,Quebec,42,8,2024,2024-10-19,SARS-CoV-2,9958,1573,15.8
+Quebec,Quebec,43,9,2024,2024-10-26,SARS-CoV-2,9963,1452,14.6
+Quebec,Quebec,44,10,2024,2024-11-02,SARS-CoV-2,9295,1227,13.2
+Quebec,Quebec,45,11,2024,2024-11-09,SARS-CoV-2,9059,1069,11.8
+Quebec,Quebec,46,12,2024,2024-11-16,SARS-CoV-2,8856,987,11.1
+Quebec,Quebec,47,13,2024,2024-11-23,SARS-CoV-2,8916,915,10.3
+Quebec,Quebec,48,14,2024,2024-11-30,SARS-CoV-2,8781,857,9.8
+Quebec,Quebec,49,15,2024,2024-12-07,SARS-CoV-2,8812,761,8.6
+Quebec,Quebec,50,16,2024,2024-12-14,SARS-CoV-2,9089,940,10.3
+Quebec,Quebec,51,17,2024,2024-12-21,SARS-CoV-2,9594,951,9.9
+Quebec,Quebec,52,18,2024,2024-12-28,SARS-CoV-2,9133,832,9.1
+Quebec,Quebec,1,19,2025,2025-01-04,SARS-CoV-2,11294,1085,9.6
+Quebec,Quebec,2,20,2025,2025-01-11,SARS-CoV-2,11530,1027,8.9
+Quebec,Quebec,3,21,2025,2025-01-18,SARS-CoV-2,10371,700,6.7
+Quebec,Quebec,4,22,2025,2025-01-25,SARS-CoV-2,10071,667,6.6
+Quebec,Quebec,5,23,2025,2025-02-01,SARS-CoV-2,11147,683,6.1
+Quebec,Quebec,6,24,2025,2025-02-08,SARS-CoV-2,12484,664,5.3
+Quebec,Quebec,7,25,2025,2025-02-15,SARS-CoV-2,13113,586,4.5
+Prairies,Saskatchewan,35,1,2024,2024-08-31,SARS-CoV-2,1272,149,11.7
+Prairies,Saskatchewan,36,2,2024,2024-09-07,SARS-CoV-2,1312,168,12.8
+Prairies,Saskatchewan,37,3,2024,2024-09-14,SARS-CoV-2,1491,190,12.7
+Prairies,Saskatchewan,38,4,2024,2024-09-21,SARS-CoV-2,1624,248,15.3
+Prairies,Saskatchewan,39,5,2024,2024-09-28,SARS-CoV-2,1620,264,16.3
+Prairies,Saskatchewan,40,6,2024,2024-10-05,SARS-CoV-2,1894,309,16.3
+Prairies,Saskatchewan,41,7,2024,2024-10-12,SARS-CoV-2,1913,359,18.8
+Prairies,Saskatchewan,42,8,2024,2024-10-19,SARS-CoV-2,1921,312,16.2
+Prairies,Saskatchewan,43,9,2024,2024-10-26,SARS-CoV-2,1977,366,18.5
+Prairies,Saskatchewan,44,10,2024,2024-11-02,SARS-CoV-2,1868,286,15.3
+Prairies,Saskatchewan,45,11,2024,2024-11-09,SARS-CoV-2,1854,271,14.6
+Prairies,Saskatchewan,46,12,2024,2024-11-16,SARS-CoV-2,1841,202,11.0
+Prairies,Saskatchewan,47,13,2024,2024-11-23,SARS-CoV-2,1684,155,9.2
+Prairies,Saskatchewan,48,14,2024,2024-11-30,SARS-CoV-2,1638,118,7.2
+Prairies,Saskatchewan,49,15,2024,2024-12-07,SARS-CoV-2,1780,132,7.4
+Prairies,Saskatchewan,50,16,2024,2024-12-14,SARS-CoV-2,1707,117,6.9
+Prairies,Saskatchewan,51,17,2024,2024-12-21,SARS-CoV-2,1739,131,7.5
+Prairies,Saskatchewan,52,18,2024,2024-12-28,SARS-CoV-2,2041,127,6.2
+Prairies,Saskatchewan,1,19,2025,2025-01-04,SARS-CoV-2,2228,133,6.0
+Prairies,Saskatchewan,2,20,2025,2025-01-11,SARS-CoV-2,2310,114,4.9
+Prairies,Saskatchewan,3,21,2025,2025-01-18,SARS-CoV-2,2064,57,2.8
+Prairies,Saskatchewan,4,22,2025,2025-01-25,SARS-CoV-2,2213,63,2.8
+Prairies,Saskatchewan,5,23,2025,2025-02-01,SARS-CoV-2,2299,51,2.2
+Prairies,Saskatchewan,6,24,2025,2025-02-08,SARS-CoV-2,2246,38,1.7
+Prairies,Saskatchewan,7,25,2025,2025-02-15,SARS-CoV-2,2147,37,1.7
+Territories,Territories,35,1,2024,2024-08-31,SARS-CoV-2,179,23,12.8
+Territories,Territories,36,2,2024,2024-09-07,SARS-CoV-2,166,21,12.7
+Territories,Territories,37,3,2024,2024-09-14,SARS-CoV-2,190,29,15.3
+Territories,Territories,38,4,2024,2024-09-21,SARS-CoV-2,208,22,10.6
+Territories,Territories,39,5,2024,2024-09-28,SARS-CoV-2,211,16,7.6
+Territories,Territories,40,6,2024,2024-10-05,SARS-CoV-2,145,7,4.8
+Territories,Territories,41,7,2024,2024-10-12,SARS-CoV-2,230,14,6.1
+Territories,Territories,42,8,2024,2024-10-19,SARS-CoV-2,179,22,12.3
+Territories,Territories,43,9,2024,2024-10-26,SARS-CoV-2,229,20,8.7
+Territories,Territories,44,10,2024,2024-11-02,SARS-CoV-2,145,11,7.6
+Territories,Territories,45,11,2024,2024-11-09,SARS-CoV-2,175,8,4.6
+Territories,Territories,46,12,2024,2024-11-16,SARS-CoV-2,188,11,5.9
+Territories,Territories,47,13,2024,2024-11-23,SARS-CoV-2,203,14,6.9
+Territories,Territories,48,14,2024,2024-11-30,SARS-CoV-2,133,4,3.0
+Territories,Territories,49,15,2024,2024-12-07,SARS-CoV-2,144,12,8.3
+Territories,Territories,50,16,2024,2024-12-14,SARS-CoV-2,194,24,12.4
+Territories,Territories,51,17,2024,2024-12-21,SARS-CoV-2,221,6,2.7
+Territories,Territories,52,18,2024,2024-12-28,SARS-CoV-2,149,2,1.3
+Territories,Territories,1,19,2025,2025-01-04,SARS-CoV-2,178,7,3.9
+Territories,Territories,2,20,2025,2025-01-11,SARS-CoV-2,240,9,3.8
+Territories,Territories,3,21,2025,2025-01-18,SARS-CoV-2,227,7,3.1
+Territories,Territories,4,22,2025,2025-01-25,SARS-CoV-2,287,6,2.1
+Territories,Territories,5,23,2025,2025-02-01,SARS-CoV-2,286,12,4.2
+Territories,Territories,6,24,2025,2025-02-08,SARS-CoV-2,262,4,1.5
+Territories,Territories,7,25,2025,2025-02-15,SARS-CoV-2,294,2,0.7
+Territories,Yukon,35,1,2024,2024-08-31,SARS-CoV-2,46,10,21.7
+Territories,Yukon,36,2,2024,2024-09-07,SARS-CoV-2,33,6,18.2
+Territories,Yukon,37,3,2024,2024-09-14,SARS-CoV-2,56,13,23.2
+Territories,Yukon,38,4,2024,2024-09-21,SARS-CoV-2,50,6,12.0
+Territories,Yukon,39,5,2024,2024-09-28,SARS-CoV-2,45,4,8.9
+Territories,Yukon,40,6,2024,2024-10-05,SARS-CoV-2,34,1,2.9
+Territories,Yukon,41,7,2024,2024-10-12,SARS-CoV-2,51,6,11.8
+Territories,Yukon,42,8,2024,2024-10-19,SARS-CoV-2,41,1,2.4
+Territories,Yukon,43,9,2024,2024-10-26,SARS-CoV-2,44,0,0.0
+Territories,Yukon,44,10,2024,2024-11-02,SARS-CoV-2,39,2,5.1
+Territories,Yukon,45,11,2024,2024-11-09,SARS-CoV-2,50,4,8.0
+Territories,Yukon,46,12,2024,2024-11-16,SARS-CoV-2,41,0,0.0
+Territories,Yukon,47,13,2024,2024-11-23,SARS-CoV-2,43,3,7.0
+Territories,Yukon,48,14,2024,2024-11-30,SARS-CoV-2,25,1,4.0
+Territories,Yukon,49,15,2024,2024-12-07,SARS-CoV-2,44,3,6.8
+Territories,Yukon,50,16,2024,2024-12-14,SARS-CoV-2,32,3,9.4
+Territories,Yukon,51,17,2024,2024-12-21,SARS-CoV-2,44,1,2.3
+Territories,Yukon,52,18,2024,2024-12-28,SARS-CoV-2,45,0,0.0
+Territories,Yukon,1,19,2025,2025-01-04,SARS-CoV-2,51,3,5.9
+Territories,Yukon,2,20,2025,2025-01-11,SARS-CoV-2,54,3,5.6
+Territories,Yukon,3,21,2025,2025-01-18,SARS-CoV-2,41,1,2.4
+Territories,Yukon,4,22,2025,2025-01-25,SARS-CoV-2,83,3,3.6
+Territories,Yukon,5,23,2025,2025-02-01,SARS-CoV-2,63,0,0.0
+Territories,Yukon,6,24,2025,2025-02-08,SARS-CoV-2,56,0,0.0
+Territories,Yukon,7,25,2025,2025-02-15,SARS-CoV-2,76,1,1.3
+Atlantic,Atlantic,35,1,2024,2024-08-31,Influenza,2242,2,0.1
+Atlantic,Atlantic,36,2,2024,2024-09-07,Influenza,2265,2,0.1
+Atlantic,Atlantic,37,3,2024,2024-09-14,Influenza,2554,1,0.0
+Atlantic,Atlantic,38,4,2024,2024-09-21,Influenza,2814,1,0.0
+Atlantic,Atlantic,39,5,2024,2024-09-28,Influenza,3085,6,0.2
+Atlantic,Atlantic,40,6,2024,2024-10-05,Influenza,3136,1,0.0
+Atlantic,Atlantic,41,7,2024,2024-10-12,Influenza,2996,1,0.0
+Atlantic,Atlantic,42,8,2024,2024-10-19,Influenza,2917,2,0.1
+Atlantic,Atlantic,43,9,2024,2024-10-26,Influenza,3051,5,0.2
+Atlantic,Atlantic,44,10,2024,2024-11-02,Influenza,2783,5,0.2
+Atlantic,Atlantic,45,11,2024,2024-11-09,Influenza,3032,11,0.4
+Atlantic,Atlantic,46,12,2024,2024-11-16,Influenza,2948,30,1.0
+Atlantic,Atlantic,47,13,2024,2024-11-23,Influenza,3220,36,1.1
+Atlantic,Atlantic,48,14,2024,2024-11-30,Influenza,3044,58,1.9
+Atlantic,Atlantic,49,15,2024,2024-12-07,Influenza,2960,96,3.2
+Atlantic,Atlantic,50,16,2024,2024-12-14,Influenza,3237,125,3.9
+Atlantic,Atlantic,51,17,2024,2024-12-21,Influenza,3482,154,4.4
+Atlantic,Atlantic,52,18,2024,2024-12-28,Influenza,3206,231,7.2
+Atlantic,Atlantic,1,19,2025,2025-01-04,Influenza,4070,304,7.5
+Atlantic,Atlantic,2,20,2025,2025-01-11,Influenza,4028,342,8.5
+Atlantic,Atlantic,3,21,2025,2025-01-18,Influenza,3875,338,8.7
+Atlantic,Atlantic,4,22,2025,2025-01-25,Influenza,3859,432,11.2
+Atlantic,Atlantic,5,23,2025,2025-02-01,Influenza,4010,575,14.3
+Atlantic,Atlantic,6,24,2025,2025-02-08,Influenza,4338,773,17.8
+Atlantic,Atlantic,7,25,2025,2025-02-15,Influenza,4298,1022,23.8
+British Columbia,British Columbia,35,1,2024,2024-08-31,Influenza,2517,35,1.4
+British Columbia,British Columbia,36,2,2024,2024-09-07,Influenza,2683,41,1.5
+British Columbia,British Columbia,37,3,2024,2024-09-14,Influenza,2832,59,2.1
+British Columbia,British Columbia,38,4,2024,2024-09-21,Influenza,3033,60,2.0
+British Columbia,British Columbia,39,5,2024,2024-09-28,Influenza,3415,65,1.9
+British Columbia,British Columbia,40,6,2024,2024-10-05,Influenza,3554,39,1.1
+British Columbia,British Columbia,41,7,2024,2024-10-12,Influenza,3798,44,1.2
+British Columbia,British Columbia,42,8,2024,2024-10-19,Influenza,4004,47,1.2
+British Columbia,British Columbia,43,9,2024,2024-10-26,Influenza,3699,41,1.1
+British Columbia,British Columbia,44,10,2024,2024-11-02,Influenza,3798,52,1.4
+British Columbia,British Columbia,45,11,2024,2024-11-09,Influenza,3848,76,2.0
+British Columbia,British Columbia,46,12,2024,2024-11-16,Influenza,4227,77,1.8
+British Columbia,British Columbia,47,13,2024,2024-11-23,Influenza,3955,93,2.4
+British Columbia,British Columbia,48,14,2024,2024-11-30,Influenza,4029,140,3.5
+British Columbia,British Columbia,49,15,2024,2024-12-07,Influenza,4223,193,4.6
+British Columbia,British Columbia,50,16,2024,2024-12-14,Influenza,4547,305,6.7
+British Columbia,British Columbia,51,17,2024,2024-12-21,Influenza,5090,613,12.0
+British Columbia,British Columbia,52,18,2024,2024-12-28,Influenza,4940,599,12.1
+British Columbia,British Columbia,1,19,2025,2025-01-04,Influenza,5405,701,13.0
+British Columbia,British Columbia,2,20,2025,2025-01-11,Influenza,5589,775,13.9
+British Columbia,British Columbia,3,21,2025,2025-01-18,Influenza,5498,831,15.1
+British Columbia,British Columbia,4,22,2025,2025-01-25,Influenza,5355,1116,20.8
+British Columbia,British Columbia,5,23,2025,2025-02-01,Influenza,6191,1576,25.5
+British Columbia,British Columbia,6,24,2025,2025-02-08,Influenza,6513,1850,28.4
+British Columbia,British Columbia,7,25,2025,2025-02-15,Influenza,6613,2131,32.2
+Canada,Canada,35,1,2024,2024-08-31,Influenza,18265,106,0.6
+Canada,Canada,36,2,2024,2024-09-07,Influenza,18364,88,0.5
+Canada,Canada,37,3,2024,2024-09-14,Influenza,20610,112,0.5
+Canada,Canada,38,4,2024,2024-09-21,Influenza,21217,112,0.5
+Canada,Canada,39,5,2024,2024-09-28,Influenza,22509,109,0.5
+Canada,Canada,40,6,2024,2024-10-05,Influenza,24308,100,0.4
+Canada,Canada,41,7,2024,2024-10-12,Influenza,25420,101,0.4
+Canada,Canada,42,8,2024,2024-10-19,Influenza,26012,133,0.5
+Canada,Canada,43,9,2024,2024-10-26,Influenza,27263,152,0.6
+Canada,Canada,44,10,2024,2024-11-02,Influenza,27034,212,0.8
+Canada,Canada,45,11,2024,2024-11-09,Influenza,27960,273,1.0
+Canada,Canada,46,12,2024,2024-11-16,Influenza,28092,296,1.1
+Canada,Canada,47,13,2024,2024-11-23,Influenza,29482,391,1.3
+Canada,Canada,48,14,2024,2024-11-30,Influenza,29451,604,2.1
+Canada,Canada,49,15,2024,2024-12-07,Influenza,30508,960,3.1
+Canada,Canada,50,16,2024,2024-12-14,Influenza,32644,1450,4.4
+Canada,Canada,51,17,2024,2024-12-21,Influenza,35105,2578,7.3
+Canada,Canada,52,18,2024,2024-12-28,Influenza,34323,3558,10.4
+Canada,Canada,1,19,2025,2025-01-04,Influenza,41690,4740,11.4
+Canada,Canada,2,20,2025,2025-01-11,Influenza,42586,5002,11.7
+Canada,Canada,3,21,2025,2025-01-18,Influenza,39354,5343,13.6
+Canada,Canada,4,22,2025,2025-01-25,Influenza,38587,6505,16.9
+Canada,Canada,5,23,2025,2025-02-01,Influenza,42406,8886,21.0
+Canada,Canada,6,24,2025,2025-02-08,Influenza,43936,10762,24.5
+Canada,Canada,7,25,2025,2025-02-15,Influenza,43813,11790,26.9
+Ontario,Ontario,35,1,2024,2024-08-31,Influenza,5205,20,0.4
+Ontario,Ontario,36,2,2024,2024-09-07,Influenza,4929,9,0.2
+Ontario,Ontario,37,3,2024,2024-09-14,Influenza,5653,19,0.3
+Ontario,Ontario,38,4,2024,2024-09-21,Influenza,5592,16,0.3
+Ontario,Ontario,39,5,2024,2024-09-28,Influenza,5838,12,0.2
+Ontario,Ontario,40,6,2024,2024-10-05,Influenza,6761,13,0.2
+Ontario,Ontario,41,7,2024,2024-10-12,Influenza,6984,8,0.1
+Ontario,Ontario,42,8,2024,2024-10-19,Influenza,7261,24,0.3
+Ontario,Ontario,43,9,2024,2024-10-26,Influenza,7713,32,0.4
+Ontario,Ontario,44,10,2024,2024-11-02,Influenza,7614,48,0.6
+Ontario,Ontario,45,11,2024,2024-11-09,Influenza,7814,50,0.6
+Ontario,Ontario,46,12,2024,2024-11-16,Influenza,6933,35,0.5
+Ontario,Ontario,47,13,2024,2024-11-23,Influenza,7577,62,0.8
+Ontario,Ontario,48,14,2024,2024-11-30,Influenza,7431,70,0.9
+Ontario,Ontario,49,15,2024,2024-12-07,Influenza,7851,129,1.6
+Ontario,Ontario,50,16,2024,2024-12-14,Influenza,8480,253,3.0
+Ontario,Ontario,51,17,2024,2024-12-21,Influenza,8966,550,6.1
+Ontario,Ontario,52,18,2024,2024-12-28,Influenza,8200,768,9.4
+Ontario,Ontario,1,19,2025,2025-01-04,Influenza,11443,1254,11.0
+Ontario,Ontario,2,20,2025,2025-01-11,Influenza,11647,1322,11.4
+Ontario,Ontario,3,21,2025,2025-01-18,Influenza,10314,1437,13.9
+Ontario,Ontario,4,22,2025,2025-01-25,Influenza,9997,1614,16.1
+Ontario,Ontario,5,23,2025,2025-02-01,Influenza,10987,2032,18.5
+Ontario,Ontario,6,24,2025,2025-02-08,Influenza,10454,2052,19.6
+Ontario,Ontario,7,25,2025,2025-02-15,Influenza,10265,2026,19.7
+Prairies,Prairies,35,1,2024,2024-08-31,Influenza,2125,40,1.9
+Prairies,Prairies,36,2,2024,2024-09-07,Influenza,2263,13,0.6
+Prairies,Prairies,37,3,2024,2024-09-14,Influenza,2449,20,0.8
+Prairies,Prairies,38,4,2024,2024-09-21,Influenza,2456,15,0.6
+Prairies,Prairies,39,5,2024,2024-09-28,Influenza,2688,10,0.4
+Prairies,Prairies,40,6,2024,2024-10-05,Influenza,3665,24,0.7
+Prairies,Prairies,41,7,2024,2024-10-12,Influenza,4381,26,0.6
+Prairies,Prairies,42,8,2024,2024-10-19,Influenza,4541,38,0.8
+Prairies,Prairies,43,9,2024,2024-10-26,Influenza,5233,54,1.0
+Prairies,Prairies,44,10,2024,2024-11-02,Influenza,5347,57,1.1
+Prairies,Prairies,45,11,2024,2024-11-09,Influenza,5687,94,1.7
+Prairies,Prairies,46,12,2024,2024-11-16,Influenza,5948,97,1.6
+Prairies,Prairies,47,13,2024,2024-11-23,Influenza,5917,136,2.3
+Prairies,Prairies,48,14,2024,2024-11-30,Influenza,6085,212,3.5
+Prairies,Prairies,49,15,2024,2024-12-07,Influenza,6514,406,6.2
+Prairies,Prairies,50,16,2024,2024-12-14,Influenza,6820,523,7.7
+Prairies,Prairies,51,17,2024,2024-12-21,Influenza,7235,805,11.1
+Prairies,Prairies,52,18,2024,2024-12-28,Influenza,7719,1109,14.4
+Prairies,Prairies,1,19,2025,2025-01-04,Influenza,8322,1122,13.5
+Prairies,Prairies,2,20,2025,2025-01-11,Influenza,8672,1129,13.0
+Prairies,Prairies,3,21,2025,2025-01-18,Influenza,7942,935,11.8
+Prairies,Prairies,4,22,2025,2025-01-25,Influenza,7661,1070,14.0
+Prairies,Prairies,5,23,2025,2025-02-01,Influenza,8069,1221,15.1
+Prairies,Prairies,6,24,2025,2025-02-08,Influenza,7833,1340,17.1
+Prairies,Prairies,7,25,2025,2025-02-15,Influenza,7433,1412,19.0
+Quebec,Quebec,35,1,2024,2024-08-31,Influenza,6044,9,0.1
+Quebec,Quebec,36,2,2024,2024-09-07,Influenza,6078,22,0.4
+Quebec,Quebec,37,3,2024,2024-09-14,Influenza,6977,11,0.2
+Quebec,Quebec,38,4,2024,2024-09-21,Influenza,7152,19,0.3
+Quebec,Quebec,39,5,2024,2024-09-28,Influenza,7310,15,0.2
+Quebec,Quebec,40,6,2024,2024-10-05,Influenza,7083,23,0.3
+Quebec,Quebec,41,7,2024,2024-10-12,Influenza,7074,19,0.3
+Quebec,Quebec,42,8,2024,2024-10-19,Influenza,7156,21,0.3
+Quebec,Quebec,43,9,2024,2024-10-26,Influenza,7404,19,0.3
+Quebec,Quebec,44,10,2024,2024-11-02,Influenza,7384,50,0.7
+Quebec,Quebec,45,11,2024,2024-11-09,Influenza,7440,41,0.6
+Quebec,Quebec,46,12,2024,2024-11-16,Influenza,7881,55,0.7
+Quebec,Quebec,47,13,2024,2024-11-23,Influenza,8642,62,0.7
+Quebec,Quebec,48,14,2024,2024-11-30,Influenza,8750,123,1.4
+Quebec,Quebec,49,15,2024,2024-12-07,Influenza,8844,136,1.5
+Quebec,Quebec,50,16,2024,2024-12-14,Influenza,9407,241,2.6
+Quebec,Quebec,51,17,2024,2024-12-21,Influenza,10141,448,4.4
+Quebec,Quebec,52,18,2024,2024-12-28,Influenza,10141,839,8.3
+Quebec,Quebec,1,19,2025,2025-01-04,Influenza,12303,1327,10.8
+Quebec,Quebec,2,20,2025,2025-01-11,Influenza,12437,1384,11.1
+Quebec,Quebec,3,21,2025,2025-01-18,Influenza,11525,1773,15.4
+Quebec,Quebec,4,22,2025,2025-01-25,Influenza,11463,2203,19.2
+Quebec,Quebec,5,23,2025,2025-02-01,Influenza,12881,3415,26.5
+Quebec,Quebec,6,24,2025,2025-02-08,Influenza,14550,4671,32.1
+Quebec,Quebec,7,25,2025,2025-02-15,Influenza,14933,5100,34.2
+Territories,Territories,35,1,2024,2024-08-31,Influenza,132,0,0.0
+Territories,Territories,36,2,2024,2024-09-07,Influenza,146,1,0.7
+Territories,Territories,37,3,2024,2024-09-14,Influenza,145,2,1.4
+Territories,Territories,38,4,2024,2024-09-21,Influenza,170,1,0.6
+Territories,Territories,39,5,2024,2024-09-28,Influenza,173,1,0.6
+Territories,Territories,40,6,2024,2024-10-05,Influenza,109,0,0.0
+Territories,Territories,41,7,2024,2024-10-12,Influenza,187,3,1.6
+Territories,Territories,42,8,2024,2024-10-19,Influenza,133,1,0.8
+Territories,Territories,43,9,2024,2024-10-26,Influenza,163,1,0.6
+Territories,Territories,44,10,2024,2024-11-02,Influenza,108,0,0.0
+Territories,Territories,45,11,2024,2024-11-09,Influenza,139,1,0.7
+Territories,Territories,46,12,2024,2024-11-16,Influenza,155,2,1.3
+Territories,Territories,47,13,2024,2024-11-23,Influenza,171,2,1.2
+Territories,Territories,48,14,2024,2024-11-30,Influenza,112,1,0.9
+Territories,Territories,49,15,2024,2024-12-07,Influenza,116,0,0.0
+Territories,Territories,50,16,2024,2024-12-14,Influenza,153,3,2.0
+Territories,Territories,51,17,2024,2024-12-21,Influenza,191,8,4.2
+Territories,Territories,52,18,2024,2024-12-28,Influenza,117,12,10.3
+Territories,Territories,1,19,2025,2025-01-04,Influenza,147,32,21.8
+Territories,Territories,2,20,2025,2025-01-11,Influenza,213,50,23.5
+Territories,Territories,3,21,2025,2025-01-18,Influenza,200,29,14.5
+Territories,Territories,4,22,2025,2025-01-25,Influenza,252,70,27.8
+Territories,Territories,5,23,2025,2025-02-01,Influenza,268,67,25.0
+Territories,Territories,6,24,2025,2025-02-08,Influenza,248,76,30.6
+Territories,Territories,7,25,2025,2025-02-15,Influenza,271,99,36.5
+Atlantic,Atlantic,35,1,2024,2024-08-31,Influenza A,2242,1,0.0
+Atlantic,Atlantic,36,2,2024,2024-09-07,Influenza A,2265,2,0.1
+Atlantic,Atlantic,37,3,2024,2024-09-14,Influenza A,2554,1,0.0
+Atlantic,Atlantic,38,4,2024,2024-09-21,Influenza A,2814,1,0.0
+Atlantic,Atlantic,39,5,2024,2024-09-28,Influenza A,3085,6,0.2
+Atlantic,Atlantic,40,6,2024,2024-10-05,Influenza A,3136,1,0.0
+Atlantic,Atlantic,41,7,2024,2024-10-12,Influenza A,2996,1,0.0
+Atlantic,Atlantic,42,8,2024,2024-10-19,Influenza A,2917,2,0.1
+Atlantic,Atlantic,43,9,2024,2024-10-26,Influenza A,3051,5,0.2
+Atlantic,Atlantic,44,10,2024,2024-11-02,Influenza A,2783,5,0.2
+Atlantic,Atlantic,45,11,2024,2024-11-09,Influenza A,3032,11,0.4
+Atlantic,Atlantic,46,12,2024,2024-11-16,Influenza A,2948,27,0.9
+Atlantic,Atlantic,47,13,2024,2024-11-23,Influenza A,3220,35,1.1
+Atlantic,Atlantic,48,14,2024,2024-11-30,Influenza A,3044,55,1.8
+Atlantic,Atlantic,49,15,2024,2024-12-07,Influenza A,2960,91,3.1
+Atlantic,Atlantic,50,16,2024,2024-12-14,Influenza A,3237,121,3.7
+Atlantic,Atlantic,51,17,2024,2024-12-21,Influenza A,3482,149,4.3
+Atlantic,Atlantic,52,18,2024,2024-12-28,Influenza A,3206,225,7.0
+Atlantic,Atlantic,1,19,2025,2025-01-04,Influenza A,4070,291,7.1
+Atlantic,Atlantic,2,20,2025,2025-01-11,Influenza A,4028,338,8.4
+Atlantic,Atlantic,3,21,2025,2025-01-18,Influenza A,3875,328,8.5
+Atlantic,Atlantic,4,22,2025,2025-01-25,Influenza A,3859,420,10.9
+Atlantic,Atlantic,5,23,2025,2025-02-01,Influenza A,4010,546,13.6
+Atlantic,Atlantic,6,24,2025,2025-02-08,Influenza A,4338,745,17.2
+Atlantic,Atlantic,7,25,2025,2025-02-15,Influenza A,4298,982,22.8
+British Columbia,British Columbia,35,1,2024,2024-08-31,Influenza A,2517,34,1.4
+British Columbia,British Columbia,36,2,2024,2024-09-07,Influenza A,2683,41,1.5
+British Columbia,British Columbia,37,3,2024,2024-09-14,Influenza A,2832,57,2.0
+British Columbia,British Columbia,38,4,2024,2024-09-21,Influenza A,3033,60,2.0
+British Columbia,British Columbia,39,5,2024,2024-09-28,Influenza A,3415,64,1.9
+British Columbia,British Columbia,40,6,2024,2024-10-05,Influenza A,3554,38,1.1
+British Columbia,British Columbia,41,7,2024,2024-10-12,Influenza A,3798,43,1.1
+British Columbia,British Columbia,42,8,2024,2024-10-19,Influenza A,4004,46,1.1
+British Columbia,British Columbia,43,9,2024,2024-10-26,Influenza A,3699,39,1.1
+British Columbia,British Columbia,44,10,2024,2024-11-02,Influenza A,3798,50,1.3
+British Columbia,British Columbia,45,11,2024,2024-11-09,Influenza A,3848,64,1.7
+British Columbia,British Columbia,46,12,2024,2024-11-16,Influenza A,4227,66,1.6
+British Columbia,British Columbia,47,13,2024,2024-11-23,Influenza A,3955,85,2.1
+British Columbia,British Columbia,48,14,2024,2024-11-30,Influenza A,4029,128,3.2
+British Columbia,British Columbia,49,15,2024,2024-12-07,Influenza A,4223,180,4.3
+British Columbia,British Columbia,50,16,2024,2024-12-14,Influenza A,4547,289,6.4
+British Columbia,British Columbia,51,17,2024,2024-12-21,Influenza A,5090,582,11.4
+British Columbia,British Columbia,52,18,2024,2024-12-28,Influenza A,4940,574,11.6
+British Columbia,British Columbia,1,19,2025,2025-01-04,Influenza A,5405,663,12.3
+British Columbia,British Columbia,2,20,2025,2025-01-11,Influenza A,5589,747,13.4
+British Columbia,British Columbia,3,21,2025,2025-01-18,Influenza A,5498,781,14.2
+British Columbia,British Columbia,4,22,2025,2025-01-25,Influenza A,5355,1048,19.6
+British Columbia,British Columbia,5,23,2025,2025-02-01,Influenza A,6191,1455,23.5
+British Columbia,British Columbia,6,24,2025,2025-02-08,Influenza A,6513,1683,25.8
+British Columbia,British Columbia,7,25,2025,2025-02-15,Influenza A,6613,1893,28.6
+Canada,Canada,35,1,2024,2024-08-31,Influenza A,18265,99,0.5
+Canada,Canada,36,2,2024,2024-09-07,Influenza A,18364,82,0.4
+Canada,Canada,37,3,2024,2024-09-14,Influenza A,20610,102,0.5
+Canada,Canada,38,4,2024,2024-09-21,Influenza A,21217,102,0.5
+Canada,Canada,39,5,2024,2024-09-28,Influenza A,22509,101,0.4
+Canada,Canada,40,6,2024,2024-10-05,Influenza A,24308,88,0.4
+Canada,Canada,41,7,2024,2024-10-12,Influenza A,25420,93,0.4
+Canada,Canada,42,8,2024,2024-10-19,Influenza A,26012,120,0.5
+Canada,Canada,43,9,2024,2024-10-26,Influenza A,27263,134,0.5
+Canada,Canada,44,10,2024,2024-11-02,Influenza A,27034,192,0.7
+Canada,Canada,45,11,2024,2024-11-09,Influenza A,27960,232,0.8
+Canada,Canada,46,12,2024,2024-11-16,Influenza A,28092,261,0.9
+Canada,Canada,47,13,2024,2024-11-23,Influenza A,29482,349,1.2
+Canada,Canada,48,14,2024,2024-11-30,Influenza A,29451,553,1.9
+Canada,Canada,49,15,2024,2024-12-07,Influenza A,30508,905,3.0
+Canada,Canada,50,16,2024,2024-12-14,Influenza A,32644,1386,4.2
+Canada,Canada,51,17,2024,2024-12-21,Influenza A,35105,2465,7.0
+Canada,Canada,52,18,2024,2024-12-28,Influenza A,34323,3397,9.9
+Canada,Canada,1,19,2025,2025-01-04,Influenza A,41690,4555,10.9
+Canada,Canada,2,20,2025,2025-01-11,Influenza A,42586,4831,11.3
+Canada,Canada,3,21,2025,2025-01-18,Influenza A,39354,5087,12.9
+Canada,Canada,4,22,2025,2025-01-25,Influenza A,38587,6172,16.0
+Canada,Canada,5,23,2025,2025-02-01,Influenza A,42406,8368,19.7
+Canada,Canada,6,24,2025,2025-02-08,Influenza A,43936,10070,22.9
+Canada,Canada,7,25,2025,2025-02-15,Influenza A,43813,10913,24.9
+Ontario,Ontario,35,1,2024,2024-08-31,Influenza A,5205,18,0.3
+Ontario,Ontario,36,2,2024,2024-09-07,Influenza A,4929,9,0.2
+Ontario,Ontario,37,3,2024,2024-09-14,Influenza A,5653,19,0.3
+Ontario,Ontario,38,4,2024,2024-09-21,Influenza A,5592,15,0.3
+Ontario,Ontario,39,5,2024,2024-09-28,Influenza A,5838,10,0.2
+Ontario,Ontario,40,6,2024,2024-10-05,Influenza A,6761,10,0.1
+Ontario,Ontario,41,7,2024,2024-10-12,Influenza A,6984,8,0.1
+Ontario,Ontario,42,8,2024,2024-10-19,Influenza A,7261,21,0.3
+Ontario,Ontario,43,9,2024,2024-10-26,Influenza A,7713,29,0.4
+Ontario,Ontario,44,10,2024,2024-11-02,Influenza A,7614,46,0.6
+Ontario,Ontario,45,11,2024,2024-11-09,Influenza A,7814,44,0.6
+Ontario,Ontario,46,12,2024,2024-11-16,Influenza A,6933,30,0.4
+Ontario,Ontario,47,13,2024,2024-11-23,Influenza A,7577,52,0.7
+Ontario,Ontario,48,14,2024,2024-11-30,Influenza A,7431,66,0.9
+Ontario,Ontario,49,15,2024,2024-12-07,Influenza A,7851,126,1.6
+Ontario,Ontario,50,16,2024,2024-12-14,Influenza A,8480,244,2.9
+Ontario,Ontario,51,17,2024,2024-12-21,Influenza A,8966,534,6.0
+Ontario,Ontario,52,18,2024,2024-12-28,Influenza A,8200,752,9.2
+Ontario,Ontario,1,19,2025,2025-01-04,Influenza A,11443,1233,10.8
+Ontario,Ontario,2,20,2025,2025-01-11,Influenza A,11647,1297,11.1
+Ontario,Ontario,3,21,2025,2025-01-18,Influenza A,10314,1402,13.6
+Ontario,Ontario,4,22,2025,2025-01-25,Influenza A,9997,1558,15.6
+Ontario,Ontario,5,23,2025,2025-02-01,Influenza A,10987,1976,18.0
+Ontario,Ontario,6,24,2025,2025-02-08,Influenza A,10454,1982,19.0
+Ontario,Ontario,7,25,2025,2025-02-15,Influenza A,10265,1952,19.0
+Prairies,Prairies,35,1,2024,2024-08-31,Influenza A,2125,39,1.8
+Prairies,Prairies,36,2,2024,2024-09-07,Influenza A,2263,11,0.5
+Prairies,Prairies,37,3,2024,2024-09-14,Influenza A,2449,16,0.7
+Prairies,Prairies,38,4,2024,2024-09-21,Influenza A,2456,10,0.4
+Prairies,Prairies,39,5,2024,2024-09-28,Influenza A,2688,10,0.4
+Prairies,Prairies,40,6,2024,2024-10-05,Influenza A,3665,24,0.7
+Prairies,Prairies,41,7,2024,2024-10-12,Influenza A,4381,23,0.5
+Prairies,Prairies,42,8,2024,2024-10-19,Influenza A,4541,34,0.7
+Prairies,Prairies,43,9,2024,2024-10-26,Influenza A,5233,49,0.9
+Prairies,Prairies,44,10,2024,2024-11-02,Influenza A,5347,53,1.0
+Prairies,Prairies,45,11,2024,2024-11-09,Influenza A,5687,84,1.5
+Prairies,Prairies,46,12,2024,2024-11-16,Influenza A,5948,87,1.5
+Prairies,Prairies,47,13,2024,2024-11-23,Influenza A,5917,126,2.1
+Prairies,Prairies,48,14,2024,2024-11-30,Influenza A,6085,201,3.3
+Prairies,Prairies,49,15,2024,2024-12-07,Influenza A,6514,399,6.1
+Prairies,Prairies,50,16,2024,2024-12-14,Influenza A,6820,519,7.6
+Prairies,Prairies,51,17,2024,2024-12-21,Influenza A,7235,786,10.9
+Prairies,Prairies,52,18,2024,2024-12-28,Influenza A,7719,1070,13.9
+Prairies,Prairies,1,19,2025,2025-01-04,Influenza A,8322,1088,13.1
+Prairies,Prairies,2,20,2025,2025-01-11,Influenza A,8672,1104,12.7
+Prairies,Prairies,3,21,2025,2025-01-18,Influenza A,7942,896,11.3
+Prairies,Prairies,4,22,2025,2025-01-25,Influenza A,7661,1022,13.3
+Prairies,Prairies,5,23,2025,2025-02-01,Influenza A,8069,1164,14.4
+Prairies,Prairies,6,24,2025,2025-02-08,Influenza A,7833,1261,16.1
+Prairies,Prairies,7,25,2025,2025-02-15,Influenza A,7433,1331,17.9
+Quebec,Quebec,35,1,2024,2024-08-31,Influenza A,6044,7,0.1
+Quebec,Quebec,36,2,2024,2024-09-07,Influenza A,6078,18,0.3
+Quebec,Quebec,37,3,2024,2024-09-14,Influenza A,6977,8,0.1
+Quebec,Quebec,38,4,2024,2024-09-21,Influenza A,7152,15,0.2
+Quebec,Quebec,39,5,2024,2024-09-28,Influenza A,7310,10,0.1
+Quebec,Quebec,40,6,2024,2024-10-05,Influenza A,7083,15,0.2
+Quebec,Quebec,41,7,2024,2024-10-12,Influenza A,7074,15,0.2
+Quebec,Quebec,42,8,2024,2024-10-19,Influenza A,7156,16,0.2
+Quebec,Quebec,43,9,2024,2024-10-26,Influenza A,7404,11,0.1
+Quebec,Quebec,44,10,2024,2024-11-02,Influenza A,7384,38,0.5
+Quebec,Quebec,45,11,2024,2024-11-09,Influenza A,7440,28,0.4
+Quebec,Quebec,46,12,2024,2024-11-16,Influenza A,7881,49,0.6
+Quebec,Quebec,47,13,2024,2024-11-23,Influenza A,8642,49,0.6
+Quebec,Quebec,48,14,2024,2024-11-30,Influenza A,8750,102,1.2
+Quebec,Quebec,49,15,2024,2024-12-07,Influenza A,8844,109,1.2
+Quebec,Quebec,50,16,2024,2024-12-14,Influenza A,9407,210,2.2
+Quebec,Quebec,51,17,2024,2024-12-21,Influenza A,10141,408,4.0
+Quebec,Quebec,52,18,2024,2024-12-28,Influenza A,10141,764,7.5
+Quebec,Quebec,1,19,2025,2025-01-04,Influenza A,12303,1248,10.1
+Quebec,Quebec,2,20,2025,2025-01-11,Influenza A,12437,1296,10.4
+Quebec,Quebec,3,21,2025,2025-01-18,Influenza A,11525,1657,14.4
+Quebec,Quebec,4,22,2025,2025-01-25,Influenza A,11463,2057,17.9
+Quebec,Quebec,5,23,2025,2025-02-01,Influenza A,12881,3165,24.6
+Quebec,Quebec,6,24,2025,2025-02-08,Influenza A,14550,4324,29.7
+Quebec,Quebec,7,25,2025,2025-02-15,Influenza A,14933,4659,31.2
+Territories,Territories,35,1,2024,2024-08-31,Influenza A,132,0,0.0
+Territories,Territories,36,2,2024,2024-09-07,Influenza A,146,1,0.7
+Territories,Territories,37,3,2024,2024-09-14,Influenza A,145,1,0.7
+Territories,Territories,38,4,2024,2024-09-21,Influenza A,170,1,0.6
+Territories,Territories,39,5,2024,2024-09-28,Influenza A,173,1,0.6
+Territories,Territories,40,6,2024,2024-10-05,Influenza A,109,0,0.0
+Territories,Territories,41,7,2024,2024-10-12,Influenza A,187,3,1.6
+Territories,Territories,42,8,2024,2024-10-19,Influenza A,133,1,0.8
+Territories,Territories,43,9,2024,2024-10-26,Influenza A,163,1,0.6
+Territories,Territories,44,10,2024,2024-11-02,Influenza A,108,0,0.0
+Territories,Territories,45,11,2024,2024-11-09,Influenza A,139,1,0.7
+Territories,Territories,46,12,2024,2024-11-16,Influenza A,155,2,1.3
+Territories,Territories,47,13,2024,2024-11-23,Influenza A,171,2,1.2
+Territories,Territories,48,14,2024,2024-11-30,Influenza A,112,1,0.9
+Territories,Territories,49,15,2024,2024-12-07,Influenza A,116,0,0.0
+Territories,Territories,50,16,2024,2024-12-14,Influenza A,153,3,2.0
+Territories,Territories,51,17,2024,2024-12-21,Influenza A,191,6,3.1
+Territories,Territories,52,18,2024,2024-12-28,Influenza A,117,12,10.3
+Territories,Territories,1,19,2025,2025-01-04,Influenza A,147,32,21.8
+Territories,Territories,2,20,2025,2025-01-11,Influenza A,213,49,23.0
+Territories,Territories,3,21,2025,2025-01-18,Influenza A,200,23,11.5
+Territories,Territories,4,22,2025,2025-01-25,Influenza A,252,67,26.6
+Territories,Territories,5,23,2025,2025-02-01,Influenza A,268,62,23.1
+Territories,Territories,6,24,2025,2025-02-08,Influenza A,248,75,30.2
+Territories,Territories,7,25,2025,2025-02-15,Influenza A,271,96,35.4
+Atlantic,Atlantic,35,1,2024,2024-08-31,Influenza B,2242,1,0.0
+Atlantic,Atlantic,36,2,2024,2024-09-07,Influenza B,2265,0,0.0
+Atlantic,Atlantic,37,3,2024,2024-09-14,Influenza B,2554,0,0.0
+Atlantic,Atlantic,38,4,2024,2024-09-21,Influenza B,2814,0,0.0
+Atlantic,Atlantic,39,5,2024,2024-09-28,Influenza B,3085,0,0.0
+Atlantic,Atlantic,40,6,2024,2024-10-05,Influenza B,3136,0,0.0
+Atlantic,Atlantic,41,7,2024,2024-10-12,Influenza B,2996,0,0.0
+Atlantic,Atlantic,42,8,2024,2024-10-19,Influenza B,2917,0,0.0
+Atlantic,Atlantic,43,9,2024,2024-10-26,Influenza B,3051,0,0.0
+Atlantic,Atlantic,44,10,2024,2024-11-02,Influenza B,2783,0,0.0
+Atlantic,Atlantic,45,11,2024,2024-11-09,Influenza B,3032,0,0.0
+Atlantic,Atlantic,46,12,2024,2024-11-16,Influenza B,2948,3,0.1
+Atlantic,Atlantic,47,13,2024,2024-11-23,Influenza B,3220,1,0.0
+Atlantic,Atlantic,48,14,2024,2024-11-30,Influenza B,3044,3,0.1
+Atlantic,Atlantic,49,15,2024,2024-12-07,Influenza B,2960,5,0.2
+Atlantic,Atlantic,50,16,2024,2024-12-14,Influenza B,3237,4,0.1
+Atlantic,Atlantic,51,17,2024,2024-12-21,Influenza B,3482,5,0.1
+Atlantic,Atlantic,52,18,2024,2024-12-28,Influenza B,3206,6,0.2
+Atlantic,Atlantic,1,19,2025,2025-01-04,Influenza B,4070,13,0.3
+Atlantic,Atlantic,2,20,2025,2025-01-11,Influenza B,4028,4,0.1
+Atlantic,Atlantic,3,21,2025,2025-01-18,Influenza B,3875,10,0.3
+Atlantic,Atlantic,4,22,2025,2025-01-25,Influenza B,3859,12,0.3
+Atlantic,Atlantic,5,23,2025,2025-02-01,Influenza B,4010,29,0.7
+Atlantic,Atlantic,6,24,2025,2025-02-08,Influenza B,4338,28,0.6
+Atlantic,Atlantic,7,25,2025,2025-02-15,Influenza B,4298,40,0.9
+British Columbia,British Columbia,35,1,2024,2024-08-31,Influenza B,2517,1,0.0
+British Columbia,British Columbia,36,2,2024,2024-09-07,Influenza B,2683,0,0.0
+British Columbia,British Columbia,37,3,2024,2024-09-14,Influenza B,2832,2,0.1
+British Columbia,British Columbia,38,4,2024,2024-09-21,Influenza B,3033,0,0.0
+British Columbia,British Columbia,39,5,2024,2024-09-28,Influenza B,3415,1,0.0
+British Columbia,British Columbia,40,6,2024,2024-10-05,Influenza B,3554,1,0.0
+British Columbia,British Columbia,41,7,2024,2024-10-12,Influenza B,3798,1,0.0
+British Columbia,British Columbia,42,8,2024,2024-10-19,Influenza B,4004,1,0.0
+British Columbia,British Columbia,43,9,2024,2024-10-26,Influenza B,3699,2,0.1
+British Columbia,British Columbia,44,10,2024,2024-11-02,Influenza B,3798,2,0.1
+British Columbia,British Columbia,45,11,2024,2024-11-09,Influenza B,3848,12,0.3
+British Columbia,British Columbia,46,12,2024,2024-11-16,Influenza B,4227,11,0.3
+British Columbia,British Columbia,47,13,2024,2024-11-23,Influenza B,3955,8,0.2
+British Columbia,British Columbia,48,14,2024,2024-11-30,Influenza B,4029,12,0.3
+British Columbia,British Columbia,49,15,2024,2024-12-07,Influenza B,4223,13,0.3
+British Columbia,British Columbia,50,16,2024,2024-12-14,Influenza B,4547,16,0.4
+British Columbia,British Columbia,51,17,2024,2024-12-21,Influenza B,5090,31,0.6
+British Columbia,British Columbia,52,18,2024,2024-12-28,Influenza B,4940,25,0.5
+British Columbia,British Columbia,1,19,2025,2025-01-04,Influenza B,5405,38,0.7
+British Columbia,British Columbia,2,20,2025,2025-01-11,Influenza B,5589,28,0.5
+British Columbia,British Columbia,3,21,2025,2025-01-18,Influenza B,5498,50,0.9
+British Columbia,British Columbia,4,22,2025,2025-01-25,Influenza B,5355,68,1.3
+British Columbia,British Columbia,5,23,2025,2025-02-01,Influenza B,6191,121,2.0
+British Columbia,British Columbia,6,24,2025,2025-02-08,Influenza B,6513,167,2.6
+British Columbia,British Columbia,7,25,2025,2025-02-15,Influenza B,6613,238,3.6
+Canada,Canada,35,1,2024,2024-08-31,Influenza B,18265,7,0.0
+Canada,Canada,36,2,2024,2024-09-07,Influenza B,18364,6,0.0
+Canada,Canada,37,3,2024,2024-09-14,Influenza B,20610,10,0.0
+Canada,Canada,38,4,2024,2024-09-21,Influenza B,21217,10,0.0
+Canada,Canada,39,5,2024,2024-09-28,Influenza B,22509,8,0.0
+Canada,Canada,40,6,2024,2024-10-05,Influenza B,24308,12,0.0
+Canada,Canada,41,7,2024,2024-10-12,Influenza B,25420,8,0.0
+Canada,Canada,42,8,2024,2024-10-19,Influenza B,26012,13,0.0
+Canada,Canada,43,9,2024,2024-10-26,Influenza B,27263,18,0.1
+Canada,Canada,44,10,2024,2024-11-02,Influenza B,27034,20,0.1
+Canada,Canada,45,11,2024,2024-11-09,Influenza B,27960,41,0.1
+Canada,Canada,46,12,2024,2024-11-16,Influenza B,28092,35,0.1
+Canada,Canada,47,13,2024,2024-11-23,Influenza B,29482,42,0.1
+Canada,Canada,48,14,2024,2024-11-30,Influenza B,29451,51,0.2
+Canada,Canada,49,15,2024,2024-12-07,Influenza B,30508,55,0.2
+Canada,Canada,50,16,2024,2024-12-14,Influenza B,32644,64,0.2
+Canada,Canada,51,17,2024,2024-12-21,Influenza B,35105,113,0.3
+Canada,Canada,52,18,2024,2024-12-28,Influenza B,34323,161,0.5
+Canada,Canada,1,19,2025,2025-01-04,Influenza B,41690,185,0.4
+Canada,Canada,2,20,2025,2025-01-11,Influenza B,42586,171,0.4
+Canada,Canada,3,21,2025,2025-01-18,Influenza B,39354,256,0.7
+Canada,Canada,4,22,2025,2025-01-25,Influenza B,38587,333,0.9
+Canada,Canada,5,23,2025,2025-02-01,Influenza B,42406,518,1.2
+Canada,Canada,6,24,2025,2025-02-08,Influenza B,43936,692,1.6
+Canada,Canada,7,25,2025,2025-02-15,Influenza B,43813,877,2.0
+Ontario,Ontario,35,1,2024,2024-08-31,Influenza B,5205,2,0.0
+Ontario,Ontario,36,2,2024,2024-09-07,Influenza B,4929,0,0.0
+Ontario,Ontario,37,3,2024,2024-09-14,Influenza B,5653,0,0.0
+Ontario,Ontario,38,4,2024,2024-09-21,Influenza B,5592,1,0.0
+Ontario,Ontario,39,5,2024,2024-09-28,Influenza B,5838,2,0.0
+Ontario,Ontario,40,6,2024,2024-10-05,Influenza B,6761,3,0.0
+Ontario,Ontario,41,7,2024,2024-10-12,Influenza B,6984,0,0.0
+Ontario,Ontario,42,8,2024,2024-10-19,Influenza B,7261,3,0.0
+Ontario,Ontario,43,9,2024,2024-10-26,Influenza B,7713,3,0.0
+Ontario,Ontario,44,10,2024,2024-11-02,Influenza B,7614,2,0.0
+Ontario,Ontario,45,11,2024,2024-11-09,Influenza B,7814,6,0.1
+Ontario,Ontario,46,12,2024,2024-11-16,Influenza B,6933,5,0.1
+Ontario,Ontario,47,13,2024,2024-11-23,Influenza B,7577,10,0.1
+Ontario,Ontario,48,14,2024,2024-11-30,Influenza B,7431,4,0.1
+Ontario,Ontario,49,15,2024,2024-12-07,Influenza B,7851,3,0.0
+Ontario,Ontario,50,16,2024,2024-12-14,Influenza B,8480,9,0.1
+Ontario,Ontario,51,17,2024,2024-12-21,Influenza B,8966,16,0.2
+Ontario,Ontario,52,18,2024,2024-12-28,Influenza B,8200,16,0.2
+Ontario,Ontario,1,19,2025,2025-01-04,Influenza B,11443,21,0.2
+Ontario,Ontario,2,20,2025,2025-01-11,Influenza B,11647,25,0.2
+Ontario,Ontario,3,21,2025,2025-01-18,Influenza B,10314,35,0.3
+Ontario,Ontario,4,22,2025,2025-01-25,Influenza B,9997,56,0.6
+Ontario,Ontario,5,23,2025,2025-02-01,Influenza B,10987,56,0.5
+Ontario,Ontario,6,24,2025,2025-02-08,Influenza B,10454,70,0.7
+Ontario,Ontario,7,25,2025,2025-02-15,Influenza B,10265,74,0.7
+Prairies,Prairies,35,1,2024,2024-08-31,Influenza B,2125,1,0.0
+Prairies,Prairies,36,2,2024,2024-09-07,Influenza B,2263,2,0.1
+Prairies,Prairies,37,3,2024,2024-09-14,Influenza B,2449,4,0.2
+Prairies,Prairies,38,4,2024,2024-09-21,Influenza B,2456,5,0.2
+Prairies,Prairies,39,5,2024,2024-09-28,Influenza B,2688,0,0.0
+Prairies,Prairies,40,6,2024,2024-10-05,Influenza B,3665,0,0.0
+Prairies,Prairies,41,7,2024,2024-10-12,Influenza B,4381,3,0.1
+Prairies,Prairies,42,8,2024,2024-10-19,Influenza B,4541,4,0.1
+Prairies,Prairies,43,9,2024,2024-10-26,Influenza B,5233,5,0.1
+Prairies,Prairies,44,10,2024,2024-11-02,Influenza B,5347,4,0.1
+Prairies,Prairies,45,11,2024,2024-11-09,Influenza B,5687,10,0.2
+Prairies,Prairies,46,12,2024,2024-11-16,Influenza B,5948,10,0.2
+Prairies,Prairies,47,13,2024,2024-11-23,Influenza B,5917,10,0.2
+Prairies,Prairies,48,14,2024,2024-11-30,Influenza B,6085,11,0.2
+Prairies,Prairies,49,15,2024,2024-12-07,Influenza B,6514,7,0.1
+Prairies,Prairies,50,16,2024,2024-12-14,Influenza B,6820,4,0.1
+Prairies,Prairies,51,17,2024,2024-12-21,Influenza B,7235,19,0.3
+Prairies,Prairies,52,18,2024,2024-12-28,Influenza B,7719,39,0.5
+Prairies,Prairies,1,19,2025,2025-01-04,Influenza B,8322,34,0.4
+Prairies,Prairies,2,20,2025,2025-01-11,Influenza B,8672,25,0.3
+Prairies,Prairies,3,21,2025,2025-01-18,Influenza B,7942,39,0.5
+Prairies,Prairies,4,22,2025,2025-01-25,Influenza B,7661,48,0.6
+Prairies,Prairies,5,23,2025,2025-02-01,Influenza B,8069,57,0.7
+Prairies,Prairies,6,24,2025,2025-02-08,Influenza B,7833,79,1.0
+Prairies,Prairies,7,25,2025,2025-02-15,Influenza B,7433,81,1.1
+Quebec,Quebec,35,1,2024,2024-08-31,Influenza B,6044,2,0.0
+Quebec,Quebec,36,2,2024,2024-09-07,Influenza B,6078,4,0.1
+Quebec,Quebec,37,3,2024,2024-09-14,Influenza B,6977,3,0.0
+Quebec,Quebec,38,4,2024,2024-09-21,Influenza B,7152,4,0.1
+Quebec,Quebec,39,5,2024,2024-09-28,Influenza B,7310,5,0.1
+Quebec,Quebec,40,6,2024,2024-10-05,Influenza B,7083,8,0.1
+Quebec,Quebec,41,7,2024,2024-10-12,Influenza B,7074,4,0.1
+Quebec,Quebec,42,8,2024,2024-10-19,Influenza B,7156,5,0.1
+Quebec,Quebec,43,9,2024,2024-10-26,Influenza B,7404,8,0.1
+Quebec,Quebec,44,10,2024,2024-11-02,Influenza B,7384,12,0.2
+Quebec,Quebec,45,11,2024,2024-11-09,Influenza B,7440,13,0.2
+Quebec,Quebec,46,12,2024,2024-11-16,Influenza B,7881,6,0.1
+Quebec,Quebec,47,13,2024,2024-11-23,Influenza B,8642,13,0.2
+Quebec,Quebec,48,14,2024,2024-11-30,Influenza B,8750,21,0.2
+Quebec,Quebec,49,15,2024,2024-12-07,Influenza B,8844,27,0.3
+Quebec,Quebec,50,16,2024,2024-12-14,Influenza B,9407,31,0.3
+Quebec,Quebec,51,17,2024,2024-12-21,Influenza B,10141,40,0.4
+Quebec,Quebec,52,18,2024,2024-12-28,Influenza B,10141,75,0.7
+Quebec,Quebec,1,19,2025,2025-01-04,Influenza B,12303,79,0.6
+Quebec,Quebec,2,20,2025,2025-01-11,Influenza B,12437,88,0.7
+Quebec,Quebec,3,21,2025,2025-01-18,Influenza B,11525,116,1.0
+Quebec,Quebec,4,22,2025,2025-01-25,Influenza B,11463,146,1.3
+Quebec,Quebec,5,23,2025,2025-02-01,Influenza B,12881,250,1.9
+Quebec,Quebec,6,24,2025,2025-02-08,Influenza B,14550,347,2.4
+Quebec,Quebec,7,25,2025,2025-02-15,Influenza B,14933,441,3.0
+Territories,Territories,35,1,2024,2024-08-31,Influenza B,132,0,0.0
+Territories,Territories,36,2,2024,2024-09-07,Influenza B,146,0,0.0
+Territories,Territories,37,3,2024,2024-09-14,Influenza B,145,1,0.7
+Territories,Territories,38,4,2024,2024-09-21,Influenza B,170,0,0.0
+Territories,Territories,39,5,2024,2024-09-28,Influenza B,173,0,0.0
+Territories,Territories,40,6,2024,2024-10-05,Influenza B,109,0,0.0
+Territories,Territories,41,7,2024,2024-10-12,Influenza B,187,0,0.0
+Territories,Territories,42,8,2024,2024-10-19,Influenza B,133,0,0.0
+Territories,Territories,43,9,2024,2024-10-26,Influenza B,163,0,0.0
+Territories,Territories,44,10,2024,2024-11-02,Influenza B,108,0,0.0
+Territories,Territories,45,11,2024,2024-11-09,Influenza B,139,0,0.0
+Territories,Territories,46,12,2024,2024-11-16,Influenza B,155,0,0.0
+Territories,Territories,47,13,2024,2024-11-23,Influenza B,171,0,0.0
+Territories,Territories,48,14,2024,2024-11-30,Influenza B,112,0,0.0
+Territories,Territories,49,15,2024,2024-12-07,Influenza B,116,0,0.0
+Territories,Territories,50,16,2024,2024-12-14,Influenza B,153,0,0.0
+Territories,Territories,51,17,2024,2024-12-21,Influenza B,191,2,1.0
+Territories,Territories,52,18,2024,2024-12-28,Influenza B,117,0,0.0
+Territories,Territories,1,19,2025,2025-01-04,Influenza B,147,0,0.0
+Territories,Territories,2,20,2025,2025-01-11,Influenza B,213,1,0.5
+Territories,Territories,3,21,2025,2025-01-18,Influenza B,200,6,3.0
+Territories,Territories,4,22,2025,2025-01-25,Influenza B,252,3,1.2
+Territories,Territories,5,23,2025,2025-02-01,Influenza B,268,5,1.9
+Territories,Territories,6,24,2025,2025-02-08,Influenza B,248,1,0.4
+Territories,Territories,7,25,2025,2025-02-15,Influenza B,271,3,1.1
+Atlantic,Atlantic,35,1,2024,2024-08-31,RSV,2146,2,0.1
+Atlantic,Atlantic,36,2,2024,2024-09-07,RSV,2218,0,0.0
+Atlantic,Atlantic,37,3,2024,2024-09-14,RSV,2467,1,0.0
+Atlantic,Atlantic,38,4,2024,2024-09-21,RSV,2719,0,0.0
+Atlantic,Atlantic,39,5,2024,2024-09-28,RSV,2982,3,0.1
+Atlantic,Atlantic,40,6,2024,2024-10-05,RSV,3026,5,0.2
+Atlantic,Atlantic,41,7,2024,2024-10-12,RSV,2877,10,0.3
+Atlantic,Atlantic,42,8,2024,2024-10-19,RSV,2819,9,0.3
+Atlantic,Atlantic,43,9,2024,2024-10-26,RSV,2948,6,0.2
+Atlantic,Atlantic,44,10,2024,2024-11-02,RSV,2682,7,0.3
+Atlantic,Atlantic,45,11,2024,2024-11-09,RSV,2958,13,0.4
+Atlantic,Atlantic,46,12,2024,2024-11-16,RSV,2872,36,1.3
+Atlantic,Atlantic,47,13,2024,2024-11-23,RSV,3120,46,1.5
+Atlantic,Atlantic,48,14,2024,2024-11-30,RSV,2978,83,2.8
+Atlantic,Atlantic,49,15,2024,2024-12-07,RSV,2906,121,4.2
+Atlantic,Atlantic,50,16,2024,2024-12-14,RSV,3203,178,5.6
+Atlantic,Atlantic,51,17,2024,2024-12-21,RSV,3396,274,8.1
+Atlantic,Atlantic,52,18,2024,2024-12-28,RSV,3122,310,9.9
+Atlantic,Atlantic,1,19,2025,2025-01-04,RSV,3911,380,9.7
+Atlantic,Atlantic,2,20,2025,2025-01-11,RSV,3925,355,9.0
+Atlantic,Atlantic,3,21,2025,2025-01-18,RSV,3786,429,11.3
+Atlantic,Atlantic,4,22,2025,2025-01-25,RSV,3766,472,12.5
+Atlantic,Atlantic,5,23,2025,2025-02-01,RSV,3915,502,12.8
+Atlantic,Atlantic,6,24,2025,2025-02-08,RSV,4244,555,13.1
+Atlantic,Atlantic,7,25,2025,2025-02-15,RSV,4265,476,11.2
+British Columbia,British Columbia,35,1,2024,2024-08-31,RSV,2517,12,0.5
+British Columbia,British Columbia,36,2,2024,2024-09-07,RSV,2709,2,0.1
+British Columbia,British Columbia,37,3,2024,2024-09-14,RSV,2826,9,0.3
+British Columbia,British Columbia,38,4,2024,2024-09-21,RSV,3033,12,0.4
+British Columbia,British Columbia,39,5,2024,2024-09-28,RSV,3415,7,0.2
+British Columbia,British Columbia,40,6,2024,2024-10-05,RSV,3539,14,0.4
+British Columbia,British Columbia,41,7,2024,2024-10-12,RSV,3780,21,0.6
+British Columbia,British Columbia,42,8,2024,2024-10-19,RSV,3903,41,1.1
+British Columbia,British Columbia,43,9,2024,2024-10-26,RSV,3586,39,1.1
+British Columbia,British Columbia,44,10,2024,2024-11-02,RSV,3660,47,1.3
+British Columbia,British Columbia,45,11,2024,2024-11-09,RSV,3715,79,2.1
+British Columbia,British Columbia,46,12,2024,2024-11-16,RSV,4081,151,3.7
+British Columbia,British Columbia,47,13,2024,2024-11-23,RSV,3820,197,5.2
+British Columbia,British Columbia,48,14,2024,2024-11-30,RSV,3907,298,7.6
+British Columbia,British Columbia,49,15,2024,2024-12-07,RSV,4091,425,10.4
+British Columbia,British Columbia,50,16,2024,2024-12-14,RSV,4399,451,10.3
+British Columbia,British Columbia,51,17,2024,2024-12-21,RSV,4801,577,12.0
+British Columbia,British Columbia,52,18,2024,2024-12-28,RSV,4796,584,12.2
+British Columbia,British Columbia,1,19,2025,2025-01-04,RSV,5205,593,11.4
+British Columbia,British Columbia,2,20,2025,2025-01-11,RSV,5375,500,9.3
+British Columbia,British Columbia,3,21,2025,2025-01-18,RSV,5339,496,9.3
+British Columbia,British Columbia,4,22,2025,2025-01-25,RSV,5143,458,8.9
+British Columbia,British Columbia,5,23,2025,2025-02-01,RSV,5912,482,8.2
+British Columbia,British Columbia,6,24,2025,2025-02-08,RSV,6258,457,7.3
+British Columbia,British Columbia,7,25,2025,2025-02-15,RSV,6372,398,6.2
+Canada,Canada,35,1,2024,2024-08-31,RSV,17044,88,0.5
+Canada,Canada,36,2,2024,2024-09-07,RSV,17106,77,0.5
+Canada,Canada,37,3,2024,2024-09-14,RSV,19058,118,0.6
+Canada,Canada,38,4,2024,2024-09-21,RSV,19795,111,0.6
+Canada,Canada,39,5,2024,2024-09-28,RSV,21225,169,0.8
+Canada,Canada,40,6,2024,2024-10-05,RSV,22942,180,0.8
+Canada,Canada,41,7,2024,2024-10-12,RSV,24087,254,1.1
+Canada,Canada,42,8,2024,2024-10-19,RSV,24723,326,1.3
+Canada,Canada,43,9,2024,2024-10-26,RSV,25888,385,1.5
+Canada,Canada,44,10,2024,2024-11-02,RSV,25545,495,1.9
+Canada,Canada,45,11,2024,2024-11-09,RSV,26569,714,2.7
+Canada,Canada,46,12,2024,2024-11-16,RSV,26344,1078,4.1
+Canada,Canada,47,13,2024,2024-11-23,RSV,27468,1501,5.5
+Canada,Canada,48,14,2024,2024-11-30,RSV,27397,1940,7.1
+Canada,Canada,49,15,2024,2024-12-07,RSV,28283,2410,8.5
+Canada,Canada,50,16,2024,2024-12-14,RSV,30206,2909,9.6
+Canada,Canada,51,17,2024,2024-12-21,RSV,32409,3584,11.1
+Canada,Canada,52,18,2024,2024-12-28,RSV,31674,3720,11.7
+Canada,Canada,1,19,2025,2025-01-04,RSV,38264,4120,10.8
+Canada,Canada,2,20,2025,2025-01-11,RSV,39168,3570,9.1
+Canada,Canada,3,21,2025,2025-01-18,RSV,36304,3172,8.7
+Canada,Canada,4,22,2025,2025-01-25,RSV,35621,2884,8.1
+Canada,Canada,5,23,2025,2025-02-01,RSV,38677,2662,6.9
+Canada,Canada,6,24,2025,2025-02-08,RSV,39865,2368,5.9
+Canada,Canada,7,25,2025,2025-02-15,RSV,39648,1938,4.9
+Ontario,Ontario,35,1,2024,2024-08-31,RSV,5205,13,0.2
+Ontario,Ontario,36,2,2024,2024-09-07,RSV,4932,13,0.3
+Ontario,Ontario,37,3,2024,2024-09-14,RSV,5654,25,0.4
+Ontario,Ontario,38,4,2024,2024-09-21,RSV,5593,20,0.4
+Ontario,Ontario,39,5,2024,2024-09-28,RSV,5839,24,0.4
+Ontario,Ontario,40,6,2024,2024-10-05,RSV,6767,40,0.6
+Ontario,Ontario,41,7,2024,2024-10-12,RSV,6985,41,0.6
+Ontario,Ontario,42,8,2024,2024-10-19,RSV,7262,73,1.0
+Ontario,Ontario,43,9,2024,2024-10-26,RSV,7718,90,1.2
+Ontario,Ontario,44,10,2024,2024-11-02,RSV,7619,117,1.5
+Ontario,Ontario,45,11,2024,2024-11-09,RSV,7814,180,2.3
+Ontario,Ontario,46,12,2024,2024-11-16,RSV,6934,255,3.7
+Ontario,Ontario,47,13,2024,2024-11-23,RSV,7583,298,3.9
+Ontario,Ontario,48,14,2024,2024-11-30,RSV,7436,420,5.6
+Ontario,Ontario,49,15,2024,2024-12-07,RSV,7860,500,6.4
+Ontario,Ontario,50,16,2024,2024-12-14,RSV,8483,634,7.5
+Ontario,Ontario,51,17,2024,2024-12-21,RSV,8964,762,8.5
+Ontario,Ontario,52,18,2024,2024-12-28,RSV,8202,685,8.4
+Ontario,Ontario,1,19,2025,2025-01-04,RSV,11443,870,7.6
+Ontario,Ontario,2,20,2025,2025-01-11,RSV,11643,786,6.8
+Ontario,Ontario,3,21,2025,2025-01-18,RSV,10313,613,5.9
+Ontario,Ontario,4,22,2025,2025-01-25,RSV,9993,544,5.4
+Ontario,Ontario,5,23,2025,2025-02-01,RSV,10989,450,4.1
+Ontario,Ontario,6,24,2025,2025-02-08,RSV,10445,341,3.3
+Ontario,Ontario,7,25,2025,2025-02-15,RSV,10266,287,2.8
+Prairies,Prairies,35,1,2024,2024-08-31,RSV,1946,4,0.2
+Prairies,Prairies,36,2,2024,2024-09-07,RSV,2071,2,0.1
+Prairies,Prairies,37,3,2024,2024-09-14,RSV,2206,7,0.3
+Prairies,Prairies,38,4,2024,2024-09-21,RSV,2232,3,0.1
+Prairies,Prairies,39,5,2024,2024-09-28,RSV,2519,12,0.5
+Prairies,Prairies,40,6,2024,2024-10-05,RSV,3441,4,0.1
+Prairies,Prairies,41,7,2024,2024-10-12,RSV,4084,21,0.5
+Prairies,Prairies,42,8,2024,2024-10-19,RSV,4265,21,0.5
+Prairies,Prairies,43,9,2024,2024-10-26,RSV,4928,32,0.6
+Prairies,Prairies,44,10,2024,2024-11-02,RSV,5020,45,0.9
+Prairies,Prairies,45,11,2024,2024-11-09,RSV,5383,93,1.7
+Prairies,Prairies,46,12,2024,2024-11-16,RSV,5638,183,3.2
+Prairies,Prairies,47,13,2024,2024-11-23,RSV,5572,297,5.3
+Prairies,Prairies,48,14,2024,2024-11-30,RSV,5758,404,7.0
+Prairies,Prairies,49,15,2024,2024-12-07,RSV,6158,515,8.4
+Prairies,Prairies,50,16,2024,2024-12-14,RSV,6469,695,10.7
+Prairies,Prairies,51,17,2024,2024-12-21,RSV,6817,846,12.4
+Prairies,Prairies,52,18,2024,2024-12-28,RSV,7414,1078,14.5
+Prairies,Prairies,1,19,2025,2025-01-04,RSV,7903,1081,13.7
+Prairies,Prairies,2,20,2025,2025-01-11,RSV,8140,971,11.9
+Prairies,Prairies,3,21,2025,2025-01-18,RSV,7484,884,11.8
+Prairies,Prairies,4,22,2025,2025-01-25,RSV,7288,768,10.5
+Prairies,Prairies,5,23,2025,2025-02-01,RSV,7690,656,8.5
+Prairies,Prairies,6,24,2025,2025-02-08,RSV,7451,504,6.8
+Prairies,Prairies,7,25,2025,2025-02-15,RSV,7074,399,5.6
+Quebec,Quebec,35,1,2024,2024-08-31,RSV,5098,57,1.1
+Quebec,Quebec,36,2,2024,2024-09-07,RSV,5030,60,1.2
+Quebec,Quebec,37,3,2024,2024-09-14,RSV,5761,75,1.3
+Quebec,Quebec,38,4,2024,2024-09-21,RSV,6048,76,1.3
+Quebec,Quebec,39,5,2024,2024-09-28,RSV,6297,123,2.0
+Quebec,Quebec,40,6,2024,2024-10-05,RSV,6060,117,1.9
+Quebec,Quebec,41,7,2024,2024-10-12,RSV,6174,161,2.6
+Quebec,Quebec,42,8,2024,2024-10-19,RSV,6341,182,2.9
+Quebec,Quebec,43,9,2024,2024-10-26,RSV,6545,218,3.3
+Quebec,Quebec,44,10,2024,2024-11-02,RSV,6456,278,4.3
+Quebec,Quebec,45,11,2024,2024-11-09,RSV,6560,347,5.3
+Quebec,Quebec,46,12,2024,2024-11-16,RSV,6664,452,6.8
+Quebec,Quebec,47,13,2024,2024-11-23,RSV,7202,663,9.2
+Quebec,Quebec,48,14,2024,2024-11-30,RSV,7206,735,10.2
+Quebec,Quebec,49,15,2024,2024-12-07,RSV,7152,846,11.8
+Quebec,Quebec,50,16,2024,2024-12-14,RSV,7499,949,12.7
+Quebec,Quebec,51,17,2024,2024-12-21,RSV,8240,1118,13.6
+Quebec,Quebec,52,18,2024,2024-12-28,RSV,8022,1056,13.2
+Quebec,Quebec,1,19,2025,2025-01-04,RSV,9655,1181,12.2
+Quebec,Quebec,2,20,2025,2025-01-11,RSV,9872,948,9.6
+Quebec,Quebec,3,21,2025,2025-01-18,RSV,9182,745,8.1
+Quebec,Quebec,4,22,2025,2025-01-25,RSV,9179,628,6.8
+Quebec,Quebec,5,23,2025,2025-02-01,RSV,9903,554,5.6
+Quebec,Quebec,6,24,2025,2025-02-08,RSV,11219,491,4.4
+Quebec,Quebec,7,25,2025,2025-02-15,RSV,11400,356,3.1
+Territories,Territories,35,1,2024,2024-08-31,RSV,132,0,0.0
+Territories,Territories,36,2,2024,2024-09-07,RSV,146,0,0.0
+Territories,Territories,37,3,2024,2024-09-14,RSV,144,1,0.7
+Territories,Territories,38,4,2024,2024-09-21,RSV,170,0,0.0
+Territories,Territories,39,5,2024,2024-09-28,RSV,173,0,0.0
+Territories,Territories,40,6,2024,2024-10-05,RSV,109,0,0.0
+Territories,Territories,41,7,2024,2024-10-12,RSV,187,0,0.0
+Territories,Territories,42,8,2024,2024-10-19,RSV,133,0,0.0
+Territories,Territories,43,9,2024,2024-10-26,RSV,163,0,0.0
+Territories,Territories,44,10,2024,2024-11-02,RSV,108,1,0.9
+Territories,Territories,45,11,2024,2024-11-09,RSV,139,2,1.4
+Territories,Territories,46,12,2024,2024-11-16,RSV,155,1,0.6
+Territories,Territories,47,13,2024,2024-11-23,RSV,171,0,0.0
+Territories,Territories,48,14,2024,2024-11-30,RSV,112,0,0.0
+Territories,Territories,49,15,2024,2024-12-07,RSV,116,3,2.6
+Territories,Territories,50,16,2024,2024-12-14,RSV,153,2,1.3
+Territories,Territories,51,17,2024,2024-12-21,RSV,191,7,3.7
+Territories,Territories,52,18,2024,2024-12-28,RSV,118,7,5.9
+Territories,Territories,1,19,2025,2025-01-04,RSV,147,15,10.2
+Territories,Territories,2,20,2025,2025-01-11,RSV,213,10,4.7
+Territories,Territories,3,21,2025,2025-01-18,RSV,200,5,2.5
+Territories,Territories,4,22,2025,2025-01-25,RSV,252,14,5.6
+Territories,Territories,5,23,2025,2025-02-01,RSV,268,18,6.7
+Territories,Territories,6,24,2025,2025-02-08,RSV,248,20,8.1
+Territories,Territories,7,25,2025,2025-02-15,RSV,271,22,8.1
+Atlantic,Atlantic,35,1,2024,2024-08-31,HPIV,576,8,1.4
+Atlantic,Atlantic,36,2,2024,2024-09-07,HPIV,577,7,1.2
+Atlantic,Atlantic,37,3,2024,2024-09-14,HPIV,698,8,1.1
+Atlantic,Atlantic,38,4,2024,2024-09-21,HPIV,847,10,1.2
+Atlantic,Atlantic,39,5,2024,2024-09-28,HPIV,834,6,0.7
+Atlantic,Atlantic,40,6,2024,2024-10-05,HPIV,889,14,1.6
+Atlantic,Atlantic,41,7,2024,2024-10-12,HPIV,921,16,1.7
+Atlantic,Atlantic,42,8,2024,2024-10-19,HPIV,906,16,1.8
+Atlantic,Atlantic,43,9,2024,2024-10-26,HPIV,968,21,2.2
+Atlantic,Atlantic,44,10,2024,2024-11-02,HPIV,987,19,1.9
+Atlantic,Atlantic,45,11,2024,2024-11-09,HPIV,1122,19,1.7
+Atlantic,Atlantic,46,12,2024,2024-11-16,HPIV,990,20,2.0
+Atlantic,Atlantic,47,13,2024,2024-11-23,HPIV,1147,26,2.3
+Atlantic,Atlantic,48,14,2024,2024-11-30,HPIV,1005,44,4.4
+Atlantic,Atlantic,49,15,2024,2024-12-07,HPIV,914,19,2.1
+Atlantic,Atlantic,50,16,2024,2024-12-14,HPIV,998,24,2.4
+Atlantic,Atlantic,51,17,2024,2024-12-21,HPIV,976,25,2.6
+Atlantic,Atlantic,52,18,2024,2024-12-28,HPIV,775,27,3.5
+Atlantic,Atlantic,1,19,2025,2025-01-04,HPIV,984,24,2.4
+Atlantic,Atlantic,2,20,2025,2025-01-11,HPIV,1126,31,2.8
+Atlantic,Atlantic,3,21,2025,2025-01-18,HPIV,1031,27,2.6
+Atlantic,Atlantic,4,22,2025,2025-01-25,HPIV,1029,22,2.1
+Atlantic,Atlantic,5,23,2025,2025-02-01,HPIV,852,17,2.0
+Atlantic,Atlantic,6,24,2025,2025-02-08,HPIV,790,22,2.8
+Atlantic,Atlantic,7,25,2025,2025-02-15,HPIV,737,11,1.5
+British Columbia,British Columbia,35,1,2024,2024-08-31,HPIV,621,9,1.4
+British Columbia,British Columbia,36,2,2024,2024-09-07,HPIV,715,12,1.7
+British Columbia,British Columbia,37,3,2024,2024-09-14,HPIV,713,10,1.4
+British Columbia,British Columbia,38,4,2024,2024-09-21,HPIV,831,22,2.6
+British Columbia,British Columbia,39,5,2024,2024-09-28,HPIV,843,14,1.7
+British Columbia,British Columbia,40,6,2024,2024-10-05,HPIV,878,18,2.1
+British Columbia,British Columbia,41,7,2024,2024-10-12,HPIV,901,20,2.2
+British Columbia,British Columbia,42,8,2024,2024-10-19,HPIV,998,21,2.1
+British Columbia,British Columbia,43,9,2024,2024-10-26,HPIV,1003,40,4.0
+British Columbia,British Columbia,44,10,2024,2024-11-02,HPIV,997,33,3.3
+British Columbia,British Columbia,45,11,2024,2024-11-09,HPIV,1205,62,5.1
+British Columbia,British Columbia,46,12,2024,2024-11-16,HPIV,1418,55,3.9
+British Columbia,British Columbia,47,13,2024,2024-11-23,HPIV,1396,56,4.0
+British Columbia,British Columbia,48,14,2024,2024-11-30,HPIV,1488,88,5.9
+British Columbia,British Columbia,49,15,2024,2024-12-07,HPIV,1627,86,5.3
+British Columbia,British Columbia,50,16,2024,2024-12-14,HPIV,1688,83,4.9
+British Columbia,British Columbia,51,17,2024,2024-12-21,HPIV,1669,91,5.5
+British Columbia,British Columbia,52,18,2024,2024-12-28,HPIV,1481,65,4.4
+British Columbia,British Columbia,1,19,2025,2025-01-04,HPIV,1596,63,3.9
+British Columbia,British Columbia,2,20,2025,2025-01-11,HPIV,1643,64,3.9
+British Columbia,British Columbia,3,21,2025,2025-01-18,HPIV,1686,41,2.4
+British Columbia,British Columbia,4,22,2025,2025-01-25,HPIV,1702,36,2.1
+British Columbia,British Columbia,5,23,2025,2025-02-01,HPIV,1883,34,1.8
+British Columbia,British Columbia,6,24,2025,2025-02-08,HPIV,2000,34,1.7
+British Columbia,British Columbia,7,25,2025,2025-02-15,HPIV,1649,24,1.5
+Canada,Canada,35,1,2024,2024-08-31,HPIV,7590,114,1.5
+Canada,Canada,36,2,2024,2024-09-07,HPIV,7534,127,1.7
+Canada,Canada,37,3,2024,2024-09-14,HPIV,8498,105,1.2
+Canada,Canada,38,4,2024,2024-09-21,HPIV,8906,116,1.3
+Canada,Canada,39,5,2024,2024-09-28,HPIV,9435,109,1.2
+Canada,Canada,40,6,2024,2024-10-05,HPIV,10372,153,1.5
+Canada,Canada,41,7,2024,2024-10-12,HPIV,10427,177,1.7
+Canada,Canada,42,8,2024,2024-10-19,HPIV,10635,169,1.6
+Canada,Canada,43,9,2024,2024-10-26,HPIV,11243,236,2.1
+Canada,Canada,44,10,2024,2024-11-02,HPIV,10926,233,2.1
+Canada,Canada,45,11,2024,2024-11-09,HPIV,11306,247,2.2
+Canada,Canada,46,12,2024,2024-11-16,HPIV,10803,283,2.6
+Canada,Canada,47,13,2024,2024-11-23,HPIV,11659,270,2.3
+Canada,Canada,48,14,2024,2024-11-30,HPIV,11688,332,2.8
+Canada,Canada,49,15,2024,2024-12-07,HPIV,11892,290,2.4
+Canada,Canada,50,16,2024,2024-12-14,HPIV,12624,312,2.5
+Canada,Canada,51,17,2024,2024-12-21,HPIV,13027,318,2.4
+Canada,Canada,52,18,2024,2024-12-28,HPIV,11952,276,2.3
+Canada,Canada,1,19,2025,2025-01-04,HPIV,14702,291,2.0
+Canada,Canada,2,20,2025,2025-01-11,HPIV,15085,275,1.8
+Canada,Canada,3,21,2025,2025-01-18,HPIV,13912,197,1.4
+Canada,Canada,4,22,2025,2025-01-25,HPIV,13636,161,1.2
+Canada,Canada,5,23,2025,2025-02-01,HPIV,14229,173,1.2
+Canada,Canada,6,24,2025,2025-02-08,HPIV,13777,150,1.1
+Canada,Canada,7,25,2025,2025-02-15,HPIV,12988,113,0.9
+Ontario,Ontario,35,1,2024,2024-08-31,HPIV,3723,57,1.5
+Ontario,Ontario,36,2,2024,2024-09-07,HPIV,3532,68,1.9
+Ontario,Ontario,37,3,2024,2024-09-14,HPIV,4132,52,1.3
+Ontario,Ontario,38,4,2024,2024-09-21,HPIV,4146,45,1.1
+Ontario,Ontario,39,5,2024,2024-09-28,HPIV,4419,52,1.2
+Ontario,Ontario,40,6,2024,2024-10-05,HPIV,5247,76,1.4
+Ontario,Ontario,41,7,2024,2024-10-12,HPIV,5270,90,1.7
+Ontario,Ontario,42,8,2024,2024-10-19,HPIV,5260,82,1.6
+Ontario,Ontario,43,9,2024,2024-10-26,HPIV,5660,104,1.8
+Ontario,Ontario,44,10,2024,2024-11-02,HPIV,5501,122,2.2
+Ontario,Ontario,45,11,2024,2024-11-09,HPIV,5492,107,1.9
+Ontario,Ontario,46,12,2024,2024-11-16,HPIV,4840,147,3.0
+Ontario,Ontario,47,13,2024,2024-11-23,HPIV,5466,129,2.4
+Ontario,Ontario,48,14,2024,2024-11-30,HPIV,5395,130,2.4
+Ontario,Ontario,49,15,2024,2024-12-07,HPIV,5624,108,1.9
+Ontario,Ontario,50,16,2024,2024-12-14,HPIV,6220,132,2.1
+Ontario,Ontario,51,17,2024,2024-12-21,HPIV,6451,129,2.0
+Ontario,Ontario,52,18,2024,2024-12-28,HPIV,5980,123,2.1
+Ontario,Ontario,1,19,2025,2025-01-04,HPIV,8051,131,1.6
+Ontario,Ontario,2,20,2025,2025-01-11,HPIV,8179,109,1.3
+Ontario,Ontario,3,21,2025,2025-01-18,HPIV,7286,74,1.0
+Ontario,Ontario,4,22,2025,2025-01-25,HPIV,7043,51,0.7
+Ontario,Ontario,5,23,2025,2025-02-01,HPIV,7629,69,0.9
+Ontario,Ontario,6,24,2025,2025-02-08,HPIV,7061,56,0.8
+Ontario,Ontario,7,25,2025,2025-02-15,HPIV,7083,40,0.6
+Prairies,Prairies,35,1,2024,2024-08-31,HPIV,1214,14,1.2
+Prairies,Prairies,36,2,2024,2024-09-07,HPIV,1298,17,1.3
+Prairies,Prairies,37,3,2024,2024-09-14,HPIV,1368,12,0.9
+Prairies,Prairies,38,4,2024,2024-09-21,HPIV,1498,11,0.7
+Prairies,Prairies,39,5,2024,2024-09-28,HPIV,1625,15,0.9
+Prairies,Prairies,40,6,2024,2024-10-05,HPIV,1736,17,1.0
+Prairies,Prairies,41,7,2024,2024-10-12,HPIV,1659,23,1.4
+Prairies,Prairies,42,8,2024,2024-10-19,HPIV,1761,23,1.3
+Prairies,Prairies,43,9,2024,2024-10-26,HPIV,1818,25,1.4
+Prairies,Prairies,44,10,2024,2024-11-02,HPIV,1771,21,1.2
+Prairies,Prairies,45,11,2024,2024-11-09,HPIV,1682,26,1.5
+Prairies,Prairies,46,12,2024,2024-11-16,HPIV,1797,36,2.0
+Prairies,Prairies,47,13,2024,2024-11-23,HPIV,1783,37,2.1
+Prairies,Prairies,48,14,2024,2024-11-30,HPIV,2001,34,1.7
+Prairies,Prairies,49,15,2024,2024-12-07,HPIV,2036,52,2.6
+Prairies,Prairies,50,16,2024,2024-12-14,HPIV,2081,51,2.5
+Prairies,Prairies,51,17,2024,2024-12-21,HPIV,2162,42,1.9
+Prairies,Prairies,52,18,2024,2024-12-28,HPIV,2205,38,1.7
+Prairies,Prairies,1,19,2025,2025-01-04,HPIV,2428,55,2.3
+Prairies,Prairies,2,20,2025,2025-01-11,HPIV,2501,54,2.2
+Prairies,Prairies,3,21,2025,2025-01-18,HPIV,2269,41,1.8
+Prairies,Prairies,4,22,2025,2025-01-25,HPIV,2224,39,1.8
+Prairies,Prairies,5,23,2025,2025-02-01,HPIV,2225,34,1.5
+Prairies,Prairies,6,24,2025,2025-02-08,HPIV,2232,29,1.3
+Prairies,Prairies,7,25,2025,2025-02-15,HPIV,1945,29,1.5
+Quebec,Quebec,35,1,2024,2024-08-31,HPIV,1456,26,1.8
+Quebec,Quebec,36,2,2024,2024-09-07,HPIV,1412,23,1.6
+Quebec,Quebec,37,3,2024,2024-09-14,HPIV,1587,23,1.4
+Quebec,Quebec,38,4,2024,2024-09-21,HPIV,1584,28,1.8
+Quebec,Quebec,39,5,2024,2024-09-28,HPIV,1714,22,1.3
+Quebec,Quebec,40,6,2024,2024-10-05,HPIV,1622,28,1.7
+Quebec,Quebec,41,7,2024,2024-10-12,HPIV,1676,28,1.7
+Quebec,Quebec,42,8,2024,2024-10-19,HPIV,1710,27,1.6
+Quebec,Quebec,43,9,2024,2024-10-26,HPIV,1794,46,2.6
+Quebec,Quebec,44,10,2024,2024-11-02,HPIV,1670,38,2.3
+Quebec,Quebec,45,11,2024,2024-11-09,HPIV,1805,33,1.8
+Quebec,Quebec,46,12,2024,2024-11-16,HPIV,1758,25,1.4
+Quebec,Quebec,47,13,2024,2024-11-23,HPIV,1867,22,1.2
+Quebec,Quebec,48,14,2024,2024-11-30,HPIV,1799,36,2.0
+Quebec,Quebec,49,15,2024,2024-12-07,HPIV,1691,25,1.5
+Quebec,Quebec,50,16,2024,2024-12-14,HPIV,1637,22,1.3
+Quebec,Quebec,51,17,2024,2024-12-21,HPIV,1769,31,1.8
+Quebec,Quebec,52,18,2024,2024-12-28,HPIV,1511,23,1.5
+Quebec,Quebec,1,19,2025,2025-01-04,HPIV,1643,18,1.1
+Quebec,Quebec,2,20,2025,2025-01-11,HPIV,1636,17,1.0
+Quebec,Quebec,3,21,2025,2025-01-18,HPIV,1640,14,0.9
+Quebec,Quebec,4,22,2025,2025-01-25,HPIV,1638,13,0.8
+Quebec,Quebec,5,23,2025,2025-02-01,HPIV,1640,19,1.2
+Quebec,Quebec,6,24,2025,2025-02-08,HPIV,1694,9,0.5
+Quebec,Quebec,7,25,2025,2025-02-15,HPIV,1574,9,0.6
+Territories,Territories,35,1,2024,2024-08-31,HPIV,N/A,N/A,N/A
+Territories,Territories,36,2,2024,2024-09-07,HPIV,N/A,N/A,N/A
+Territories,Territories,37,3,2024,2024-09-14,HPIV,N/A,N/A,N/A
+Territories,Territories,38,4,2024,2024-09-21,HPIV,N/A,N/A,N/A
+Territories,Territories,39,5,2024,2024-09-28,HPIV,N/A,N/A,N/A
+Territories,Territories,40,6,2024,2024-10-05,HPIV,N/A,N/A,N/A
+Territories,Territories,41,7,2024,2024-10-12,HPIV,N/A,N/A,N/A
+Territories,Territories,42,8,2024,2024-10-19,HPIV,N/A,N/A,N/A
+Territories,Territories,43,9,2024,2024-10-26,HPIV,N/A,N/A,N/A
+Territories,Territories,44,10,2024,2024-11-02,HPIV,N/A,N/A,N/A
+Territories,Territories,45,11,2024,2024-11-09,HPIV,N/A,N/A,N/A
+Territories,Territories,46,12,2024,2024-11-16,HPIV,N/A,N/A,N/A
+Territories,Territories,47,13,2024,2024-11-23,HPIV,N/A,N/A,N/A
+Territories,Territories,48,14,2024,2024-11-30,HPIV,N/A,N/A,N/A
+Territories,Territories,49,15,2024,2024-12-07,HPIV,N/A,N/A,N/A
+Territories,Territories,50,16,2024,2024-12-14,HPIV,N/A,N/A,N/A
+Territories,Territories,51,17,2024,2024-12-21,HPIV,N/A,N/A,N/A
+Territories,Territories,52,18,2024,2024-12-28,HPIV,N/A,N/A,N/A
+Territories,Territories,1,19,2025,2025-01-04,HPIV,N/A,N/A,N/A
+Territories,Territories,2,20,2025,2025-01-11,HPIV,N/A,N/A,N/A
+Territories,Territories,3,21,2025,2025-01-18,HPIV,N/A,N/A,N/A
+Territories,Territories,4,22,2025,2025-01-25,HPIV,N/A,N/A,N/A
+Territories,Territories,5,23,2025,2025-02-01,HPIV,N/A,N/A,N/A
+Territories,Territories,6,24,2025,2025-02-08,HPIV,N/A,N/A,N/A
+Territories,Territories,7,25,2025,2025-02-15,HPIV,N/A,N/A,N/A
+Atlantic,Atlantic,35,1,2024,2024-08-31,ADV,576,10,1.7
+Atlantic,Atlantic,36,2,2024,2024-09-07,ADV,577,8,1.4
+Atlantic,Atlantic,37,3,2024,2024-09-14,ADV,698,12,1.7
+Atlantic,Atlantic,38,4,2024,2024-09-21,ADV,847,10,1.2
+Atlantic,Atlantic,39,5,2024,2024-09-28,ADV,834,8,1.0
+Atlantic,Atlantic,40,6,2024,2024-10-05,ADV,889,7,0.8
+Atlantic,Atlantic,41,7,2024,2024-10-12,ADV,921,14,1.5
+Atlantic,Atlantic,42,8,2024,2024-10-19,ADV,906,11,1.2
+Atlantic,Atlantic,43,9,2024,2024-10-26,ADV,968,11,1.1
+Atlantic,Atlantic,44,10,2024,2024-11-02,ADV,987,17,1.7
+Atlantic,Atlantic,45,11,2024,2024-11-09,ADV,1122,24,2.1
+Atlantic,Atlantic,46,12,2024,2024-11-16,ADV,990,25,2.5
+Atlantic,Atlantic,47,13,2024,2024-11-23,ADV,1147,33,2.9
+Atlantic,Atlantic,48,14,2024,2024-11-30,ADV,1005,38,3.8
+Atlantic,Atlantic,49,15,2024,2024-12-07,ADV,915,43,4.7
+Atlantic,Atlantic,50,16,2024,2024-12-14,ADV,1017,52,5.1
+Atlantic,Atlantic,51,17,2024,2024-12-21,ADV,977,39,4.0
+Atlantic,Atlantic,52,18,2024,2024-12-28,ADV,776,34,4.4
+Atlantic,Atlantic,1,19,2025,2025-01-04,ADV,984,63,6.4
+Atlantic,Atlantic,2,20,2025,2025-01-11,ADV,1126,62,5.5
+Atlantic,Atlantic,3,21,2025,2025-01-18,ADV,1035,62,6.0
+Atlantic,Atlantic,4,22,2025,2025-01-25,ADV,1027,49,4.8
+Atlantic,Atlantic,5,23,2025,2025-02-01,ADV,856,33,3.9
+Atlantic,Atlantic,6,24,2025,2025-02-08,ADV,804,19,2.4
+Atlantic,Atlantic,7,25,2025,2025-02-15,ADV,746,8,1.1
+British Columbia,British Columbia,35,1,2024,2024-08-31,ADV,621,2,0.3
+British Columbia,British Columbia,36,2,2024,2024-09-07,ADV,715,9,1.3
+British Columbia,British Columbia,37,3,2024,2024-09-14,ADV,713,5,0.7
+British Columbia,British Columbia,38,4,2024,2024-09-21,ADV,831,2,0.2
+British Columbia,British Columbia,39,5,2024,2024-09-28,ADV,843,2,0.2
+British Columbia,British Columbia,40,6,2024,2024-10-05,ADV,915,16,1.7
+British Columbia,British Columbia,41,7,2024,2024-10-12,ADV,942,9,1.0
+British Columbia,British Columbia,42,8,2024,2024-10-19,ADV,1029,12,1.2
+British Columbia,British Columbia,43,9,2024,2024-10-26,ADV,1044,9,0.9
+British Columbia,British Columbia,44,10,2024,2024-11-02,ADV,1023,15,1.5
+British Columbia,British Columbia,45,11,2024,2024-11-09,ADV,1233,8,0.6
+British Columbia,British Columbia,46,12,2024,2024-11-16,ADV,1441,20,1.4
+British Columbia,British Columbia,47,13,2024,2024-11-23,ADV,1426,19,1.3
+British Columbia,British Columbia,48,14,2024,2024-11-30,ADV,1513,27,1.8
+British Columbia,British Columbia,49,15,2024,2024-12-07,ADV,1663,50,3.0
+British Columbia,British Columbia,50,16,2024,2024-12-14,ADV,1718,35,2.0
+British Columbia,British Columbia,51,17,2024,2024-12-21,ADV,1701,30,1.8
+British Columbia,British Columbia,52,18,2024,2024-12-28,ADV,1509,29,1.9
+British Columbia,British Columbia,1,19,2025,2025-01-04,ADV,1617,35,2.2
+British Columbia,British Columbia,2,20,2025,2025-01-11,ADV,1673,22,1.3
+British Columbia,British Columbia,3,21,2025,2025-01-18,ADV,1707,16,0.9
+British Columbia,British Columbia,4,22,2025,2025-01-25,ADV,1725,23,1.3
+British Columbia,British Columbia,5,23,2025,2025-02-01,ADV,1914,42,2.2
+British Columbia,British Columbia,6,24,2025,2025-02-08,ADV,2025,26,1.3
+British Columbia,British Columbia,7,25,2025,2025-02-15,ADV,1662,19,1.1
+Canada,Canada,35,1,2024,2024-08-31,ADV,7633,67,0.9
+Canada,Canada,36,2,2024,2024-09-07,ADV,7590,66,0.9
+Canada,Canada,37,3,2024,2024-09-14,ADV,8547,62,0.7
+Canada,Canada,38,4,2024,2024-09-21,ADV,8970,65,0.7
+Canada,Canada,39,5,2024,2024-09-28,ADV,9484,88,0.9
+Canada,Canada,40,6,2024,2024-10-05,ADV,10464,103,1.0
+Canada,Canada,41,7,2024,2024-10-12,ADV,10533,111,1.1
+Canada,Canada,42,8,2024,2024-10-19,ADV,10738,104,1.0
+Canada,Canada,43,9,2024,2024-10-26,ADV,11348,130,1.1
+Canada,Canada,44,10,2024,2024-11-02,ADV,10986,143,1.3
+Canada,Canada,45,11,2024,2024-11-09,ADV,11372,165,1.5
+Canada,Canada,46,12,2024,2024-11-16,ADV,10879,209,1.9
+Canada,Canada,47,13,2024,2024-11-23,ADV,11744,232,2.0
+Canada,Canada,48,14,2024,2024-11-30,ADV,11750,227,1.9
+Canada,Canada,49,15,2024,2024-12-07,ADV,11969,254,2.1
+Canada,Canada,50,16,2024,2024-12-14,ADV,12715,247,1.9
+Canada,Canada,51,17,2024,2024-12-21,ADV,13115,221,1.7
+Canada,Canada,52,18,2024,2024-12-28,ADV,12006,200,1.7
+Canada,Canada,1,19,2025,2025-01-04,ADV,14763,235,1.6
+Canada,Canada,2,20,2025,2025-01-11,ADV,15164,207,1.4
+Canada,Canada,3,21,2025,2025-01-18,ADV,13990,184,1.3
+Canada,Canada,4,22,2025,2025-01-25,ADV,13729,173,1.3
+Canada,Canada,5,23,2025,2025-02-01,ADV,14337,190,1.3
+Canada,Canada,6,24,2025,2025-02-08,ADV,13893,152,1.1
+Canada,Canada,7,25,2025,2025-02-15,ADV,13083,132,1.0
+Ontario,Ontario,35,1,2024,2024-08-31,ADV,3723,14,0.4
+Ontario,Ontario,36,2,2024,2024-09-07,ADV,3531,15,0.4
+Ontario,Ontario,37,3,2024,2024-09-14,ADV,4132,17,0.4
+Ontario,Ontario,38,4,2024,2024-09-21,ADV,4149,16,0.4
+Ontario,Ontario,39,5,2024,2024-09-28,ADV,4419,15,0.3
+Ontario,Ontario,40,6,2024,2024-10-05,ADV,5255,23,0.4
+Ontario,Ontario,41,7,2024,2024-10-12,ADV,5262,30,0.6
+Ontario,Ontario,42,8,2024,2024-10-19,ADV,5261,15,0.3
+Ontario,Ontario,43,9,2024,2024-10-26,ADV,5660,33,0.6
+Ontario,Ontario,44,10,2024,2024-11-02,ADV,5501,44,0.8
+Ontario,Ontario,45,11,2024,2024-11-09,ADV,5492,57,1.0
+Ontario,Ontario,46,12,2024,2024-11-16,ADV,4840,54,1.1
+Ontario,Ontario,47,13,2024,2024-11-23,ADV,5467,66,1.2
+Ontario,Ontario,48,14,2024,2024-11-30,ADV,5398,63,1.2
+Ontario,Ontario,49,15,2024,2024-12-07,ADV,5624,77,1.4
+Ontario,Ontario,50,16,2024,2024-12-14,ADV,6220,72,1.2
+Ontario,Ontario,51,17,2024,2024-12-21,ADV,6452,62,1.0
+Ontario,Ontario,52,18,2024,2024-12-28,ADV,5980,65,1.1
+Ontario,Ontario,1,19,2025,2025-01-04,ADV,8052,64,0.8
+Ontario,Ontario,2,20,2025,2025-01-11,ADV,8181,64,0.8
+Ontario,Ontario,3,21,2025,2025-01-18,ADV,7292,50,0.7
+Ontario,Ontario,4,22,2025,2025-01-25,ADV,7042,46,0.7
+Ontario,Ontario,5,23,2025,2025-02-01,ADV,7629,50,0.7
+Ontario,Ontario,6,24,2025,2025-02-08,ADV,7061,50,0.7
+Ontario,Ontario,7,25,2025,2025-02-15,ADV,7083,46,0.6
+Prairies,Prairies,35,1,2024,2024-08-31,ADV,1214,20,1.6
+Prairies,Prairies,36,2,2024,2024-09-07,ADV,1296,12,0.9
+Prairies,Prairies,37,3,2024,2024-09-14,ADV,1366,11,0.8
+Prairies,Prairies,38,4,2024,2024-09-21,ADV,1498,17,1.1
+Prairies,Prairies,39,5,2024,2024-09-28,ADV,1625,13,0.8
+Prairies,Prairies,40,6,2024,2024-10-05,ADV,1735,18,1.0
+Prairies,Prairies,41,7,2024,2024-10-12,ADV,1659,14,0.8
+Prairies,Prairies,42,8,2024,2024-10-19,ADV,1761,13,0.7
+Prairies,Prairies,43,9,2024,2024-10-26,ADV,1818,17,0.9
+Prairies,Prairies,44,10,2024,2024-11-02,ADV,1771,19,1.1
+Prairies,Prairies,45,11,2024,2024-11-09,ADV,1681,10,0.6
+Prairies,Prairies,46,12,2024,2024-11-16,ADV,1796,24,1.3
+Prairies,Prairies,47,13,2024,2024-11-23,ADV,1783,22,1.2
+Prairies,Prairies,48,14,2024,2024-11-30,ADV,2001,17,0.8
+Prairies,Prairies,49,15,2024,2024-12-07,ADV,2036,24,1.2
+Prairies,Prairies,50,16,2024,2024-12-14,ADV,2079,24,1.2
+Prairies,Prairies,51,17,2024,2024-12-21,ADV,2161,17,0.8
+Prairies,Prairies,52,18,2024,2024-12-28,ADV,2205,23,1.0
+Prairies,Prairies,1,19,2025,2025-01-04,ADV,2427,16,0.7
+Prairies,Prairies,2,20,2025,2025-01-11,ADV,2501,10,0.4
+Prairies,Prairies,3,21,2025,2025-01-18,ADV,2267,16,0.7
+Prairies,Prairies,4,22,2025,2025-01-25,ADV,2224,15,0.7
+Prairies,Prairies,5,23,2025,2025-02-01,ADV,2225,15,0.7
+Prairies,Prairies,6,24,2025,2025-02-08,ADV,2232,11,0.5
+Prairies,Prairies,7,25,2025,2025-02-15,ADV,1945,27,1.4
+Quebec,Quebec,35,1,2024,2024-08-31,ADV,1473,21,1.4
+Quebec,Quebec,36,2,2024,2024-09-07,ADV,1429,22,1.5
+Quebec,Quebec,37,3,2024,2024-09-14,ADV,1601,17,1.1
+Quebec,Quebec,38,4,2024,2024-09-21,ADV,1600,20,1.2
+Quebec,Quebec,39,5,2024,2024-09-28,ADV,1723,48,2.8
+Quebec,Quebec,40,6,2024,2024-10-05,ADV,1632,35,2.1
+Quebec,Quebec,41,7,2024,2024-10-12,ADV,1695,44,2.6
+Quebec,Quebec,42,8,2024,2024-10-19,ADV,1735,53,3.1
+Quebec,Quebec,43,9,2024,2024-10-26,ADV,1813,60,3.3
+Quebec,Quebec,44,10,2024,2024-11-02,ADV,1682,48,2.9
+Quebec,Quebec,45,11,2024,2024-11-09,ADV,1820,66,3.6
+Quebec,Quebec,46,12,2024,2024-11-16,ADV,1774,84,4.7
+Quebec,Quebec,47,13,2024,2024-11-23,ADV,1883,92,4.9
+Quebec,Quebec,48,14,2024,2024-11-30,ADV,1808,81,4.5
+Quebec,Quebec,49,15,2024,2024-12-07,ADV,1706,60,3.5
+Quebec,Quebec,50,16,2024,2024-12-14,ADV,1647,61,3.7
+Quebec,Quebec,51,17,2024,2024-12-21,ADV,1794,72,4.0
+Quebec,Quebec,52,18,2024,2024-12-28,ADV,1519,48,3.2
+Quebec,Quebec,1,19,2025,2025-01-04,ADV,1656,54,3.3
+Quebec,Quebec,2,20,2025,2025-01-11,ADV,1660,48,2.9
+Quebec,Quebec,3,21,2025,2025-01-18,ADV,1651,40,2.4
+Quebec,Quebec,4,22,2025,2025-01-25,ADV,1651,38,2.3
+Quebec,Quebec,5,23,2025,2025-02-01,ADV,1652,50,3.0
+Quebec,Quebec,6,24,2025,2025-02-08,ADV,1714,42,2.5
+Quebec,Quebec,7,25,2025,2025-02-15,ADV,1586,30,1.9
+Territories,Territories,35,1,2024,2024-08-31,ADV,N/A,N/A,N/A
+Territories,Territories,36,2,2024,2024-09-07,ADV,N/A,N/A,N/A
+Territories,Territories,37,3,2024,2024-09-14,ADV,N/A,N/A,N/A
+Territories,Territories,38,4,2024,2024-09-21,ADV,N/A,N/A,N/A
+Territories,Territories,39,5,2024,2024-09-28,ADV,N/A,N/A,N/A
+Territories,Territories,40,6,2024,2024-10-05,ADV,N/A,N/A,N/A
+Territories,Territories,41,7,2024,2024-10-12,ADV,N/A,N/A,N/A
+Territories,Territories,42,8,2024,2024-10-19,ADV,N/A,N/A,N/A
+Territories,Territories,43,9,2024,2024-10-26,ADV,N/A,N/A,N/A
+Territories,Territories,44,10,2024,2024-11-02,ADV,N/A,N/A,N/A
+Territories,Territories,45,11,2024,2024-11-09,ADV,N/A,N/A,N/A
+Territories,Territories,46,12,2024,2024-11-16,ADV,N/A,N/A,N/A
+Territories,Territories,47,13,2024,2024-11-23,ADV,N/A,N/A,N/A
+Territories,Territories,48,14,2024,2024-11-30,ADV,N/A,N/A,N/A
+Territories,Territories,49,15,2024,2024-12-07,ADV,N/A,N/A,N/A
+Territories,Territories,50,16,2024,2024-12-14,ADV,N/A,N/A,N/A
+Territories,Territories,51,17,2024,2024-12-21,ADV,N/A,N/A,N/A
+Territories,Territories,52,18,2024,2024-12-28,ADV,N/A,N/A,N/A
+Territories,Territories,1,19,2025,2025-01-04,ADV,N/A,N/A,N/A
+Territories,Territories,2,20,2025,2025-01-11,ADV,N/A,N/A,N/A
+Territories,Territories,3,21,2025,2025-01-18,ADV,N/A,N/A,N/A
+Territories,Territories,4,22,2025,2025-01-25,ADV,N/A,N/A,N/A
+Territories,Territories,5,23,2025,2025-02-01,ADV,N/A,N/A,N/A
+Territories,Territories,6,24,2025,2025-02-08,ADV,N/A,N/A,N/A
+Territories,Territories,7,25,2025,2025-02-15,ADV,N/A,N/A,N/A
+Atlantic,Atlantic,35,1,2024,2024-08-31,HMPV,576,1,0.2
+Atlantic,Atlantic,36,2,2024,2024-09-07,HMPV,577,2,0.3
+Atlantic,Atlantic,37,3,2024,2024-09-14,HMPV,698,1,0.1
+Atlantic,Atlantic,38,4,2024,2024-09-21,HMPV,847,1,0.1
+Atlantic,Atlantic,39,5,2024,2024-09-28,HMPV,834,4,0.5
+Atlantic,Atlantic,40,6,2024,2024-10-05,HMPV,889,0,0.0
+Atlantic,Atlantic,41,7,2024,2024-10-12,HMPV,921,1,0.1
+Atlantic,Atlantic,42,8,2024,2024-10-19,HMPV,906,1,0.1
+Atlantic,Atlantic,43,9,2024,2024-10-26,HMPV,968,0,0.0
+Atlantic,Atlantic,44,10,2024,2024-11-02,HMPV,987,2,0.2
+Atlantic,Atlantic,45,11,2024,2024-11-09,HMPV,1122,3,0.3
+Atlantic,Atlantic,46,12,2024,2024-11-16,HMPV,990,5,0.5
+Atlantic,Atlantic,47,13,2024,2024-11-23,HMPV,1147,8,0.7
+Atlantic,Atlantic,48,14,2024,2024-11-30,HMPV,1005,2,0.2
+Atlantic,Atlantic,49,15,2024,2024-12-07,HMPV,914,9,1.0
+Atlantic,Atlantic,50,16,2024,2024-12-14,HMPV,1017,13,1.3
+Atlantic,Atlantic,51,17,2024,2024-12-21,HMPV,977,13,1.3
+Atlantic,Atlantic,52,18,2024,2024-12-28,HMPV,776,12,1.5
+Atlantic,Atlantic,1,19,2025,2025-01-04,HMPV,984,20,2.0
+Atlantic,Atlantic,2,20,2025,2025-01-11,HMPV,1126,16,1.4
+Atlantic,Atlantic,3,21,2025,2025-01-18,HMPV,1035,14,1.4
+Atlantic,Atlantic,4,22,2025,2025-01-25,HMPV,1026,16,1.6
+Atlantic,Atlantic,5,23,2025,2025-02-01,HMPV,855,24,2.8
+Atlantic,Atlantic,6,24,2025,2025-02-08,HMPV,811,12,1.5
+Atlantic,Atlantic,7,25,2025,2025-02-15,HMPV,746,18,2.4
+British Columbia,British Columbia,35,1,2024,2024-08-31,HMPV,621,9,1.4
+British Columbia,British Columbia,36,2,2024,2024-09-07,HMPV,715,4,0.6
+British Columbia,British Columbia,37,3,2024,2024-09-14,HMPV,713,6,0.8
+British Columbia,British Columbia,38,4,2024,2024-09-21,HMPV,831,4,0.5
+British Columbia,British Columbia,39,5,2024,2024-09-28,HMPV,843,6,0.7
+British Columbia,British Columbia,40,6,2024,2024-10-05,HMPV,878,13,1.5
+British Columbia,British Columbia,41,7,2024,2024-10-12,HMPV,901,6,0.7
+British Columbia,British Columbia,42,8,2024,2024-10-19,HMPV,998,10,1.0
+British Columbia,British Columbia,43,9,2024,2024-10-26,HMPV,1003,14,1.4
+British Columbia,British Columbia,44,10,2024,2024-11-02,HMPV,997,12,1.2
+British Columbia,British Columbia,45,11,2024,2024-11-09,HMPV,1205,8,0.7
+British Columbia,British Columbia,46,12,2024,2024-11-16,HMPV,1418,21,1.5
+British Columbia,British Columbia,47,13,2024,2024-11-23,HMPV,1395,18,1.3
+British Columbia,British Columbia,48,14,2024,2024-11-30,HMPV,1488,24,1.6
+British Columbia,British Columbia,49,15,2024,2024-12-07,HMPV,1626,36,2.2
+British Columbia,British Columbia,50,16,2024,2024-12-14,HMPV,1688,49,2.9
+British Columbia,British Columbia,51,17,2024,2024-12-21,HMPV,1669,60,3.6
+British Columbia,British Columbia,52,18,2024,2024-12-28,HMPV,1479,55,3.7
+British Columbia,British Columbia,1,19,2025,2025-01-04,HMPV,1594,64,4.0
+British Columbia,British Columbia,2,20,2025,2025-01-11,HMPV,1643,80,4.9
+British Columbia,British Columbia,3,21,2025,2025-01-18,HMPV,1686,61,3.6
+British Columbia,British Columbia,4,22,2025,2025-01-25,HMPV,1702,54,3.2
+British Columbia,British Columbia,5,23,2025,2025-02-01,HMPV,1882,54,2.9
+British Columbia,British Columbia,6,24,2025,2025-02-08,HMPV,1999,67,3.4
+British Columbia,British Columbia,7,25,2025,2025-02-15,HMPV,1649,52,3.2
+Canada,Canada,35,1,2024,2024-08-31,HMPV,7611,30,0.4
+Canada,Canada,36,2,2024,2024-09-07,HMPV,7556,18,0.2
+Canada,Canada,37,3,2024,2024-09-14,HMPV,8481,21,0.2
+Canada,Canada,38,4,2024,2024-09-21,HMPV,8894,20,0.2
+Canada,Canada,39,5,2024,2024-09-28,HMPV,9515,20,0.2
+Canada,Canada,40,6,2024,2024-10-05,HMPV,10447,25,0.2
+Canada,Canada,41,7,2024,2024-10-12,HMPV,10516,17,0.2
+Canada,Canada,42,8,2024,2024-10-19,HMPV,10686,26,0.2
+Canada,Canada,43,9,2024,2024-10-26,HMPV,11310,29,0.3
+Canada,Canada,44,10,2024,2024-11-02,HMPV,10958,33,0.3
+Canada,Canada,45,11,2024,2024-11-09,HMPV,11329,33,0.3
+Canada,Canada,46,12,2024,2024-11-16,HMPV,10849,54,0.5
+Canada,Canada,47,13,2024,2024-11-23,HMPV,11692,54,0.5
+Canada,Canada,48,14,2024,2024-11-30,HMPV,11704,70,0.6
+Canada,Canada,49,15,2024,2024-12-07,HMPV,11905,91,0.8
+Canada,Canada,50,16,2024,2024-12-14,HMPV,12653,125,1.0
+Canada,Canada,51,17,2024,2024-12-21,HMPV,13038,141,1.1
+Canada,Canada,52,18,2024,2024-12-28,HMPV,11899,163,1.4
+Canada,Canada,1,19,2025,2025-01-04,HMPV,14695,203,1.4
+Canada,Canada,2,20,2025,2025-01-11,HMPV,15062,233,1.5
+Canada,Canada,3,21,2025,2025-01-18,HMPV,13930,195,1.4
+Canada,Canada,4,22,2025,2025-01-25,HMPV,13675,208,1.5
+Canada,Canada,5,23,2025,2025-02-01,HMPV,14249,255,1.8
+Canada,Canada,6,24,2025,2025-02-08,HMPV,13806,207,1.5
+Canada,Canada,7,25,2025,2025-02-15,HMPV,13027,191,1.5
+Ontario,Ontario,35,1,2024,2024-08-31,HMPV,3747,7,0.2
+Ontario,Ontario,36,2,2024,2024-09-07,HMPV,3556,9,0.3
+Ontario,Ontario,37,3,2024,2024-09-14,HMPV,4155,6,0.1
+Ontario,Ontario,38,4,2024,2024-09-21,HMPV,4155,10,0.2
+Ontario,Ontario,39,5,2024,2024-09-28,HMPV,4421,9,0.2
+Ontario,Ontario,40,6,2024,2024-10-05,HMPV,5257,8,0.2
+Ontario,Ontario,41,7,2024,2024-10-12,HMPV,5265,6,0.1
+Ontario,Ontario,42,8,2024,2024-10-19,HMPV,5260,7,0.1
+Ontario,Ontario,43,9,2024,2024-10-26,HMPV,5654,8,0.1
+Ontario,Ontario,44,10,2024,2024-11-02,HMPV,5495,8,0.1
+Ontario,Ontario,45,11,2024,2024-11-09,HMPV,5494,9,0.2
+Ontario,Ontario,46,12,2024,2024-11-16,HMPV,4839,14,0.3
+Ontario,Ontario,47,13,2024,2024-11-23,HMPV,5461,13,0.2
+Ontario,Ontario,48,14,2024,2024-11-30,HMPV,5390,26,0.5
+Ontario,Ontario,49,15,2024,2024-12-07,HMPV,5613,28,0.5
+Ontario,Ontario,50,16,2024,2024-12-14,HMPV,6214,40,0.6
+Ontario,Ontario,51,17,2024,2024-12-21,HMPV,6450,34,0.5
+Ontario,Ontario,52,18,2024,2024-12-28,HMPV,5927,49,0.8
+Ontario,Ontario,1,19,2025,2025-01-04,HMPV,8052,70,0.9
+Ontario,Ontario,2,20,2025,2025-01-11,HMPV,8176,73,0.9
+Ontario,Ontario,3,21,2025,2025-01-18,HMPV,7282,61,0.8
+Ontario,Ontario,4,22,2025,2025-01-25,HMPV,7045,77,1.1
+Ontario,Ontario,5,23,2025,2025-02-01,HMPV,7628,96,1.3
+Ontario,Ontario,6,24,2025,2025-02-08,HMPV,7058,56,0.8
+Ontario,Ontario,7,25,2025,2025-02-15,HMPV,7082,74,1.0
+Prairies,Prairies,35,1,2024,2024-08-31,HMPV,1193,2,0.2
+Prairies,Prairies,36,2,2024,2024-09-07,HMPV,1264,0,0.0
+Prairies,Prairies,37,3,2024,2024-09-14,HMPV,1299,7,0.5
+Prairies,Prairies,38,4,2024,2024-09-21,HMPV,1435,1,0.1
+Prairies,Prairies,39,5,2024,2024-09-28,HMPV,1665,1,0.1
+Prairies,Prairies,40,6,2024,2024-10-05,HMPV,1769,0,0.0
+Prairies,Prairies,41,7,2024,2024-10-12,HMPV,1696,0,0.0
+Prairies,Prairies,42,8,2024,2024-10-19,HMPV,1758,2,0.1
+Prairies,Prairies,43,9,2024,2024-10-26,HMPV,1843,3,0.2
+Prairies,Prairies,44,10,2024,2024-11-02,HMPV,1785,1,0.1
+Prairies,Prairies,45,11,2024,2024-11-09,HMPV,1678,2,0.1
+Prairies,Prairies,46,12,2024,2024-11-16,HMPV,1790,1,0.1
+Prairies,Prairies,47,13,2024,2024-11-23,HMPV,1772,9,0.5
+Prairies,Prairies,48,14,2024,2024-11-30,HMPV,1995,11,0.6
+Prairies,Prairies,49,15,2024,2024-12-07,HMPV,2023,10,0.5
+Prairies,Prairies,50,16,2024,2024-12-14,HMPV,2066,15,0.7
+Prairies,Prairies,51,17,2024,2024-12-21,HMPV,2138,17,0.8
+Prairies,Prairies,52,18,2024,2024-12-28,HMPV,2182,23,1.1
+Prairies,Prairies,1,19,2025,2025-01-04,HMPV,2389,22,0.9
+Prairies,Prairies,2,20,2025,2025-01-11,HMPV,2448,35,1.4
+Prairies,Prairies,3,21,2025,2025-01-18,HMPV,2242,34,1.5
+Prairies,Prairies,4,22,2025,2025-01-25,HMPV,2197,33,1.5
+Prairies,Prairies,5,23,2025,2025-02-01,HMPV,2183,44,2.0
+Prairies,Prairies,6,24,2025,2025-02-08,HMPV,2186,37,1.7
+Prairies,Prairies,7,25,2025,2025-02-15,HMPV,1899,24,1.3
+Quebec,Quebec,35,1,2024,2024-08-31,HMPV,1448,11,0.8
+Quebec,Quebec,36,2,2024,2024-09-07,HMPV,1402,3,0.2
+Quebec,Quebec,37,3,2024,2024-09-14,HMPV,1579,1,0.1
+Quebec,Quebec,38,4,2024,2024-09-21,HMPV,1581,4,0.3
+Quebec,Quebec,39,5,2024,2024-09-28,HMPV,1712,0,0.0
+Quebec,Quebec,40,6,2024,2024-10-05,HMPV,1616,3,0.2
+Quebec,Quebec,41,7,2024,2024-10-12,HMPV,1679,4,0.2
+Quebec,Quebec,42,8,2024,2024-10-19,HMPV,1718,6,0.3
+Quebec,Quebec,43,9,2024,2024-10-26,HMPV,1797,4,0.2
+Quebec,Quebec,44,10,2024,2024-11-02,HMPV,1672,10,0.6
+Quebec,Quebec,45,11,2024,2024-11-09,HMPV,1806,11,0.6
+Quebec,Quebec,46,12,2024,2024-11-16,HMPV,1774,13,0.7
+Quebec,Quebec,47,13,2024,2024-11-23,HMPV,1879,6,0.3
+Quebec,Quebec,48,14,2024,2024-11-30,HMPV,1801,7,0.4
+Quebec,Quebec,49,15,2024,2024-12-07,HMPV,1704,8,0.5
+Quebec,Quebec,50,16,2024,2024-12-14,HMPV,1634,8,0.5
+Quebec,Quebec,51,17,2024,2024-12-21,HMPV,1774,17,1.0
+Quebec,Quebec,52,18,2024,2024-12-28,HMPV,1518,23,1.5
+Quebec,Quebec,1,19,2025,2025-01-04,HMPV,1649,24,1.5
+Quebec,Quebec,2,20,2025,2025-01-11,HMPV,1646,26,1.6
+Quebec,Quebec,3,21,2025,2025-01-18,HMPV,1647,20,1.2
+Quebec,Quebec,4,22,2025,2025-01-25,HMPV,1645,25,1.5
+Quebec,Quebec,5,23,2025,2025-02-01,HMPV,1640,29,1.8
+Quebec,Quebec,6,24,2025,2025-02-08,HMPV,1695,33,1.9
+Quebec,Quebec,7,25,2025,2025-02-15,HMPV,1590,22,1.4
+Territories,Territories,35,1,2024,2024-08-31,HMPV,N/A,N/A,N/A
+Territories,Territories,36,2,2024,2024-09-07,HMPV,N/A,N/A,N/A
+Territories,Territories,37,3,2024,2024-09-14,HMPV,N/A,N/A,N/A
+Territories,Territories,38,4,2024,2024-09-21,HMPV,N/A,N/A,N/A
+Territories,Territories,39,5,2024,2024-09-28,HMPV,N/A,N/A,N/A
+Territories,Territories,40,6,2024,2024-10-05,HMPV,N/A,N/A,N/A
+Territories,Territories,41,7,2024,2024-10-12,HMPV,N/A,N/A,N/A
+Territories,Territories,42,8,2024,2024-10-19,HMPV,N/A,N/A,N/A
+Territories,Territories,43,9,2024,2024-10-26,HMPV,N/A,N/A,N/A
+Territories,Territories,44,10,2024,2024-11-02,HMPV,N/A,N/A,N/A
+Territories,Territories,45,11,2024,2024-11-09,HMPV,N/A,N/A,N/A
+Territories,Territories,46,12,2024,2024-11-16,HMPV,N/A,N/A,N/A
+Territories,Territories,47,13,2024,2024-11-23,HMPV,N/A,N/A,N/A
+Territories,Territories,48,14,2024,2024-11-30,HMPV,N/A,N/A,N/A
+Territories,Territories,49,15,2024,2024-12-07,HMPV,N/A,N/A,N/A
+Territories,Territories,50,16,2024,2024-12-14,HMPV,N/A,N/A,N/A
+Territories,Territories,51,17,2024,2024-12-21,HMPV,N/A,N/A,N/A
+Territories,Territories,52,18,2024,2024-12-28,HMPV,N/A,N/A,N/A
+Territories,Territories,1,19,2025,2025-01-04,HMPV,N/A,N/A,N/A
+Territories,Territories,2,20,2025,2025-01-11,HMPV,N/A,N/A,N/A
+Territories,Territories,3,21,2025,2025-01-18,HMPV,N/A,N/A,N/A
+Territories,Territories,4,22,2025,2025-01-25,HMPV,N/A,N/A,N/A
+Territories,Territories,5,23,2025,2025-02-01,HMPV,N/A,N/A,N/A
+Territories,Territories,6,24,2025,2025-02-08,HMPV,N/A,N/A,N/A
+Territories,Territories,7,25,2025,2025-02-15,HMPV,N/A,N/A,N/A
+Atlantic,Atlantic,35,1,2024,2024-08-31,EV/RV,576,57,9.9
+Atlantic,Atlantic,36,2,2024,2024-09-07,EV/RV,577,73,12.7
+Atlantic,Atlantic,37,3,2024,2024-09-14,EV/RV,698,121,17.3
+Atlantic,Atlantic,38,4,2024,2024-09-21,EV/RV,847,217,25.6
+Atlantic,Atlantic,39,5,2024,2024-09-28,EV/RV,834,224,26.9
+Atlantic,Atlantic,40,6,2024,2024-10-05,EV/RV,889,240,27.0
+Atlantic,Atlantic,41,7,2024,2024-10-12,EV/RV,921,228,24.8
+Atlantic,Atlantic,42,8,2024,2024-10-19,EV/RV,906,213,23.5
+Atlantic,Atlantic,43,9,2024,2024-10-26,EV/RV,968,212,21.9
+Atlantic,Atlantic,44,10,2024,2024-11-02,EV/RV,987,183,18.5
+Atlantic,Atlantic,45,11,2024,2024-11-09,EV/RV,1122,218,19.4
+Atlantic,Atlantic,46,12,2024,2024-11-16,EV/RV,990,201,20.3
+Atlantic,Atlantic,47,13,2024,2024-11-23,EV/RV,1147,215,18.7
+Atlantic,Atlantic,48,14,2024,2024-11-30,EV/RV,1005,170,16.9
+Atlantic,Atlantic,49,15,2024,2024-12-07,EV/RV,915,146,16.0
+Atlantic,Atlantic,50,16,2024,2024-12-14,EV/RV,1017,172,16.9
+Atlantic,Atlantic,51,17,2024,2024-12-21,EV/RV,977,155,15.9
+Atlantic,Atlantic,52,18,2024,2024-12-28,EV/RV,776,93,12.0
+Atlantic,Atlantic,1,19,2025,2025-01-04,EV/RV,984,98,10.0
+Atlantic,Atlantic,2,20,2025,2025-01-11,EV/RV,1126,115,10.2
+Atlantic,Atlantic,3,21,2025,2025-01-18,EV/RV,1035,80,7.7
+Atlantic,Atlantic,4,22,2025,2025-01-25,EV/RV,1026,96,9.4
+Atlantic,Atlantic,5,23,2025,2025-02-01,EV/RV,855,76,8.9
+Atlantic,Atlantic,6,24,2025,2025-02-08,EV/RV,811,58,7.2
+Atlantic,Atlantic,7,25,2025,2025-02-15,EV/RV,746,49,6.6
+British Columbia,British Columbia,35,1,2024,2024-08-31,EV/RV,617,55,8.9
+British Columbia,British Columbia,36,2,2024,2024-09-07,EV/RV,712,86,12.1
+British Columbia,British Columbia,37,3,2024,2024-09-14,EV/RV,704,110,15.6
+British Columbia,British Columbia,38,4,2024,2024-09-21,EV/RV,823,186,22.6
+British Columbia,British Columbia,39,5,2024,2024-09-28,EV/RV,833,209,25.1
+British Columbia,British Columbia,40,6,2024,2024-10-05,EV/RV,901,194,21.5
+British Columbia,British Columbia,41,7,2024,2024-10-12,EV/RV,940,210,22.3
+British Columbia,British Columbia,42,8,2024,2024-10-19,EV/RV,1027,240,23.4
+British Columbia,British Columbia,43,9,2024,2024-10-26,EV/RV,1027,191,18.6
+British Columbia,British Columbia,44,10,2024,2024-11-02,EV/RV,1010,181,17.9
+British Columbia,British Columbia,45,11,2024,2024-11-09,EV/RV,1242,220,17.7
+British Columbia,British Columbia,46,12,2024,2024-11-16,EV/RV,1446,260,18.0
+British Columbia,British Columbia,47,13,2024,2024-11-23,EV/RV,1442,219,15.2
+British Columbia,British Columbia,48,14,2024,2024-11-30,EV/RV,1533,233,15.2
+British Columbia,British Columbia,49,15,2024,2024-12-07,EV/RV,1645,277,16.8
+British Columbia,British Columbia,50,16,2024,2024-12-14,EV/RV,1713,229,13.4
+British Columbia,British Columbia,51,17,2024,2024-12-21,EV/RV,1695,249,14.7
+British Columbia,British Columbia,52,18,2024,2024-12-28,EV/RV,1505,229,15.2
+British Columbia,British Columbia,1,19,2025,2025-01-04,EV/RV,1632,169,10.4
+British Columbia,British Columbia,2,20,2025,2025-01-11,EV/RV,1675,143,8.5
+British Columbia,British Columbia,3,21,2025,2025-01-18,EV/RV,1724,139,8.1
+British Columbia,British Columbia,4,22,2025,2025-01-25,EV/RV,1739,153,8.8
+British Columbia,British Columbia,5,23,2025,2025-02-01,EV/RV,1915,165,8.6
+British Columbia,British Columbia,6,24,2025,2025-02-08,EV/RV,2024,159,7.9
+British Columbia,British Columbia,7,25,2025,2025-02-15,EV/RV,1668,115,6.9
+Canada,Canada,35,1,2024,2024-08-31,EV/RV,7697,734,9.5
+Canada,Canada,36,2,2024,2024-09-07,EV/RV,7644,773,10.1
+Canada,Canada,37,3,2024,2024-09-14,EV/RV,8590,1133,13.2
+Canada,Canada,38,4,2024,2024-09-21,EV/RV,8999,1710,19.0
+Canada,Canada,39,5,2024,2024-09-28,EV/RV,9511,1945,20.5
+Canada,Canada,40,6,2024,2024-10-05,EV/RV,10478,2070,19.8
+Canada,Canada,41,7,2024,2024-10-12,EV/RV,10561,2048,19.4
+Canada,Canada,42,8,2024,2024-10-19,EV/RV,10779,1689,15.7
+Canada,Canada,43,9,2024,2024-10-26,EV/RV,11346,1649,14.5
+Canada,Canada,44,10,2024,2024-11-02,EV/RV,10993,1499,13.6
+Canada,Canada,45,11,2024,2024-11-09,EV/RV,11411,1599,14.0
+Canada,Canada,46,12,2024,2024-11-16,EV/RV,10927,1590,14.6
+Canada,Canada,47,13,2024,2024-11-23,EV/RV,11786,1615,13.7
+Canada,Canada,48,14,2024,2024-11-30,EV/RV,11784,1586,13.5
+Canada,Canada,49,15,2024,2024-12-07,EV/RV,11984,1388,11.6
+Canada,Canada,50,16,2024,2024-12-14,EV/RV,12746,1378,10.8
+Canada,Canada,51,17,2024,2024-12-21,EV/RV,13116,1316,10.0
+Canada,Canada,52,18,2024,2024-12-28,EV/RV,11987,1068,8.9
+Canada,Canada,1,19,2025,2025-01-04,EV/RV,14817,1040,7.0
+Canada,Canada,2,20,2025,2025-01-11,EV/RV,15196,897,5.9
+Canada,Canada,3,21,2025,2025-01-18,EV/RV,14048,759,5.4
+Canada,Canada,4,22,2025,2025-01-25,EV/RV,13772,765,5.6
+Canada,Canada,5,23,2025,2025-02-01,EV/RV,14369,783,5.4
+Canada,Canada,6,24,2025,2025-02-08,EV/RV,13931,774,5.6
+Canada,Canada,7,25,2025,2025-02-15,EV/RV,13140,674,5.1
+Ontario,Ontario,35,1,2024,2024-08-31,EV/RV,3747,254,6.8
+Ontario,Ontario,36,2,2024,2024-09-07,EV/RV,3557,225,6.3
+Ontario,Ontario,37,3,2024,2024-09-14,EV/RV,4155,420,10.1
+Ontario,Ontario,38,4,2024,2024-09-21,EV/RV,4155,655,15.8
+Ontario,Ontario,39,5,2024,2024-09-28,EV/RV,4422,774,17.5
+Ontario,Ontario,40,6,2024,2024-10-05,EV/RV,5259,947,18.0
+Ontario,Ontario,41,7,2024,2024-10-12,EV/RV,5265,977,18.6
+Ontario,Ontario,42,8,2024,2024-10-19,EV/RV,5260,676,12.9
+Ontario,Ontario,43,9,2024,2024-10-26,EV/RV,5660,701,12.4
+Ontario,Ontario,44,10,2024,2024-11-02,EV/RV,5500,648,11.8
+Ontario,Ontario,45,11,2024,2024-11-09,EV/RV,5494,666,12.1
+Ontario,Ontario,46,12,2024,2024-11-16,EV/RV,4841,585,12.1
+Ontario,Ontario,47,13,2024,2024-11-23,EV/RV,5468,693,12.7
+Ontario,Ontario,48,14,2024,2024-11-30,EV/RV,5395,636,11.8
+Ontario,Ontario,49,15,2024,2024-12-07,EV/RV,5622,507,9.0
+Ontario,Ontario,50,16,2024,2024-12-14,EV/RV,6216,573,9.2
+Ontario,Ontario,51,17,2024,2024-12-21,EV/RV,6450,491,7.6
+Ontario,Ontario,52,18,2024,2024-12-28,EV/RV,5927,419,7.1
+Ontario,Ontario,1,19,2025,2025-01-04,EV/RV,8052,509,6.3
+Ontario,Ontario,2,20,2025,2025-01-11,EV/RV,8175,390,4.8
+Ontario,Ontario,3,21,2025,2025-01-18,EV/RV,7286,308,4.2
+Ontario,Ontario,4,22,2025,2025-01-25,EV/RV,7045,263,3.7
+Ontario,Ontario,5,23,2025,2025-02-01,EV/RV,7628,312,4.1
+Ontario,Ontario,6,24,2025,2025-02-08,EV/RV,7058,310,4.4
+Ontario,Ontario,7,25,2025,2025-02-15,EV/RV,7082,255,3.6
+Prairies,Prairies,35,1,2024,2024-08-31,EV/RV,1208,173,14.3
+Prairies,Prairies,36,2,2024,2024-09-07,EV/RV,1287,185,14.4
+Prairies,Prairies,37,3,2024,2024-09-14,EV/RV,1346,221,16.4
+Prairies,Prairies,38,4,2024,2024-09-21,EV/RV,1485,317,21.3
+Prairies,Prairies,39,5,2024,2024-09-28,EV/RV,1611,353,21.9
+Prairies,Prairies,40,6,2024,2024-10-05,EV/RV,1715,340,19.8
+Prairies,Prairies,41,7,2024,2024-10-12,EV/RV,1638,272,16.6
+Prairies,Prairies,42,8,2024,2024-10-19,EV/RV,1753,239,13.6
+Prairies,Prairies,43,9,2024,2024-10-26,EV/RV,1796,237,13.2
+Prairies,Prairies,44,10,2024,2024-11-02,EV/RV,1745,231,13.2
+Prairies,Prairies,45,11,2024,2024-11-09,EV/RV,1658,199,12.0
+Prairies,Prairies,46,12,2024,2024-11-16,EV/RV,1788,233,13.0
+Prairies,Prairies,47,13,2024,2024-11-23,EV/RV,1771,199,11.2
+Prairies,Prairies,48,14,2024,2024-11-30,EV/RV,1980,240,12.1
+Prairies,Prairies,49,15,2024,2024-12-07,EV/RV,2020,211,10.4
+Prairies,Prairies,50,16,2024,2024-12-14,EV/RV,2068,181,8.8
+Prairies,Prairies,51,17,2024,2024-12-21,EV/RV,2133,167,7.8
+Prairies,Prairies,52,18,2024,2024-12-28,EV/RV,2186,155,7.1
+Prairies,Prairies,1,19,2025,2025-01-04,EV/RV,2419,103,4.3
+Prairies,Prairies,2,20,2025,2025-01-11,EV/RV,2488,112,4.5
+Prairies,Prairies,3,21,2025,2025-01-18,EV/RV,2261,106,4.7
+Prairies,Prairies,4,22,2025,2025-01-25,EV/RV,2218,124,5.6
+Prairies,Prairies,5,23,2025,2025-02-01,EV/RV,2221,123,5.5
+Prairies,Prairies,6,24,2025,2025-02-08,EV/RV,2226,134,6.0
+Prairies,Prairies,7,25,2025,2025-02-15,EV/RV,1945,144,7.4
+Quebec,Quebec,35,1,2024,2024-08-31,EV/RV,1523,184,12.1
+Quebec,Quebec,36,2,2024,2024-09-07,EV/RV,1469,188,12.8
+Quebec,Quebec,37,3,2024,2024-09-14,EV/RV,1650,250,15.2
+Quebec,Quebec,38,4,2024,2024-09-21,EV/RV,1644,319,19.4
+Quebec,Quebec,39,5,2024,2024-09-28,EV/RV,1771,371,20.9
+Quebec,Quebec,40,6,2024,2024-10-05,EV/RV,1676,335,20.0
+Quebec,Quebec,41,7,2024,2024-10-12,EV/RV,1743,346,19.9
+Quebec,Quebec,42,8,2024,2024-10-19,EV/RV,1787,311,17.4
+Quebec,Quebec,43,9,2024,2024-10-26,EV/RV,1850,301,16.3
+Quebec,Quebec,44,10,2024,2024-11-02,EV/RV,1729,254,14.7
+Quebec,Quebec,45,11,2024,2024-11-09,EV/RV,1871,288,15.4
+Quebec,Quebec,46,12,2024,2024-11-16,EV/RV,1824,310,17.0
+Quebec,Quebec,47,13,2024,2024-11-23,EV/RV,1920,284,14.8
+Quebec,Quebec,48,14,2024,2024-11-30,EV/RV,1846,301,16.3
+Quebec,Quebec,49,15,2024,2024-12-07,EV/RV,1757,243,13.8
+Quebec,Quebec,50,16,2024,2024-12-14,EV/RV,1698,217,12.8
+Quebec,Quebec,51,17,2024,2024-12-21,EV/RV,1831,250,13.7
+Quebec,Quebec,52,18,2024,2024-12-28,EV/RV,1576,170,10.8
+Quebec,Quebec,1,19,2025,2025-01-04,EV/RV,1703,154,9.0
+Quebec,Quebec,2,20,2025,2025-01-11,EV/RV,1709,132,7.7
+Quebec,Quebec,3,21,2025,2025-01-18,EV/RV,1704,123,7.2
+Quebec,Quebec,4,22,2025,2025-01-25,EV/RV,1684,126,7.5
+Quebec,Quebec,5,23,2025,2025-02-01,EV/RV,1689,103,6.1
+Quebec,Quebec,6,24,2025,2025-02-08,EV/RV,1755,106,6.0
+Quebec,Quebec,7,25,2025,2025-02-15,EV/RV,1638,105,6.4
+Territories,Territories,35,1,2024,2024-08-31,EV/RV,N/A,N/A,N/A
+Territories,Territories,36,2,2024,2024-09-07,EV/RV,N/A,N/A,N/A
+Territories,Territories,37,3,2024,2024-09-14,EV/RV,N/A,N/A,N/A
+Territories,Territories,38,4,2024,2024-09-21,EV/RV,N/A,N/A,N/A
+Territories,Territories,39,5,2024,2024-09-28,EV/RV,N/A,N/A,N/A
+Territories,Territories,40,6,2024,2024-10-05,EV/RV,N/A,N/A,N/A
+Territories,Territories,41,7,2024,2024-10-12,EV/RV,N/A,N/A,N/A
+Territories,Territories,42,8,2024,2024-10-19,EV/RV,N/A,N/A,N/A
+Territories,Territories,43,9,2024,2024-10-26,EV/RV,N/A,N/A,N/A
+Territories,Territories,44,10,2024,2024-11-02,EV/RV,N/A,N/A,N/A
+Territories,Territories,45,11,2024,2024-11-09,EV/RV,N/A,N/A,N/A
+Territories,Territories,46,12,2024,2024-11-16,EV/RV,N/A,N/A,N/A
+Territories,Territories,47,13,2024,2024-11-23,EV/RV,N/A,N/A,N/A
+Territories,Territories,48,14,2024,2024-11-30,EV/RV,N/A,N/A,N/A
+Territories,Territories,49,15,2024,2024-12-07,EV/RV,N/A,N/A,N/A
+Territories,Territories,50,16,2024,2024-12-14,EV/RV,N/A,N/A,N/A
+Territories,Territories,51,17,2024,2024-12-21,EV/RV,N/A,N/A,N/A
+Territories,Territories,52,18,2024,2024-12-28,EV/RV,N/A,N/A,N/A
+Territories,Territories,1,19,2025,2025-01-04,EV/RV,N/A,N/A,N/A
+Territories,Territories,2,20,2025,2025-01-11,EV/RV,N/A,N/A,N/A
+Territories,Territories,3,21,2025,2025-01-18,EV/RV,N/A,N/A,N/A
+Territories,Territories,4,22,2025,2025-01-25,EV/RV,N/A,N/A,N/A
+Territories,Territories,5,23,2025,2025-02-01,EV/RV,N/A,N/A,N/A
+Territories,Territories,6,24,2025,2025-02-08,EV/RV,N/A,N/A,N/A
+Territories,Territories,7,25,2025,2025-02-15,EV/RV,N/A,N/A,N/A
+Atlantic,Atlantic,35,1,2024,2024-08-31,HCoV,576,3,0.5
+Atlantic,Atlantic,36,2,2024,2024-09-07,HCoV,577,2,0.3
+Atlantic,Atlantic,37,3,2024,2024-09-14,HCoV,708,4,0.6
+Atlantic,Atlantic,38,4,2024,2024-09-21,HCoV,847,10,1.2
+Atlantic,Atlantic,39,5,2024,2024-09-28,HCoV,834,7,0.8
+Atlantic,Atlantic,40,6,2024,2024-10-05,HCoV,889,5,0.6
+Atlantic,Atlantic,41,7,2024,2024-10-12,HCoV,921,2,0.2
+Atlantic,Atlantic,42,8,2024,2024-10-19,HCoV,906,4,0.4
+Atlantic,Atlantic,43,9,2024,2024-10-26,HCoV,968,3,0.3
+Atlantic,Atlantic,44,10,2024,2024-11-02,HCoV,987,7,0.7
+Atlantic,Atlantic,45,11,2024,2024-11-09,HCoV,1122,8,0.7
+Atlantic,Atlantic,46,12,2024,2024-11-16,HCoV,990,13,1.3
+Atlantic,Atlantic,47,13,2024,2024-11-23,HCoV,1147,17,1.5
+Atlantic,Atlantic,48,14,2024,2024-11-30,HCoV,1005,24,2.4
+Atlantic,Atlantic,49,15,2024,2024-12-07,HCoV,914,24,2.6
+Atlantic,Atlantic,50,16,2024,2024-12-14,HCoV,1015,31,3.1
+Atlantic,Atlantic,51,17,2024,2024-12-21,HCoV,1057,53,5.0
+Atlantic,Atlantic,52,18,2024,2024-12-28,HCoV,776,31,4.0
+Atlantic,Atlantic,1,19,2025,2025-01-04,HCoV,984,48,4.9
+Atlantic,Atlantic,2,20,2025,2025-01-11,HCoV,1126,49,4.4
+Atlantic,Atlantic,3,21,2025,2025-01-18,HCoV,1031,57,5.5
+Atlantic,Atlantic,4,22,2025,2025-01-25,HCoV,1028,68,6.6
+Atlantic,Atlantic,5,23,2025,2025-02-01,HCoV,852,43,5.0
+Atlantic,Atlantic,6,24,2025,2025-02-08,HCoV,808,50,6.2
+Atlantic,Atlantic,7,25,2025,2025-02-15,HCoV,747,53,7.1
+British Columbia,British Columbia,35,1,2024,2024-08-31,HCoV,617,1,0.2
+British Columbia,British Columbia,36,2,2024,2024-09-07,HCoV,712,0,0.0
+British Columbia,British Columbia,37,3,2024,2024-09-14,HCoV,704,7,1.0
+British Columbia,British Columbia,38,4,2024,2024-09-21,HCoV,823,4,0.5
+British Columbia,British Columbia,39,5,2024,2024-09-28,HCoV,833,3,0.4
+British Columbia,British Columbia,40,6,2024,2024-10-05,HCoV,872,4,0.5
+British Columbia,British Columbia,41,7,2024,2024-10-12,HCoV,893,5,0.6
+British Columbia,British Columbia,42,8,2024,2024-10-19,HCoV,988,4,0.4
+British Columbia,British Columbia,43,9,2024,2024-10-26,HCoV,988,4,0.4
+British Columbia,British Columbia,44,10,2024,2024-11-02,HCoV,974,2,0.2
+British Columbia,British Columbia,45,11,2024,2024-11-09,HCoV,1195,4,0.3
+British Columbia,British Columbia,46,12,2024,2024-11-16,HCoV,1407,10,0.7
+British Columbia,British Columbia,47,13,2024,2024-11-23,HCoV,1387,5,0.4
+British Columbia,British Columbia,48,14,2024,2024-11-30,HCoV,1478,16,1.1
+British Columbia,British Columbia,49,15,2024,2024-12-07,HCoV,1612,22,1.4
+British Columbia,British Columbia,50,16,2024,2024-12-14,HCoV,1678,24,1.4
+British Columbia,British Columbia,51,17,2024,2024-12-21,HCoV,1658,55,3.3
+British Columbia,British Columbia,52,18,2024,2024-12-28,HCoV,1469,59,4.0
+British Columbia,British Columbia,1,19,2025,2025-01-04,HCoV,1586,61,3.8
+British Columbia,British Columbia,2,20,2025,2025-01-11,HCoV,1628,50,3.1
+British Columbia,British Columbia,3,21,2025,2025-01-18,HCoV,1679,60,3.6
+British Columbia,British Columbia,4,22,2025,2025-01-25,HCoV,1688,93,5.5
+British Columbia,British Columbia,5,23,2025,2025-02-01,HCoV,1869,148,7.9
+British Columbia,British Columbia,6,24,2025,2025-02-08,HCoV,1987,157,7.9
+British Columbia,British Columbia,7,25,2025,2025-02-15,HCoV,1636,159,9.7
+Canada,Canada,35,1,2024,2024-08-31,HCoV,6253,31,0.5
+Canada,Canada,36,2,2024,2024-09-07,HCoV,6244,36,0.6
+Canada,Canada,37,3,2024,2024-09-14,HCoV,7096,49,0.7
+Canada,Canada,38,4,2024,2024-09-21,HCoV,7456,54,0.7
+Canada,Canada,39,5,2024,2024-09-28,HCoV,7832,48,0.6
+Canada,Canada,40,6,2024,2024-10-05,HCoV,8734,56,0.6
+Canada,Canada,41,7,2024,2024-10-12,HCoV,8770,38,0.4
+Canada,Canada,42,8,2024,2024-10-19,HCoV,8805,38,0.4
+Canada,Canada,43,9,2024,2024-10-26,HCoV,9438,38,0.4
+Canada,Canada,44,10,2024,2024-11-02,HCoV,9187,41,0.4
+Canada,Canada,45,11,2024,2024-11-09,HCoV,9776,67,0.7
+Canada,Canada,46,12,2024,2024-11-16,HCoV,9386,66,0.7
+Canada,Canada,47,13,2024,2024-11-23,HCoV,10157,91,0.9
+Canada,Canada,48,14,2024,2024-11-30,HCoV,10066,125,1.2
+Canada,Canada,49,15,2024,2024-12-07,HCoV,10060,151,1.5
+Canada,Canada,50,16,2024,2024-12-14,HCoV,10780,195,1.8
+Canada,Canada,51,17,2024,2024-12-21,HCoV,11127,290,2.6
+Canada,Canada,52,18,2024,2024-12-28,HCoV,9905,307,3.1
+Canada,Canada,1,19,2025,2025-01-04,HCoV,12288,443,3.6
+Canada,Canada,2,20,2025,2025-01-11,HCoV,12751,442,3.5
+Canada,Canada,3,21,2025,2025-01-18,HCoV,11749,458,3.9
+Canada,Canada,4,22,2025,2025-01-25,HCoV,11585,595,5.1
+Canada,Canada,5,23,2025,2025-02-01,HCoV,13630,828,6.1
+Canada,Canada,6,24,2025,2025-02-08,HCoV,13771,963,7.0
+Canada,Canada,7,25,2025,2025-02-15,HCoV,12946,964,7.4
+Ontario,Ontario,35,1,2024,2024-08-31,HCoV,2406,8,0.3
+Ontario,Ontario,36,2,2024,2024-09-07,HCoV,2298,9,0.4
+Ontario,Ontario,37,3,2024,2024-09-14,HCoV,2762,10,0.4
+Ontario,Ontario,38,4,2024,2024-09-21,HCoV,2732,5,0.2
+Ontario,Ontario,39,5,2024,2024-09-28,HCoV,2845,12,0.4
+Ontario,Ontario,40,6,2024,2024-10-05,HCoV,3637,12,0.3
+Ontario,Ontario,41,7,2024,2024-10-12,HCoV,3655,9,0.2
+Ontario,Ontario,42,8,2024,2024-10-19,HCoV,3536,8,0.2
+Ontario,Ontario,43,9,2024,2024-10-26,HCoV,3958,8,0.2
+Ontario,Ontario,44,10,2024,2024-11-02,HCoV,3878,11,0.3
+Ontario,Ontario,45,11,2024,2024-11-09,HCoV,4085,22,0.5
+Ontario,Ontario,46,12,2024,2024-11-16,HCoV,3542,5,0.1
+Ontario,Ontario,47,13,2024,2024-11-23,HCoV,4101,29,0.7
+Ontario,Ontario,48,14,2024,2024-11-30,HCoV,3894,28,0.7
+Ontario,Ontario,49,15,2024,2024-12-07,HCoV,3913,49,1.3
+Ontario,Ontario,50,16,2024,2024-12-14,HCoV,4489,49,1.1
+Ontario,Ontario,51,17,2024,2024-12-21,HCoV,4583,65,1.4
+Ontario,Ontario,52,18,2024,2024-12-28,HCoV,4051,82,2.0
+Ontario,Ontario,1,19,2025,2025-01-04,HCoV,5780,163,2.8
+Ontario,Ontario,2,20,2025,2025-01-11,HCoV,5985,203,3.4
+Ontario,Ontario,3,21,2025,2025-01-18,HCoV,5271,180,3.4
+Ontario,Ontario,4,22,2025,2025-01-25,HCoV,5065,237,4.7
+Ontario,Ontario,5,23,2025,2025-02-01,HCoV,7057,411,5.8
+Ontario,Ontario,6,24,2025,2025-02-08,HCoV,7058,483,6.8
+Ontario,Ontario,7,25,2025,2025-02-15,HCoV,7058,462,6.5
+Prairies,Prairies,35,1,2024,2024-08-31,HCoV,1254,3,0.2
+Prairies,Prairies,36,2,2024,2024-09-07,HCoV,1317,4,0.3
+Prairies,Prairies,37,3,2024,2024-09-14,HCoV,1388,5,0.4
+Prairies,Prairies,38,4,2024,2024-09-21,HCoV,1522,5,0.3
+Prairies,Prairies,39,5,2024,2024-09-28,HCoV,1668,5,0.3
+Prairies,Prairies,40,6,2024,2024-10-05,HCoV,1773,4,0.2
+Prairies,Prairies,41,7,2024,2024-10-12,HCoV,1700,4,0.2
+Prairies,Prairies,42,8,2024,2024-10-19,HCoV,1758,1,0.1
+Prairies,Prairies,43,9,2024,2024-10-26,HCoV,1844,5,0.3
+Prairies,Prairies,44,10,2024,2024-11-02,HCoV,1785,6,0.3
+Prairies,Prairies,45,11,2024,2024-11-09,HCoV,1682,6,0.4
+Prairies,Prairies,46,12,2024,2024-11-16,HCoV,1797,8,0.4
+Prairies,Prairies,47,13,2024,2024-11-23,HCoV,1783,14,0.8
+Prairies,Prairies,48,14,2024,2024-11-30,HCoV,2001,28,1.4
+Prairies,Prairies,49,15,2024,2024-12-07,HCoV,2036,27,1.3
+Prairies,Prairies,50,16,2024,2024-12-14,HCoV,2081,45,2.2
+Prairies,Prairies,51,17,2024,2024-12-21,HCoV,2162,70,3.2
+Prairies,Prairies,52,18,2024,2024-12-28,HCoV,2205,79,3.6
+Prairies,Prairies,1,19,2025,2025-01-04,HCoV,2428,117,4.8
+Prairies,Prairies,2,20,2025,2025-01-11,HCoV,2501,101,4.0
+Prairies,Prairies,3,21,2025,2025-01-18,HCoV,2269,111,4.9
+Prairies,Prairies,4,22,2025,2025-01-25,HCoV,2224,128,5.8
+Prairies,Prairies,5,23,2025,2025-02-01,HCoV,2225,142,6.4
+Prairies,Prairies,6,24,2025,2025-02-08,HCoV,2232,166,7.4
+Prairies,Prairies,7,25,2025,2025-02-15,HCoV,1945,186,9.6
+Quebec,Quebec,35,1,2024,2024-08-31,HCoV,1400,16,1.1
+Quebec,Quebec,36,2,2024,2024-09-07,HCoV,1340,21,1.6
+Quebec,Quebec,37,3,2024,2024-09-14,HCoV,1534,23,1.5
+Quebec,Quebec,38,4,2024,2024-09-21,HCoV,1532,30,2.0
+Quebec,Quebec,39,5,2024,2024-09-28,HCoV,1652,21,1.3
+Quebec,Quebec,40,6,2024,2024-10-05,HCoV,1563,31,2.0
+Quebec,Quebec,41,7,2024,2024-10-12,HCoV,1601,18,1.1
+Quebec,Quebec,42,8,2024,2024-10-19,HCoV,1617,21,1.3
+Quebec,Quebec,43,9,2024,2024-10-26,HCoV,1680,18,1.1
+Quebec,Quebec,44,10,2024,2024-11-02,HCoV,1563,15,1.0
+Quebec,Quebec,45,11,2024,2024-11-09,HCoV,1692,27,1.6
+Quebec,Quebec,46,12,2024,2024-11-16,HCoV,1650,30,1.8
+Quebec,Quebec,47,13,2024,2024-11-23,HCoV,1739,26,1.5
+Quebec,Quebec,48,14,2024,2024-11-30,HCoV,1688,29,1.7
+Quebec,Quebec,49,15,2024,2024-12-07,HCoV,1585,29,1.8
+Quebec,Quebec,50,16,2024,2024-12-14,HCoV,1517,46,3.0
+Quebec,Quebec,51,17,2024,2024-12-21,HCoV,1667,47,2.8
+Quebec,Quebec,52,18,2024,2024-12-28,HCoV,1404,56,4.0
+Quebec,Quebec,1,19,2025,2025-01-04,HCoV,1510,54,3.6
+Quebec,Quebec,2,20,2025,2025-01-11,HCoV,1511,39,2.6
+Quebec,Quebec,3,21,2025,2025-01-18,HCoV,1499,50,3.3
+Quebec,Quebec,4,22,2025,2025-01-25,HCoV,1580,69,4.4
+Quebec,Quebec,5,23,2025,2025-02-01,HCoV,1627,84,5.2
+Quebec,Quebec,6,24,2025,2025-02-08,HCoV,1686,107,6.3
+Quebec,Quebec,7,25,2025,2025-02-15,HCoV,1560,104,6.7
+Territories,Territories,35,1,2024,2024-08-31,HCoV,N/A,N/A,N/A
+Territories,Territories,36,2,2024,2024-09-07,HCoV,N/A,N/A,N/A
+Territories,Territories,37,3,2024,2024-09-14,HCoV,N/A,N/A,N/A
+Territories,Territories,38,4,2024,2024-09-21,HCoV,N/A,N/A,N/A
+Territories,Territories,39,5,2024,2024-09-28,HCoV,N/A,N/A,N/A
+Territories,Territories,40,6,2024,2024-10-05,HCoV,N/A,N/A,N/A
+Territories,Territories,41,7,2024,2024-10-12,HCoV,N/A,N/A,N/A
+Territories,Territories,42,8,2024,2024-10-19,HCoV,N/A,N/A,N/A
+Territories,Territories,43,9,2024,2024-10-26,HCoV,N/A,N/A,N/A
+Territories,Territories,44,10,2024,2024-11-02,HCoV,N/A,N/A,N/A
+Territories,Territories,45,11,2024,2024-11-09,HCoV,N/A,N/A,N/A
+Territories,Territories,46,12,2024,2024-11-16,HCoV,N/A,N/A,N/A
+Territories,Territories,47,13,2024,2024-11-23,HCoV,N/A,N/A,N/A
+Territories,Territories,48,14,2024,2024-11-30,HCoV,N/A,N/A,N/A
+Territories,Territories,49,15,2024,2024-12-07,HCoV,N/A,N/A,N/A
+Territories,Territories,50,16,2024,2024-12-14,HCoV,N/A,N/A,N/A
+Territories,Territories,51,17,2024,2024-12-21,HCoV,N/A,N/A,N/A
+Territories,Territories,52,18,2024,2024-12-28,HCoV,N/A,N/A,N/A
+Territories,Territories,1,19,2025,2025-01-04,HCoV,N/A,N/A,N/A
+Territories,Territories,2,20,2025,2025-01-11,HCoV,N/A,N/A,N/A
+Territories,Territories,3,21,2025,2025-01-18,HCoV,N/A,N/A,N/A
+Territories,Territories,4,22,2025,2025-01-25,HCoV,N/A,N/A,N/A
+Territories,Territories,5,23,2025,2025-02-01,HCoV,N/A,N/A,N/A
+Territories,Territories,6,24,2025,2025-02-08,HCoV,N/A,N/A,N/A
+Territories,Territories,7,25,2025,2025-02-15,HCoV,N/A,N/A,N/A
