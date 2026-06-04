@@ -93,6 +93,7 @@ def get_dashboard_update_date(base_url,headers):
 def check_most_recent_update_date(date,date_file):
     with open(date_file,"a+") as file:
         current_date = date
+        file.seek(0)  # a+ opens with the cursor at EOF; rewind so read() sees the file
         contents = file.read()
 
     already_updated = current_date in contents
