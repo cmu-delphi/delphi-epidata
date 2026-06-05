@@ -10,6 +10,7 @@ Delphi's Epidata API provides real-time access to epidemiological surveillance d
 It is built and maintained by the Carnegie Mellon University [Delphi research
 group](https://delphi.cmu.edu/). The Epidata API includes:
 
+* The [Delphi V5 API](api/v5.md), serving real-time, high-resolution signals for public health surveillance.
 * The [main endpoint (COVIDcast)](api/covidcast.md), providing daily updates about current COVID-19 and influenza activity across the United States.
 * A [variety of other endpoints](api/README.md), providing primarily historical data about various diseases including COVID-19, influenza, dengue fever, and norovirus in several countries.
 
