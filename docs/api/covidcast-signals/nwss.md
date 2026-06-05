@@ -41,6 +41,54 @@ In the Delphi API, wastewater data is served at the `sewershed` level (individua
 1. TOC
 {:toc}
 
+## Available Signals
+
+Wastewater signals are constructed by combining a pathogen prefix with a post-processing suffix in the format `<pathogen_prefix>_<suffix>`. For example, combining the prefix `covid` with the suffix `avg_conc_lin` constructs the signal `covid_avg_conc_lin`.
+
+### Pathogen Prefixes
+
+| Prefix | Pathogen | Target PCR |
+|---|---|---|
+| `covid` | COVID-19 | SARS-CoV-2 |
+| `flu` | Influenza | Influenza A |
+| `flu_h5` | Avian Flu | H5 Influenza A |
+| `rsv` | RSV | Respiratory Syncytial Virus |
+| `measles` | Measles | Measles |
+| `mpox_all` | Mpox (All Clades) | Mpox (all clades) |
+| `mpox_clade_i` | Mpox Clade I | Mpox Clade I |
+| `mpox_clade_ii` | Mpox Clade II | Mpox Clade II |
+| `mpox_nvo` | Mpox NVO | Non-variola orthopoxvirus |
+
+### Suffixes
+
+| Suffix | Metric Type | Description |
+|---|---|---|
+| `avg_conc` | Average Concentration | Log-average concentration ($$\log_{10}$$ copies/L) |
+| `avg_conc_lin` | Average Concentration | Linear average concentration (copies/L) |
+| `flowpop_lin` | Flow-Population | Flow-population normalized concentration (copies/person/day) |
+| `mic_lin` | Microbial | Microbial normalized concentration (unitless ratio) |
+
+
+## Source-Specific Keys
+
+Wastewater data has unique properties, including multiple facilities, replicate samples, and laboratory PCR targets. To support this granularity, the V5 table schema includes:
+
+| Column | Key Type | Description |
+|---|---|---|
+| `nwss_source` | Primary Key (Extra Key) | The data provider or laboratory network that analyzed/reported the sample (see [Providers](#providers)). |
+| `sample_index` | Primary Key (Extra Key) | An integer identifier mapped to the original sample's unique ID (`sample_id`). |
+| `pcr_target` | Value Column (Extra Value) | The target pathogen or organism analyzed in the sample (e.g., `sars-cov-2`, `fluav`, `rsv`). |
+
+
+## Auxiliary Metadata Table
+
+Since wastewater treatment facilities have static traits (such as populations served and lab methodologies) that do not change daily, this metadata is served in a companion table via the `/aux_data/` endpoint at `https://api.delphi.cmu.edu/epidata/v5/aux_data/?source=nwss`.
+
+The table is keyed by `report_time`, `geo_value`, `time_value`, `nwss_source`, `sample_index`, and `pcr_target`.
+
+Its value columns report facility demographics (`state_territory`, `county_fips`, `counties_served`, `population_served`), sample specifics (`sample_type`, `sample_location`, `flow_rate`), laboratory methods (`concentration_method`, `extraction_method`, `major_lab_method`, `pcr_type`, `pcr_target_units`, `lod_sewage`), and pipeline metrics (`rec_eff_percent`, `pipeline_run_id`).
+
+
 ## Signal features
 The signals vary across the underlying data provider, the normalization method, and the post-processing method.
 
@@ -76,50 +124,6 @@ Regardless of normalization method, the daily wastewater data is noisy; to make 
 |---|---|---|---|
 | **Average Concentration (log-transformed)** | `avg_conc` | Logarithmic ($$\log_{10}$$ copies/L) | Replicates are averaged and log-transformed. |
 | **Average Concentration (linear scale)** | `_avg_conc_lin` | Linear (copies/L) | Replicates are averaged on a linear scale. |
-
-
-### Full signal list
-
-Here is the complete list of available signals for the active sewershed-level `nwss` source:
-
-| Signal | Pathogen | Metric Type | Description |
-|---|---|---|---|
-| `covid_avg_conc` | COVID-19 | Average Concentration | Log-average concentration of SARS-CoV-2. |
-| `covid_avg_conc_lin` | COVID-19 | Average Concentration | Linear average concentration of SARS-CoV-2. |
-| `covid_flowpop_lin` | COVID-19 | Flow-Population | Flow-population normalized concentration of SARS-CoV-2. |
-| `covid_mic_lin` | COVID-19 | Microbial | Microbial normalized concentration of SARS-CoV-2. |
-| `flu_avg_conc` | Influenza | Average Concentration | Log-average concentration of Influenza A. |
-| `flu_avg_conc_lin` | Influenza | Average Concentration | Linear average concentration of Influenza A. |
-| `flu_flowpop_lin` | Influenza | Flow-Population | Flow-population normalized concentration of Influenza A. |
-| `flu_mic_lin` | Influenza | Microbial | Microbial normalized concentration of Influenza A. |
-| `flu_h5_avg_conc` | Avian Flu (H5) | Average Concentration | Log-average concentration of H5 Influenza A. |
-| `flu_h5_avg_conc_lin` | Avian Flu (H5) | Average Concentration | Linear average concentration of H5 Influenza A. |
-| `flu_h5_flowpop_lin` | Avian Flu (H5) | Flow-Population | Flow-population normalized concentration of H5 Influenza A. |
-| `flu_h5_mic_lin` | Avian Flu (H5) | Microbial | Microbial normalized concentration of H5 Influenza A. |
-| `rsv_avg_conc` | RSV | Average Concentration | Log-average concentration of RSV. |
-| `rsv_avg_conc_lin` | RSV | Average Concentration | Linear average concentration of RSV. |
-| `rsv_flowpop_lin` | RSV | Flow-Population | Flow-population normalized concentration of RSV. |
-| `rsv_mic_lin` | RSV | Microbial | Microbial normalized concentration of RSV. |
-| `measles_avg_conc` | Measles | Average Concentration | Log-average concentration of Measles. |
-| `measles_avg_conc_lin` | Measles | Average Concentration | Linear average concentration of Measles. |
-| `measles_flowpop_lin` | Measles | Flow-Population | Flow-population normalized concentration of Measles. |
-| `measles_mic_lin` | Measles | Microbial | Microbial normalized concentration of Measles. |
-| `mpox_all_avg_conc` | Mpox | Average Concentration | Log-average concentration of Mpox (all clades). |
-| `mpox_all_avg_conc_lin` | Mpox | Average Concentration | Linear average concentration of Mpox (all clades). |
-| `mpox_all_flowpop_lin` | Mpox | Flow-Population | Flow-population normalized concentration of Mpox (all clades). |
-| `mpox_all_mic_lin` | Mpox | Microbial | Microbial normalized concentration of Mpox (all clades). |
-| `mpox_clade_i_avg_conc` | Mpox Clade I | Average Concentration | Log-average concentration of Mpox Clade I. |
-| `mpox_clade_i_avg_conc_lin` | Mpox Clade I | Average Concentration | Linear average concentration of Mpox Clade I. |
-| `mpox_clade_i_flowpop_lin` | Mpox Clade I | Flow-Population | Flow-population normalized concentration of Mpox Clade I. |
-| `mpox_clade_i_mic_lin` | Mpox Clade I | Microbial | Microbial normalized concentration of Mpox Clade I. |
-| `mpox_clade_ii_avg_conc` | Mpox Clade II | Average Concentration | Log-average concentration of Mpox Clade II. |
-| `mpox_clade_ii_avg_conc_lin` | Mpox Clade II | Average Concentration | Linear average concentration of Mpox Clade II. |
-| `mpox_clade_ii_flowpop_lin` | Mpox Clade II | Flow-Population | Flow-population normalized concentration of Mpox Clade II. |
-| `mpox_clade_ii_mic_lin` | Mpox Clade II | Microbial | Microbial normalized concentration of Mpox Clade II. |
-| `mpox_nvo_avg_conc` | Mpox NVO | Average Concentration | Log-average concentration of Non-variola orthopoxvirus. |
-| `mpox_nvo_avg_conc_lin` | Mpox NVO | Average Concentration | Linear average concentration of Non-variola orthopoxvirus. |
-| `mpox_nvo_flowpop_lin` | Mpox NVO | Flow-Population | Flow-population normalized concentration of Non-variola orthopoxvirus. |
-| `mpox_nvo_mic_lin` | Mpox NVO | Microbial | Microbial normalized concentration of Non-variola orthopoxvirus. |
 
 ## Estimation
 
