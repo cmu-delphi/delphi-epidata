@@ -11,11 +11,11 @@ grand_parent: Delphi V5 API
 | :--- | :--- |
 | **Source Name** | `nwss` |
 | **Data Source** | [National Wastewater Surveillance System (NWSS)](https://www.cdc.gov/nwss/index.html) |
-| **Geographic Levels** | sewershed (see [geographic coding](../covidcast_geography.md)) |
-| **Temporal Granularity** | Daily (sample collection dates) (see [date format docs](../covidcast_times.md)) |
+| **Geographic Levels** | sewershed (see [Sampling Sites](#sampling-sites)) |
+| **Temporal Granularity** | Weekly |
 | **Reporting Cadence** | Weekly (typically updated on Fridays) |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
-| **Temporal Scope Start** | 2020-07-05 |
+| **Temporal Scope Start** | 2020-01-14 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Changelog
@@ -34,6 +34,12 @@ The [National Wastewater Surveillance System (NWSS)](https://www.cdc.gov/nwss/in
 The project was launched in September 2020 and is ongoing. Delphi ingests un-versioned wastewater concentration data from several public Socrata API datasets provided by the CDC.
 
 In the Delphi API, wastewater data is served at the `sewershed` level (individual treatment plant or grab sample site level).
+
+## Sampling Sites
+
+NWSS data is collected from wastewater monitoring sites within the sewer network. Each facility in the system is identified by a unique sewershed identifier, which represents the geographic area whose wastewater flows through that facility.
+
+The CDC coordinates data collection across a national network of public health laboratories and contracted testing providers. For more detail on how sampling sites are selected and how surveys are conducted, see the [CDC NWSS data sources documentation](https://www.cdc.gov/wastewater/about/index.html#cdc_survey_profile_how_surveys_are_conducted-data-sources).
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -143,6 +149,8 @@ Standard errors and sample sizes are not applicable to these signals.
 ## Missingness
 
 If a sample site has too few individuals, the NWSS does not provide the detailed data, so we cannot include it in our aggregations.
+
+Also, data from sewersheds serving fewer than 3,000 people, as well as data from facility or institution specific sampling locations and tribal communities, are generally not available unless approved by the local jurisdiction.
 
 ## Lag and Backfill
 
