@@ -100,14 +100,6 @@ The parameters available for each source are documented in each linked source-sp
 | [`covidcast_meta`](covidcast_meta.md) | COVIDCast Metadata | Metadata for Delphi's COVID-19 surveillance streams. | no |
 | [`covid_hosp`](covid_hosp.md) | COVID-19 Hospitalization | COVID-19 Reported Patient Impact and Hospital Capacity. | no |
 
-### Delphi V5 API Data (Standardized Versioned Endpoints)
-
-| Endpoint | Name | Description | Restricted? |
-| --- | --- | --- | --- |
-| [`v5`](v5.md) | Delphi V5 API | Modernized interface with standard columns, version range/snapshot queries, and aux data support. | no |
-| [`v5_meta`](v5_meta.md) | V5 Metadata | Discovery endpoints for active V5 sources, schemas, signals, and update checks. | no |
-
-
 ### Influenza Data
 
 | Endpoint | Name | Description | Restricted? |
