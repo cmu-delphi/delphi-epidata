@@ -1,6 +1,6 @@
 ---
 title: PopHive Claims
-parent: V5 Sources and Signals
+parent: Delphi V5 Sources and Signals
 grand_parent: Delphi V5 API
 nav_order: 3
 ---
