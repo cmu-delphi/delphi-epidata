@@ -32,7 +32,7 @@ Weekly hospital respiratory admissions and bed usage reported to NHSN.
 
 ---
 
-### Epic Cosmos by Pophive ([`pophive`](v5-signals/pophive.md))
+### Epic Cosmos by Pophive ([`pophive`](v5-signals/epic-cosmos.md))
 
 | Attribute | Details |
 | :--- | :--- |
