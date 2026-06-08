@@ -156,8 +156,7 @@ Also, data from sewersheds serving fewer than 3,000 people, as well as data from
 
 ## Lag and Backfill
 
-Due to collection, shipping, processing and reporting time, these signals are subject to some lag.
-Typically, this is between 4-6 days.
+These signals are released weekly with ~4 days of latency
 
 ## Source and Licensing
 
