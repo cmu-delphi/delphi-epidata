@@ -88,7 +88,7 @@ Wastewater data has unique properties, including multiple facilities, replicate 
 
 ## Auxiliary Metadata Table
 
-Since wastewater treatment facilities have static traits (such as populations served and lab methodologies) that do not change daily, this metadata is served in a companion table via the `/aux_data/` endpoint at `https://api.delphi.cmu.edu/epidata/v5/aux_data/?source=nwss`.
+Since wastewater treatment facilities have static traits (such as populations served and lab methodologies) that do not change daily, this metadata is served in a companion table via the `/aux_data/` endpoint at `https://delphi.cmu.edu/epidata/v5/aux_data/?source=nwss`.
 
 The table is keyed by `report_time`, `geo_value`, `time_value`, `nwss_source`, `sample_index`, and `pcr_target`.
 
