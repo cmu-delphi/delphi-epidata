@@ -69,8 +69,8 @@ Wastewater signals are constructed by combining a pathogen prefix with a post-pr
 
 | Suffix | Metric Type | Description |
 |---|---|---|
-| `avg_conc` | Average Concentration | Log-average concentration ($$\log_{10}$$ copies/L) |
-| `avg_conc_lin` | Average Concentration | Linear average concentration (copies/L) |
+| `avg_conc` | Average Concentration | Concentration of the PCR target back-calculated to unconcentrated sample basis |
+| `avg_conc_lin` | Average Concentration | Concentration of the PCR target on a per sample amount basis where all values are on a linear (not log10) concentration basis |
 | `flowpop_lin` | Flow-Population | Flow-population normalized concentration (copies/person/day) |
 | `mic_lin` | Microbial | Microbial normalized concentration (unitless ratio) |
 
