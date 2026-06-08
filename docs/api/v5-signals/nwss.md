@@ -122,14 +122,14 @@ The two approaches used in the NWSS datasets to normalize viral concentration ar
 | **Flow-population** | This is calculated as $$\frac{v\cdot r}{p}$$, where $$v$$ is measured viral concentration, $$r$$ is measured flow rate, and $$p$$ is population served. This normalization method is applied to concentrations $$v$$ measured from raw (unconcentrated) wastewater. The resulting value is in units of viral gene copies per person per day. It tracks the total number of individuals whose shedding behavior has changed. | `_flowpop` |
 | **Microbial** | This divides a measurement by the concentration of one of several potential fecal biomarkers. These are molecular indicators of either viruses or bacteria commonly found throughout the population. The most common viral indicator comes from the pepper mild mottle virus (PMMoV), a virus that infects plants and is commonly found in pepper products. The most common bacterial indicators come from Bacteroides HF183 and Lachnospiraceae Lachno3, both common gut bacteria. This normalization method is applied to sludge samples, which have been concentrated in preparation for treatment. The resulting value is unitless, and tracks the proportion of individuals whose shedding behavior has changed. | `_mic` |
 
-### Post Processing methods
+### Post-processing methods
 
-Regardless of normalization method, the daily wastewater data is noisy; to make the indicators more useful, the NWSS has provided versions of the data that are post-processed in different ways.
+Regardless of normalization method, the daily wastewater data is noisy; to make the indicators more useful, the NWSS provides versions of the data that are post-processed in different ways:
 
-| Method | Suffix | Scale | Description |
-|---|---|---|---|
-| **Average Concentration (log-transformed)** | `avg_conc` | Logarithmic ($$\log_{10}$$ copies/L) | Replicates are averaged and log-transformed. |
-| **Average Concentration (linear scale)** | `_avg_conc_lin` | Linear (copies/L) | Replicates are averaged on a linear scale. |
+| Method | Suffix | Description |
+|---|---|---|
+| **Average Concentration** | `avg_conc` | Concentration of the PCR target back-calculated to unconcentrated sample basis. Non-detections are typically reported as zero. |
+| **Linearized Average Concentration** | `avg_conc_lin` | Concentration of the PCR target on a per sample amount basis where all values are on a linear (not log10) concentration basis. |
 
 ## Estimation
 
