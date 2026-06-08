@@ -14,8 +14,11 @@ grand_parent: Delphi V5 API
 | **Geographic Levels** | sewershed (see [Sampling Sites](#sampling-sites)) |
 | **Temporal Granularity** | Weekly |
 | **Reporting Cadence** | Weekly (typically updated on Fridays) |
-| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
-| **Temporal Scope Start** | 2020-01-14 |
+| **Temporal Scope Start** | <span class="source-metadata-field" data-source="nwss" data-field="reference_time_range.first">Varies by state (loading...)</span> |
+| **Latest Data Available** | <span class="source-metadata-field" data-source="nwss" data-field="reference_time_range.latest">Ongoing (loading...)</span> |
+| **First Report Time** | <span class="source-metadata-field" data-source="nwss" data-field="report_time_range.first">loading...</span> |
+| **Latest Report Time** | <span class="source-metadata-field" data-source="nwss" data-field="report_time_range.latest">loading...</span> |
+| **Date of last Delphi data revision:** | Never (see [data revision docs](#changelog)) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Changelog
