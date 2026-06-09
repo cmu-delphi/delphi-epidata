@@ -56,17 +56,18 @@ Wastewater signals are constructed by combining a pathogen prefix with a post-pr
 
 ### Pathogen Prefixes
 
-| Prefix | Pathogen | Target PCR |
-|---|---|---|
-| `covid` | COVID-19 | SARS-CoV-2 |
-| `flu` | Influenza | Influenza A |
-| `flu_h5` | Avian Flu | H5 Influenza A |
-| `rsv` | RSV | Respiratory Syncytial Virus |
-| `measles` | Measles | Measles |
-| `mpox_all` | Mpox (All Clades) | Mpox (all clades) |
-| `mpox_clade_i` | Mpox Clade I | Mpox Clade I |
-| `mpox_clade_ii` | Mpox Clade II | Mpox Clade II |
-| `mpox_nvo` | Mpox NVO | Non-variola orthopoxvirus |
+| Prefix | Pathogen | Target PCR | Socrata endpoint |
+|---|---|---|---|
+| `covid` | COVID-19 | `sars-cov-2` | [j9g8-acpt](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-SARS-CoV-2/j9g8-acpt/about_data) |
+| `flu` | Influenza | `fluav` | [ymmh-divb](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Influenza-A/ymmh-divb/about_data) |
+| `flu_h5` | Avian Flu | `fluav a h5` | [mtpu-urpp](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-H5-Influenza-A/mtpu-urpp/about_data) |
+| `rsv` | RSV | `rsv` | [45cq-cw4i](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i/about_data) |
+| `measles` | Measles | `mev_wt` | [akvg-8vrb](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Measles/akvg-8vrb/about_data) |
+| `mpox_all` | Mpox (All Clades) | `hmpxv` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
+| `mpox_clade_i` | Mpox Clade I | `hmpxv clade i` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
+| `mpox_clade_ii` | Mpox Clade II | `hmpxv clade ii` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
+| `mpox_nvo` | Mpox NVO | `nvo` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
+
 
 ### Suffixes
 
@@ -77,6 +78,7 @@ Wastewater signals are constructed by combining a pathogen prefix with a post-pr
 | `flowpop_lin` | Flow-Population | Flow-population normalized concentration (copies/person/day) |
 | `mic_lin` | Microbial | Microbial normalized concentration (unitless ratio) |
 
+For more details on the columns, see one of the socrata endpoints, e.g. [RSV](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i/about_data) which provides descriptions of all columns.
 
 ## Source-Specific Keys
 
@@ -86,12 +88,12 @@ Wastewater data has unique properties, including multiple facilities, replicate 
 |---|---|---|
 | `nwss_source` | Primary Key (Extra Key) | The data provider or laboratory network that analyzed/reported the sample (see [Providers](#providers)). |
 | `sample_index` | Primary Key (Extra Key) | An integer identifier mapped to the original sample's unique ID (`sample_id`). |
-| `pcr_target` | Value Column (Extra Value) | The target pathogen or organism analyzed in the sample (e.g., `sars-cov-2`, `fluav`, `rsv`). |
+| `pcr_target` | Value Column (Extra Value) | The target pathogen or organism analyzed in the sample (e.g., `sars-cov-2`, `fluav`, `rsv`). Include to join onto the auxiliary metadata table|
 
 
 ## Auxiliary Metadata Table
 
-Since wastewater treatment facilities have static traits (such as populations served and lab methodologies) that do not change daily, this metadata is served in a companion table via the `/aux_data/` endpoint at `https://delphi.cmu.edu/epidata/v5/aux_data/?source=nwss`.
+Since wastewater treatment facilities have sample-specific traits (such as populations served and lab methodologies) that can change with time, this metadata is served in a companion table via the `/aux_data/` endpoint at `https://delphi.cmu.edu/epidata/v5/aux_data/?source=nwss`.
 
 The table is keyed by `report_time`, `geo_value`, `time_value`, `nwss_source`, `sample_index`, and `pcr_target`.
 
@@ -110,7 +112,7 @@ The following table shows the history of data providers:
 |-|-|-|
 | `cdc_verily` | 2023/10/30-Today | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly. |
 | `nwss` | 2020/06/21-Today | Data reported by the respective state, territorial, and local public health agencies; the actual processing may be done by a private lab such as Verily or Biobot, or the agency itself, or a partnering university. |
-| `wws` | 2021/12/26-Today | Data analyzed by [Wastewater Scan](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS. |
+| `wws` | 2021/12/26-Today | Data analyzed by [Wastewater Scan](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS. Use of this data outside of public health decision making requires contacting WastewaterSCAN Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (https://data.wastewaterscan.org/about/#18).|
 | `biobot` | 2020-2023 | Data analyzed by [Biobot](https://biobot.io/) and then shared with the NWSS. |
 
 ### Normalization methods
@@ -157,8 +159,7 @@ Also, data from sewersheds serving fewer than 3,000 people, as well as data from
 
 ## Lag and Backfill
 
-Due to collection, shipping, processing and reporting time, these signals are subject to some lag.
-Typically, this is between 4-6 days.
+These signals are released weekly with ~4 days of latency
 
 ## Source and Licensing
 
@@ -167,6 +168,8 @@ The site-level data is provided un-versioned via the Socrata API across pathogen
 
 
 The NWSS is aggregating data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, and [Wastewater Scan](https://www.wastewaterscan.org/en).
+
+The WastewaterSCAN data were collected as part of the [WastewaterSCAN]([Wastewater Scan](https://www.wastewaterscan.org/en)) / SCAN project, a partnership between Stanford University, Emory University, and Verily funded philanthropically through a gift to Stanford University, and then shared with the NWSS. Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (as described [here](https://data.wastewaterscan.org/about/#18)).
 
 This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
 

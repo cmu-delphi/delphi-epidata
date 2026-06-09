@@ -92,7 +92,7 @@ The `fill_method` column indicates how missing values were filled:
 | :--- | :--- |
 | `source` | Returns the raw reported value. |
 | `ave` | Fills missing values using the average of neighboring values during aggregation. |
-| `zero` | Treats suppressed or missing values as zero during aggregation. |
+| `zero` | Treats missing values as zero during aggregation. |
 
 If you do not specify a `fill_method`, the API returns all available rows across all methods.
 
