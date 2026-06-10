@@ -24,7 +24,7 @@ nav_order: 3
 <details markdown="1">
 <summary>Click to expand</summary>
 
-No changes so far.
+- **2025-09-23**. Data ingestion starts (earliest report date in the dataset).
 
 </details>
 

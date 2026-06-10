@@ -23,7 +23,7 @@ grand_parent: Delphi V5 API
 <details markdown="1">
 <summary>Click to expand</summary>
 
-No changes so far.
+- **2026-02-25**. Data ingestion starts (earliest report date in the dataset).
 
 </details>
 
