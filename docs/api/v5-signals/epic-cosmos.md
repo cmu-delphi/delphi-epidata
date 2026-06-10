@@ -13,7 +13,7 @@ nav_order: 3
 | **Source Name** | `pophive` |
 | **Data Source** | [Epic Cosmos](https://cosmos.epic.com/) via [PopHIVE](https://github.com/PopHIVE/Ingest) |
 | **Geographic Levels** | HHS Regions (`hhs`), nation, state |
-| **Temporal Granularity** | Weekly |
+| **Temporal Granularity** | Weekly (epiweeks; dates are Saturdays, the last day of the week) |
 | **Reporting Cadence** | Weekly |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2018-01-07 |
@@ -58,6 +58,12 @@ No changes so far.
 ## Estimation
 
 Epic Cosmos data is aggregated from electronic health records of participating healthcare systems. Percentages are calculated as the ratio of encounters with a specific diagnosis or result to the total number of relevant encounters.
+
+---
+
+## Temporal Representation
+
+Dates in this dataset represent epiweeks, where the reported dates (`time_value`) correspond to Saturdays (the last day of each week).
 
 ---
 
