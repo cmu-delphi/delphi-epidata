@@ -14,7 +14,7 @@ nav_order: 3
 | **Data Source** | [Epic Cosmos](https://cosmos.epic.com/) via [PopHIVE](https://github.com/PopHIVE/Ingest) |
 | **Geographic Levels** | HHS Regions (`hhs`), nation, state |
 | **Temporal Granularity** | Weekly (epiweeks; dates are Saturdays, the last day of the week) |
-| **Reporting Cadence** | Weekly |
+| **Reporting Cadence** | Irregular (biweekly to monthly updates; see [Overview](#overview)) |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2018-01-07 |
 | **License** | [PopHIVE Attribution](https://github.com/PopHIVE/Ingest) / [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en)|
@@ -32,6 +32,8 @@ nav_order: 3
 {: .no_toc}
 
 [Epic Cosmos](https://cosmos.epic.com/) is a collaborative research platform containing de-identified patient data from over 300 million patients across more than 1,600 hospitals and health systems using Epic electronic health record systems. Data is accessed via SlicerDicer, a self-service analytics tool. The dataset includes emergency department visits, diagnoses, immunizations, laboratory results, and other clinical data.
+
+Note that while data updates are expected to be biweekly, the actual reporting cadence is irregular. Historically, the interval between releases has ranged from weekly to monthly, with occasional lags exceeding four weeks.
 
 ## Table of contents
 {: .no_toc .text-delta}
