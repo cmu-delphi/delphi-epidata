@@ -14,6 +14,7 @@ from epiweeks import Week
 from datetime import datetime, timedelta
 import math
 from io import StringIO
+import numpy as np
 
 from delphi.epidata.acquisition.rvdss.constants import (
         HISTORIC_SEASON_URLS,
@@ -301,6 +302,8 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
         table["flu_pct_positive"] =   (table["flu_positive_tests"]/table["flu_tests"])*100
     else:
         table[virus+"_positive_tests"] = (table[virus+"_pct_positive"]/100) *table[virus+"_tests"]
+
+    table.loc[table[virus+"_tests"] == 0,virus+"_pct_positive"] = np.nan   
 
     table = table.set_index(['epiweek', 'time_value', 'issue', 'geo_type', 'geo_value'],verify_integrity=True)
     return(table)
