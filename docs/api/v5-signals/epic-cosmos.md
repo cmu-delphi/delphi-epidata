@@ -16,7 +16,10 @@ nav_order: 3
 | **Temporal Granularity** | Weekly (epiweeks; dates are Saturdays, the last day of the week) |
 | **Reporting Cadence** | Irregular (biweekly to monthly updates; see [Overview](#overview)) |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
-| **Temporal Scope Start** | 2018-01-07 |
+| **Temporal Scope Start** | <span class="source-metadata-field" data-source="pophive" data-field="reference_time_range.first">2018-01-07 (loading...)</span> |
+| **Latest Data Available** | <span class="source-metadata-field" data-source="pophive" data-field="reference_time_range.latest">loading...</span> |
+| **First Report Time** | <span class="source-metadata-field" data-source="pophive" data-field="report_time_range.first">loading...</span> |
+| **Latest Report Time** | <span class="source-metadata-field" data-source="pophive" data-field="report_time_range.latest">loading...</span> |
 | **License** | [PopHIVE Attribution](https://github.com/PopHIVE/Ingest) / [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en)|
 
 ## Changelog
