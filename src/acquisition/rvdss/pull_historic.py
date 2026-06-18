@@ -300,6 +300,10 @@ def create_percent_positive_detection_table(table,modified_date,start_year, flu=
 
         table["flu_positive_tests"] =  table["flua_positive_tests"] +  table["flub_positive_tests"]
         table["flu_pct_positive"] =   (table["flu_positive_tests"]/table["flu_tests"])*100
+        
+        table.loc[table["flu_tests"] == 0,"flua_pct_positive"] = np.nan  
+        table.loc[table["flu_tests"] == 0,"flub_pct_positive"] = np.nan  
+        
     else:
         table[virus+"_positive_tests"] = (table[virus+"_pct_positive"]/100) *table[virus+"_tests"]
 
