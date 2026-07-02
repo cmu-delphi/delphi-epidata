@@ -137,7 +137,6 @@ def main():
         "-pat",
         action="store_true",
         help="patch in missings seasons, which are unarchived and must be obtained through csvs"
-        # TODO: Look into passing a file name
     )
     # fmt: on
     args = parser.parse_args()
@@ -167,7 +166,7 @@ def main():
     if historical_flag:
         update_historical_data(logger)
     if patch_flag:
-        patch_seasons(season_start_years=[2013,2014,2024], logger=logger)
+        patch_seasons(season_start_years=[2013,2014,2024,2025], logger=logger)
         
 
 if __name__ == "__main__":
