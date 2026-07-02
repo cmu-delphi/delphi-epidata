@@ -232,8 +232,12 @@ def create_detections_table(table,modified_date,week_number,week_end_date,start_
                     'geo_type':geo_types})
 
     table.columns =[re.sub(" ","_",col) for col in table.columns]
+    
+    # calculate total flu positive tests from a and b positive tests
+    if "flua_positive_tests" in table.columns and "flub_positive_tests" in table.columns:
+        table["flu_positive_tests"] = table["flua_positive_tests"] + table["flub_positive_tests"]
+    
     return(table)
-
 
 def create_percent_positive_detection_table(table,modified_date,start_year, flu=False,overwrite_weeks=False):
     table = deduplicate_rows(table)
