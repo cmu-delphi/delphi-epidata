@@ -88,7 +88,7 @@ def update(data, logger):
     cur = cnx.cursor()
 
     data = data.reset_index(
-      ).replace({np.nan: None})
+      ).replace({np.nan: None,np.inf: None,-np.inf: None})
     rvdss_cols_subset = [col for col in data.columns if col in rvdss_cols]
     data_dict = data.to_dict(orient = "records")
 
