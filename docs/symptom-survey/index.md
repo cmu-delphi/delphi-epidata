@@ -1,6 +1,6 @@
 ---
 title: <i>inactive</i> COVID-19 Trends and Impact Survey
-nav_order: 4
+nav_order: 5
 ---
 
 # COVID-19 Trends and Impact Survey (CTIS)
