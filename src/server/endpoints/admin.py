@@ -123,7 +123,7 @@ def _register():
                 409,
             )
         User.create_user(api_key=user_api_key, email=user_email, session=session)
-    return make_response(f"Successfully registered API key '{user_api_key}'", 200)
+    return make_response(f"Successfully registered API key for {user_email}", 200, {"Content-Type": "text/plain"})
 
 
 @bp.route("/replace_key", methods=["POST"])
@@ -141,7 +141,7 @@ def _replace_key():
             return make_response("No user found with that email address", 404)
         existing_roles = {role.name for role in user.roles}
         User.update_user(user=user, api_key=user_api_key, email=user_email, roles=existing_roles, session=session)
-    return make_response(f"Successfully replaced API key for '{user_email}'", 200)
+    return make_response(f"Successfully replaced API key for {user_email}", 200, {"Content-Type": "text/plain"})
 
 
 @bp.route("/diagnostics", methods=["GET", "PUT", "POST", "DELETE"])

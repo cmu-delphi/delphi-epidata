@@ -14,7 +14,7 @@ function onSubmit(e) {
     var allResponses = form.getResponses();
     var latestResponse = allResponses[allResponses.length - 1];
 
-    var user_api_key = Math.random().toString(16).substr(2, 18);
+    var user_api_key = Utilities.getUuid().replace(/-/g, '');
     var user_email = latestResponse.getRespondentEmail();
 
     var payload = {
@@ -53,7 +53,7 @@ function onSubmit(e) {
         });
     } else if (result.getResponseCode() == 409) {
         Logger.log('Email already registered, replacing key for %s', user_email);
-        var new_api_key = Math.random().toString(16).substr(2, 18);
+        var new_api_key = Utilities.getUuid().replace(/-/g, '');
         var replacePayload = {
             'token': WEBHOOK_SECRET,
             'user_api_key': new_api_key,
@@ -108,7 +108,7 @@ function backfillRegistrationsSince(cutoffDate, dryRun) {
             continue;
         }
 
-        var user_api_key = Math.random().toString(16).substr(2, 18);
+        var user_api_key = Utilities.getUuid().replace(/-/g, '');
 
         if (dryRun) {
             Logger.log('DRY RUN — would register: %s with key: %s', user_email, user_api_key);
