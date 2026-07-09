@@ -4,6 +4,7 @@
 
 
 var POST_URL = "https://api.delphi.cmu.edu/epidata/admin/register";
+var REPLACE_URL = "https://api.delphi.cmu.edu/epidata/admin/replace_key";
 var WEBHOOK_SECRET = "abc";
 
 function onSubmit(e) {
@@ -51,19 +52,42 @@ function onSubmit(e) {
             Delphi Team`
         });
     } else if (result.getResponseCode() == 409) {
-        Logger.log('Registration was not successful, %s %s', result.getContentText("UTF-8"), result.GetResponseCode);
-        MailApp.sendEmail({
-            to: user_email,
-            subject: "Delphi Epidata API Registration",
-            noReply: true,
-            body: `
-            API Key was not generated.
+        Logger.log('Email already registered, replacing key for %s', user_email);
+        var new_api_key = Math.random().toString(16).substr(2, 18);
+        var replacePayload = {
+            'token': WEBHOOK_SECRET,
+            'user_api_key': new_api_key,
+            'user_email': user_email,
+        };
+        var replaceOptions = {
+            "method": "post",
+            "contentType": "application/json",
+            "muteHttpExceptions": true,
+            "payload": JSON.stringify(replacePayload)
+        };
+        var replaceResult = UrlFetchApp.fetch(REPLACE_URL, replaceOptions);
+        if (replaceResult.getResponseCode() == 200) {
+            Logger.log('Key replacement successful for %s', user_email);
+            MailApp.sendEmail({
+                to: user_email,
+                subject: "Delphi Epidata API Registration",
+                noReply: true,
+                body: `Thank you for registering with the Delphi Epidata API.
 
-            This email address is already registered.  Please contact us if you believe this to be in error.
+Your API key is: ${new_api_key}
 
-            Best,
-            Delphi Team`
-        });
+Note: this email address was already registered, so a new key has been issued and your previous key has been deactivated.
+
+For usage information, see the API Keys section of the documentation: https://cmu-delphi.github.io/delphi-epidata/api/api_keys.html
+
+We strongly suggest you subscribe to our API mailing list to make sure you are informed on important topics, like announcements of API changes, details of updates to data, and unexpected downtime or other problems: https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api
+
+Best,
+Delphi Team`
+            });
+        } else {
+            Logger.log('Key replacement failed for %s: %s %s', user_email, replaceResult.getResponseCode(), replaceResult.getContentText("UTF-8"));
+        }
     }
 };
 
