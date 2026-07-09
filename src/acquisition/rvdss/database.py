@@ -87,8 +87,13 @@ def update(data, logger):
                                   database="epidata")
     cur = cnx.cursor()
 
+    # Convert infinities to NaN first (comparison-based replace handles inf on
+    # numeric columns), then map every NaN to None. Passing multiple keys to a
+    # single replace() call routes through pandas' multi-value code path, which
+    # does not reliably convert NaN -> None, leaving stray NaNs that break the
+    # SQL insert ("Unknown column 'nan'").
     data = data.reset_index(
-      ).replace({np.nan: None})
+      ).replace([np.inf, -np.inf], np.nan).replace({np.nan: None})
     rvdss_cols_subset = [col for col in data.columns if col in rvdss_cols]
     data_dict = data.to_dict(orient = "records")
 
