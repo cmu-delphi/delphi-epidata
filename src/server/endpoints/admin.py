@@ -4,6 +4,7 @@ import socket
 from typing import Dict, List, Set
 
 from flask import Blueprint, make_response, render_template_string, request
+from markupsafe import escape
 from werkzeug.exceptions import NotFound, Unauthorized
 from werkzeug.utils import redirect
 
@@ -123,7 +124,25 @@ def _register():
                 409,
             )
         User.create_user(api_key=user_api_key, email=user_email, session=session)
-    return make_response(f"Successfully registered API key '{user_api_key}'", 200)
+    return make_response(f"Successfully registered API key for {escape(user_email)}", 200, {"Content-Type": "text/plain"})
+
+
+@bp.route("/replace_key", methods=["POST"])
+def _replace_key():
+    body = request.get_json()
+    token = body.get("token")
+    if token is None or token != REGISTER_WEBHOOK_TOKEN:
+        raise Unauthorized()
+
+    user_api_key = body["user_api_key"]
+    user_email = body["user_email"]
+    with WriteSession() as session:
+        user = User.find_user(user_email=user_email, session=session)
+        if not user:
+            return make_response("No user found with that email address", 404)
+        existing_roles = {role.name for role in user.roles}
+        User.update_user(user=user, api_key=user_api_key, email=user_email, roles=existing_roles, session=session)
+    return make_response(f"Successfully replaced API key for {escape(user_email)}", 200, {"Content-Type": "text/plain"})
 
 
 @bp.route("/diagnostics", methods=["GET", "PUT", "POST", "DELETE"])
