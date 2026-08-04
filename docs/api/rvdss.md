@@ -1,0 +1,262 @@
+---
+parent: Data Sources and Signals
+grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+title: Respiratory Virus Detections in Canada
+nav_order: 4
+---
+
+# Respiratory Virus Detections in Canada
+
+{: .no_toc}
+
+| Attribute | Details |
+| :--- | :--- |
+| **Source Name** | `rvdss` |
+| **Data Source** | [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) from the Public Health Agency of Canada |
+| **Geographic Levels** | Nation, region, province, individual laboratories (see [Geographic Codes](geographic_codes.md#canada)) |
+| **Temporal Granularity** | Weekly (Epiweek) (see [date formats docs](date_formats.md)) |
+| **Reporting Cadence** | Weekly, typically the Thursday or Friday after the end of an epiweek |
+| **Temporal Scope Start** | Epiweek 36 2013 (2013-09-07) |
+| **License** | [Open Government Licence - Canada](#source-and-licensing) |
+
+## Overview
+{: .no_toc}
+
+This data source of respiratory virus detections in Canada is collected by the [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) and published by the Public Health Agency of Canada (PHAC). Laboratory tests for various respiratory illnesses are reported on a weekly basis by sentinel laboratories across Canada to the [Centre for Immunization and Respiratory Infectious Diseases (CIRID)](https://www.canada.ca/en/public-health/services/infectious-diseases/centre-immunization-respiratory-infectious-diseases-cirid.html), a subsidiary of PHAC. The data was originally reported in weekly online reports, but since June 2024, has changed to being reported through a dynamic dashboard.
+
+> **Note:** Human coronovirus (HCoV) refers to seasonal coronovirus, which differs from SARS-CoV-2, the novel pandemic coronovirus that causes COVID-19. SARS-CoV-2 (COVID-19) was not reported until the start of the 2022-2023 season.
+{: .note }
+
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
+## Signals
+
+| Signal                         | Description                                                                                                                                                                              |
+|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `sarscov2_tests`               | Number of SARS-CoV-2 (COVID-19) laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                                                           |
+| `sarscov2_positive_tests`      | Number of positive SARS-CoV-2 (COVID-19) laboratory tests <br/> **Earliest Date Available:** 2022-09-03                                                                                  |
+| `sarscov2_pct_positive`        | Percentage of SARS-CoV-2 (COVID-19) laboratory tests that are positive <br/> **Earliest Date Available:** 2022-09-03                                                                     |
+| `flu_tests`                    | Number of influenza laboratory tests. Tests for all influenza subtypes are included. <br/> **Earliest Date Available:** 2013-08-31                                                                                    |
+| `flua_tests`                   | Number of influenza A laboratory tests. Since influenza tests normally are panels composed of subtests for influenza A and influenza B, we assume that the number of influenza A tests is always the same as the total number of influenza tests (`flu_tests`). This assumption has been validated on dates June 20, 2024-August 29, 2024, when the RVDSS dashboard explicitly reported numbers of total, flu A, and flu B tests. This field is maintained for convenience. <br/> **Earliest Date Available:** 2013-08-31         |
+| `flub_tests`                   | Number of influenza B laboratory tests. Since influenza tests normally are panels composed of subtests for influenza A and influenza B, we assume that the number of influenza B tests is always the same as the total number of influenza tests (`flu_tests`). This assumption has been validated on dates June 20, 2024-August 29, 2024, when the RVDSS dashboard explicitly reported numbers of total, flu A, and flu B tests. This field is maintained for convenience.  <br/> **Earliest Date Available:** 2013-08-31         |
+| `flu_positive_tests`           | Number of influenza laboratory tests positive for any influenza subtype. <br/> **Earliest Date Available:** 2013-08-31                              |
+| `flu_pct_positive`             | Percentage of influenza laboratory tests that are positive for any influenza subtype. <br/> **Earliest Date Available:** 2013-08-31                 |
+| `fluah1n1pdm09_positive_tests` | Number of influenza laboratory tests positive for influenza A(H1N1)pdm09. <br/> **Earliest Date Available:** 2013-08-31                                                                                 |
+| `fluah3_positive_tests`        | Number of influenza laboratory tests positive for influenza A(H3N2). <br/> **Earliest Date Available:** 2013-08-31                                                                                      |
+| `fluauns_positive_tests`       | Number of influenza laboratory tests positive for influenza A (unsubtyped). <br/> **Earliest Date Available:** 2016-09-03                                                                               |
+| `flua_positive_tests`          | Number of influenza laboratory tests positive for any influenza A subtype. This is the sum of influenza A(H1N1)pdm09 (`fluah1n1pdm09_positive_tests`), A(H3N2) (`fluah3_positive_tests`), and other influenza A (unsubtyped) (`fluauns_positive_tests`) positive tests. <br/> **Earliest Date Available:** 2013-08-31 |
+| `flua_pct_positive`            | Percentage of influenza laboratory tests that are positive for any influenza A subtype <br/> **Earliest Date Available:** 2013-08-31                                                                              |
+| `flub_positive_tests`          | Number of influenza laboratory tests positive for influenza B. <br/> **Earliest Date Available:** 2013-08-31                                                                                            |
+| `flub_pct_positive`            | Percentage of influenza laboratory tests positive for influenza B. <br/> **Earliest Date Available:** 2013-08-31                                                                               |
+| `rsv_tests`                    | Number of respiratory syncytial virus (RSV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                               |
+| `rsv_positive_tests`           | Number of positive RSV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                |
+| `rsv_pct_positive`             | Percentage of RSV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
+| `hpiv_tests`                   | Number of human parainfluenza virus (HPIV) laboratory tests. Tests for all HPIV subtypes are included. <br/> **Earliest Date Available:** 2013-08-31                                                              |
+| `hpiv1_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-1 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpiv2_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-2 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpiv3_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-3 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpiv4_positive_tests`         | Number of HPIV laboratory tests positive for HPIV-4 <br/> **Earliest Date Available:** 2013-08-31                                                                                        |
+| `hpivother_positive_tests`     | Number of HPIV laboratory tests positive for any other HPIV subtype. <br/> **Earliest Date Available:** 2013-08-31                                                                        |
+| `hpiv_positive_tests`          | Number of HPIV laboratory tests positive for any HPIV subtype. This is the sum of HPIV-1 (`hpiv1_positive_tests`), HPIV-2 (`hpiv2_positive_tests`), HPIV-3 (`hpiv3_positive_tests`), HPIV-4 (`hpiv4_positive_tests`), and other HPIV subtypes (`hpivother_positive_tests`) positive tests. <br/> **Earliest Date Available:** 2013-08-31                                                                                   |
+| `hpiv_pct_positive`            | Percentage of HPIV laboratory tests that are positive for any HPIV subtype. <br/> **Earliest Date Available:** 2013-08-31                                                                   |
+| `adv_tests`                    | Number of adenovirus (ADV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                |
+| `adv_positive_tests`           | Number of positive ADV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                    |
+| `adv_pct_positive`             | Percentage of ADV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
+| `hmpv_tests`                   | Number of human metapneumovirus (hMPV) laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                    |
+| `hmpv_positive_tests`          | Number of positive hMPV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                   |
+| `hmpv_pct_positive`            | Percentage of hMPV laboratory tests that are positive <br/>**Earliest Date Available:** 2013-08-31                                                                                       |
+| `evrv_tests`                   | Number of enterovirus/rhinovirus (EV/RV) laboratory tests. Enterovirus and rhinovirus are both types of enteroviruses and [according to the US CDC](https://www.cdc.gov/nrevss/php/dashboard/index.html), "[m]ost diagnostic assays are not able to distinguish rhinoviruses from enteroviruses and have a combined single target for both viruses". <br/> **Earliest Date Available:** 2013-08-31                     |
+| `evrv_positive_tests`          | Number of positive EV/RV laboratory tests <br/>**Earliest Date Available:** 2013-08-31                                                                                                   |
+| `evrv_pct_positive`            | Percentage of EV/RV laboratory tests that are positive <br/>**Earliest Date Available:** 2013-08-31                                                                                      |
+| `hcov_tests`                   | Number of human coronavirus (HCoV) laboratory tests. <br/> **Earliest Date Available:** 2013-08-31                                                                                       |
+| `hcov_positive_tests`          | Number of positive HCoV laboratory tests <br/> **Earliest Date Available:** 2013-08-31                                                                                                   |
+| `hcov_pct_positive`            | Percentage of HCoV laboratory tests that are positive <br/> **Earliest Date Available:** 2013-08-31                                                                                      |
+
+## Geography {#geography}
+
+This data source reports data for Canada at the `nation`, `region`, `province`, and `lab` levels. For a complete list of valid geographic codes for each type, see the [Canada section in Geographic Codes](geographic_codes.md#canada).
+
+## Estimation
+
+### Calculation of Percent Positive Lab Tests
+
+For each respiratory virus, the number of total lab tests performed and number of positive lab tests are reported. For convenience, we calculate the percentage of positive tests for a given virus as:
+
+$$\text{Percent Positive Lab Tests} = \frac{\text{Number of Positive Tests}}{\text{Number of Total Tests}} \times 100$$
+
+Percent positive lab tests ranges from 0-100%. For HPIV, total HPIV positive tests are not always reported, so we manually calculate them by summing up the positive tests for all HPIV subtypes:
+
+$$
+\text{HPIV Positive Tests} = \sum\text{HPIV}_\text{subtype}
+$$
+
+for subtype = 1, 2, 3, 4, and other
+
+Prior to the end of the 2023-2024 season, total tests and percent positivity were reported, but number of positive tests was not explicitly reported. For convenience, we manually calculated number of positive tests when only percent positive lab tests and number of lab tests were available.
+
+$$\text{Number Positive Lab Tests} = \frac{\text{Percent Positive Lab Tests}}{100} \times \text{Number of Total Tests}$$
+
+These values are not rounded, so some are not integers.
+
+## Missingness
+
+The source uses multiple terms used to denote missing data:
+
+- `NC` : Not collected
+- `NR` : Data not reported for current week
+- `NA` : Not available
+- Not tested
+
+We were unable to find detailed guidance about the difference between these categories.
+For convenience, we treat all these as missing (`NA`), but there may be subtle differences.
+
+For epiweeks 5 and 47 of the 2019-2020 season, the reports are empty, so data from these weeks are missing.
+
+## Lag and Backfill
+
+Data is reported about 5 days after the end of an epiweek. For June-August 2025, the dashboard containing the data was updated every two weeks, so the lag during that period was larger.
+
+### Data Versioning {#version}
+
+Epiweeks end on Saturday, and the data is usually updated the following Thursday or Friday.
+The dashboard where data is currently published states when it was last updated, so we use that date as the version date.
+
+The dashboard has only been used to publish data since June 2024.
+Prior to that, data was published weekly in blog post format.
+To make this older data more useful, we reconstructed the source's version history, deriving the version date from metadata included in the weekly report webpages.
+
+We defined the version date of a particular data issue to be the date the report webpage was last modified.
+Historically, page-last-modified dates were usually 5 days after the end of the epiweek data was being reported for ("reference date").
+Occasionally, page-last-modified dates were later than that -- sometimes much later, up to a year after the reference date.
+
+Our understanding is that data in weekly reports were not modified after being published. Thus, we expect page-last-modified dates falling more than about a week after the reference date to indicate changes in the text on the page rather than changes to the data.
+With that in mind, if the page-last-modified date was _more_ than 14 days after the reference date, we set the version date to be 5 days after the end of epiweek being reported. This matches the more common behavior seen.
+
+### Revisions
+
+The data experiences backfill as counts are finalized in subsequent weeks. The amount and impact of revisions depends on the virus.
+
+Across all indicators, most (99%) observations have less than 3 revisions. `hpiv1_*`,`hpiv2_*`,`hpiv3_*`, and `hpiv4_*` indicators have revisions even more rarely.
+
+Across all indicators, the top 10% of observations (unique location-date pairs) with the largest relative spread have had values revised by 25-33% or more. However, revisions that greatly impact a reported value happen soon after an observation is first reported.
+90% of observations with revisions are revised to within 20% of their final value (and stay within that 20% range) 1-3 weeks after the date an observation is being reported for.
+And 95% of observations with revisions are finalized within 3-4 weeks.
+
+Looking at the revision speed of specific indicators, `sarscov2_*` and `flub_*` indicators are finalized fairly fast (95% finalized after 12 days). `fluah3_positive_tests` and `adv_*` indicators are finalized fairly slowly (95% finalized after 30-40 days).
+
+`flu_pct_positive`, `flua_pct_positive`, `fluah1n1pdm09_positive_tests` and related indicators have larger spread than other indicators. That is, about 70-90% of observations have more than 10% relative spread vs 20-30% in other indicators.
+
+## Limitations
+
+This data reports the results of laboratory testing of respiratory viruses, which only represents a subset of people who may be sick. People with mild symptoms may be excluded, and there may be a delay between someone developing symptoms and getting a lab test.
+
+Data comes from labs across Canada, and some provinces only have one reporting lab, with no further information about, for example, location of individual labs, if any.
+Only Quebec and Ontario report detailed disaggregated (lab-level) data.
+Other provinces may have multiple labs, but don't report them separately.
+If labs or healthcare providers tend to be located in larger cities or cities in general, and it is easier for people in more densely populated areas to have lab tests done than those in rural locations, the data may overrepresent the urban population.
+
+Our reconstruction of version dates prior to June 2024 may be based on incorrect assumptions.
+
+
+## The API
+
+The base URL is: <https://api.delphi.cmu.edu/epidata/rvdss/>
+
+### Parameters
+
+#### Required
+
+| Key | Description | Type |
+| :--- | :--- | :--- |
+| `geo_values` | The geographical location (see [Geography](#geography)) | string |
+| `geo_type` | The type of geographical location (see [Geography](#geography)) <br/> **Available types:** `lab`,`province`, `region`, `nation` | string |
+| `time_values` | The date corresponding to the last day (Saturday) of `epiweek` | date |
+| `time_type` | Type of time value, only `week` available | string |
+
+#### Optional
+
+| Parameter | Description | Type |
+| --- | --- | --- |
+| `as_of` | issue date of the data (see [Data Versioning](#version)). Mutually exclusive with `issues`. | epiweek |
+| `issues` | list of issue dates (see [Date Formats](date_formats.md)). Mutually exclusive with `as_of`. | `list` of epiweeks |
+
+### Response
+
+| Field | Description | Type |
+| --- | --- | --- |
+| `result` | result code: 1 = success, 2 = too many results, -2 = no results | integer |
+| `epidata` | list of results | array of objects |
+| `epidata[].geo_type` | geographical location type (`nation`, `region`, `province`, `lab`) | string |
+| `epidata[].geo_value` | geographical location identifier | string |
+| `epidata[].region` | region identifier | string |
+| `epidata[].time_type` | type of time value (`week`) | string |
+| `epidata[].epiweek` | epiweek for which data is reported (YYYYWW) | integer |
+| `epidata[].time_value` | date corresponding to the last day (Saturday) of the epiweek | integer |
+| `epidata[].issue` | issue/version date of the data | integer |
+| `epidata[].year` | year for which data is reported (YYYY) | integer |
+| `epidata[].*` | various signal fields (see [Signals](#signals)) | float |
+| `message` | `success` or error message | string |
+
+## Example URLs
+
+### RVDSS at the National Level for a range of epiweeks
+<https://api.delphi.cmu.edu/epidata/rvdss/?geo_type=nation&geo_values=ca&time_values=202301-202310>
+
+### RVDSS for a specific province and specific issue
+<https://api.delphi.cmu.edu/epidata/rvdss/?geo_type=province&geo_values=on&time_values=202340&as_of=202341>
+
+## Code Samples
+
+Libraries are available for [R](https://cmu-delphi.github.io/epidatr/) and [Python](https://cmu-delphi.github.io/epidatpy/).
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="python">Python</button>
+    <button data-tab="r">R</button>
+  </div>
+
+  <div class="tab-content active" data-tab="python" markdown="1">
+
+```python
+from epidatpy import EpiDataContext, EpiRange
+
+epidata = EpiDataContext()
+res = epidata.pub_rvdss(
+    geo_type="nation",
+    geo_values="ca",
+    time_values=EpiRange(202301, 202310)
+)
+print(res.df())
+```
+
+  </div>
+
+  <div class="tab-content" data-tab="r" markdown="1">
+
+```R
+library(epidatr)
+
+res <- pub_rvdss(
+    geo_type = "nation",
+    geo_values = "ca",
+    time_values = epirange(202301, 202310)
+)
+print(res)
+```
+
+  </div>
+</div>
+
+## Source and Licensing {#source-and-licensing}
+
+This source is derived from PHAC's Respiratory Virus Detection Data, originally reported in [weekly reports](https://www.canada.ca/en/public-health/services/surveillance/respiratory-virus-detections-canada.html), and currently reported in a [dynamic dashboard](https://health-infobase.canada.ca/respiratory-virus-surveillance/?source=rvdss).
+
+The data is made available under the [Open Government Licence - Canada](https://open.canada.ca/en/open-government-licence-canada).
+
+## Additional Resources
+
+PHAC provides a more [detailed overview of respiratory surveillance in Canada](https://www.canada.ca/en/public-health/services/diseases/flu-influenza/influenza-surveillance/about-fluwatch.html).
