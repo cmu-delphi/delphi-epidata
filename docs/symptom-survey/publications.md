@@ -26,14 +26,17 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
-- S. Pampati, E.A. Stuart, J. Lessler et al (2024). [Impact of School-Based
+- D. Butts, N. Parikh, and S.Y. Del Valle (2026). [Heterogeneous estimations
+  of non-pharmaceutical mitigation behavior during the COVID-19 pandemic](https://doi.org/10.1038/s41597-026-07348-3).
+  *Scientific Data*.
+- S. Pampati, E.A. Stuart, J. Lessler et al (2025). [Impact of School-Based
   Infection Prevention Strategies on Household COVID-19 and Respiratory
   Disease Outcomes: a Cross-Sectional Study](https://doi.org/10.1016/j.annepidem.2025.10.019).
-  *Annals of Epidemiology*.
+  *Annals of Epidemiology* 112, 76-83.
 - K.B. Smith, S. Shen, and B.T. Denton (2025). [Can past variants of SARS-CoV-2
   predict the impact of future variants? Machine learning for early warning
   of US counties at risk](https://doi.org/10.1007/s10729-025-09728-4).
-  *Health Care Management Science*.
+  *Health Care Management Science* 28, 738-758.
 - E.M. Fahle, T.J. Kane, T. Patterson, S.F. Reardon, D.O. Staiger, and E.A. Stuart
   (2025). [School District and Community Factors Associated with Test Score
   Declines During the COVID-19 Pandemic](https://doi.org/10.1177/01614681251369937).
