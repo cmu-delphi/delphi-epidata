@@ -9,7 +9,7 @@ nav_order: 3
 This endpoint was previously known as COVIDcast.
 
 This is the documentation for accessing Delphi's COVID-19 indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
-epidemiological data API. This API provides data on the spread and impact of the COVID-19 pandemic across the United States, most of which is available at the
+epidemiological data API. This API provides data on the spread and impact of fast-moving contagious diseases, including COVID-19, across the United States, most of which is available at the
 county level and updated daily. This data powers our public [COVIDcast
 map](https://delphi.cmu.edu/covidcast/) which includes testing, cases, and death data,
 as well as unique healthcare and survey data Delphi acquires through its
