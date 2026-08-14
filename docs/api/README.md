@@ -7,7 +7,7 @@ nav_order: 4
 # Other Endpoints
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
-API for tracking fast-moving contagious diseases such as influenza, dengue,
+API for tracking infectious diseases such as influenza, dengue,
 and norovirus. Note that additional data, including most COVID-19 signals, is
 available in the [main Epidata API (formerly known as COVIDcast)](covidcast.md).
 
