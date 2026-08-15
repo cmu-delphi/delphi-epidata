@@ -2,7 +2,6 @@
 title: PopHive Claims
 parent: Delphi V5 Sources and Signals
 grand_parent: Delphi V5 API
-nav_order: 3
 ---
 
 # PopHive Claims Aggregations (Epic Cosmos)

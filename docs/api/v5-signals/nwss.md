@@ -2,6 +2,7 @@
 title: NWSS Wastewater
 parent: Delphi V5 Sources and Signals
 grand_parent: Delphi V5 API
+nav_order: 4
 ---
 
 # National Wastewater Surveillance System (NWSS)
