@@ -86,7 +86,7 @@ Wastewater data has unique properties, including multiple facilities, replicate 
 |---|---|---|
 | `nwss_source` | Primary Key (Extra Key) | The data provider or laboratory network that analyzed/reported the sample (see [Providers](#providers)). |
 | `sample_index` | Primary Key (Extra Key) | An integer identifier mapped to the original sample's unique ID (`sample_id`). |
-| `pcr_target` | Value Column (Extra Value) | The target pathogen or organism analyzed in the sample (e.g., `sars-cov-2`, `fluav`, `rsv`). Include to join onto the auxiliary metadata table|
+| `pcr_target` | Primary Key (Extra Key) | The target pathogen or organism analyzed in the sample (e.g., `sars-cov-2`, `fluav`, `rsv`). Include to join onto the auxiliary metadata table. |
 
 
 ## Auxiliary Metadata Table
@@ -108,10 +108,10 @@ The following table shows the history of data providers:
 
 | Provider | Available | Description |
 |-|-|-|
-| `cdc_verily` | 2023/10/30-Today | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly. |
-| `nwss` | 2020/06/21-Today | Data reported by the respective state, territorial, and local public health agencies; the actual processing may be done by a private lab such as Verily or Biobot, or the agency itself, or a partnering university. |
-| `wws` | 2021/12/26-Today | Data analyzed by [Wastewater Scan](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS. Use of this data outside of public health decision making requires contacting WastewaterSCAN Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (https://data.wastewaterscan.org/about/#18).|
-| `biobot` | 2020-2023 | Data analyzed by [Biobot](https://biobot.io/) and then shared with the NWSS. |
+| `CDC_Verily` | 2023/10/30-Today | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly. |
+| `State_Territory` | 2020/06/21-Today | Data reported by the respective state, territorial, and local public health agencies; the actual processing may be done by a private lab such as Verily or Biobot, or the agency itself, or a partnering university. |
+| `WastewaterSCAN` | 2021/12/26-Today | Data analyzed by [WastewaterSCAN](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS. Use of this data outside of public health decision making requires contacting WastewaterSCAN. Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (https://data.wastewaterscan.org/about/#18).|
+| `CDC_Biobot` | 2020-2023 | Data analyzed by [Biobot](https://biobot.io/) and then shared with the NWSS. |
 
 ### Normalization methods
 
@@ -122,8 +122,8 @@ The two approaches used in the NWSS datasets to normalize viral concentration ar
 
 | Normalization method | Description | Signal Suffix |
 |---|---|---|
-| **Flow-population** | This is calculated as $$\frac{v\cdot r}{p}$$, where $$v$$ is measured viral concentration, $$r$$ is measured flow rate, and $$p$$ is population served. This normalization method is applied to concentrations $$v$$ measured from raw (unconcentrated) wastewater. The resulting value is in units of viral gene copies per person per day. It tracks the total number of individuals whose shedding behavior has changed. | `_flowpop` |
-| **Microbial** | This divides a measurement by the concentration of one of several potential fecal biomarkers. These are molecular indicators of either viruses or bacteria commonly found throughout the population. The most common viral indicator comes from the pepper mild mottle virus (PMMoV), a virus that infects plants and is commonly found in pepper products. The most common bacterial indicators come from Bacteroides HF183 and Lachnospiraceae Lachno3, both common gut bacteria. This normalization method is applied to sludge samples, which have been concentrated in preparation for treatment. The resulting value is unitless, and tracks the proportion of individuals whose shedding behavior has changed. | `_mic` |
+| **Flow-population** | This is calculated as $$\frac{v\cdot r}{p}$$, where $$v$$ is measured viral concentration, $$r$$ is measured flow rate, and $$p$$ is population served. This normalization method is applied to concentrations $$v$$ measured from raw (unconcentrated) wastewater. The resulting value is in units of viral gene copies per person per day. It tracks the total number of individuals whose shedding behavior has changed. | `_flowpop_lin` |
+| **Microbial** | This divides a measurement by the concentration of one of several potential fecal biomarkers. These are molecular indicators of either viruses or bacteria commonly found throughout the population. The most common viral indicator comes from the pepper mild mottle virus (PMMoV), a virus that infects plants and is commonly found in pepper products. The most common bacterial indicators come from Bacteroides HF183 and Lachnospiraceae Lachno3, both common gut bacteria. This normalization method is applied to sludge samples, which have been concentrated in preparation for treatment. The resulting value is unitless, and tracks the proportion of individuals whose shedding behavior has changed. | `_mic_lin` |
 
 ### Post-processing methods
 
@@ -167,7 +167,7 @@ The site-level data is provided un-versioned via the Socrata API across pathogen
 
 The NWSS is aggregating data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, and [Wastewater Scan](https://www.wastewaterscan.org/en).
 
-The WastewaterSCAN data were collected as part of the [WastewaterSCAN]([Wastewater Scan](https://www.wastewaterscan.org/en)) / SCAN project, a partnership between Stanford University, Emory University, and Verily funded philanthropically through a gift to Stanford University, and then shared with the NWSS. Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (as described [here](https://data.wastewaterscan.org/about/#18)).
+The WastewaterSCAN data were collected as part of the [WastewaterSCAN](https://www.wastewaterscan.org/en) / SCAN project, a partnership between Stanford University, Emory University, and Verily funded philanthropically through a gift to Stanford University, and then shared with the NWSS. Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (as described [here](https://data.wastewaterscan.org/about/#18)).
 
-This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-copyright).
+This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-works).
 
