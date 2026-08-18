@@ -1,7 +1,7 @@
 ---
 title: Inactive Sources (Other)
 parent: Data Sources and Signals
-grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+grand_parent: Other Endpoints
 nav_order: 99
 has_children: true
 ---
