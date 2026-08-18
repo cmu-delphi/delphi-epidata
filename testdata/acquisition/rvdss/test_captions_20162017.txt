@@ -1,0 +1,8 @@
+<summary>Table 1 - Respiratory Virus Detections/Isolations for the Week 03 ending January 21, 2017</summary>
+<summary>Positive Influenza Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
+<summary>Positive RSV Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
+<summary>Positive Parainfluenza Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
+<summary>Positive Adenovirus Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
+<summary>Positive hMPV Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
+<summary>Positive Enterovirus/Rhinovirus Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>
+<summary>Positive Coronavirus Tests (%) in Canada by Region by Week of Report - Text Equivalent</summary>

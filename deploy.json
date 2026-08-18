@@ -208,6 +208,16 @@
       "add-header-comment": true
     },
 
+    "// acquisition - rvdss",
+    {
+      "type": "move",
+      "src": "src/acquisition/rvdss/",
+      "dst": "[[package]]/acquisition/rvdss/",
+      "match": "^.*\\.(py)$",
+      "recursive": true,
+      "add-header-comment": true
+    },
+
     "// maintenance",
     {
       "type": "move",
