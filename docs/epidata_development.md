@@ -182,5 +182,5 @@ Additional internal documentation for Sentry can be found [here](https://booksta
 ## COVIDcast Development Guide
 
 For information on accessing Delphi's COVID-19 indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
-epidemiological data API, please see [COVIDcast Epidata API](https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html). This API provides data on the spread and impact of the COVID-19 pandemic across the United States, most of which is available at the
+epidemiological data API, please see [COVIDcast Epidata API](https://cmu-delphi.github.io/delphi-epidata/api/covidcast.html). This API provides data on the spread and impact of fast-moving contagious diseases, including COVID-19, across the United States, most of which is available at the
 county level and updated daily.

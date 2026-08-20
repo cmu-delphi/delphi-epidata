@@ -6,19 +6,18 @@ nav_order: 3
 
 # Main Epidata API
 
-This endpoint was previously known as COVIDcast.
+This legacy Epidata API endpoint was formerly called COVIDcast.
 
-This is the documentation for accessing Delphi's COVID-19 indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
-epidemiological data API. This API provides data on the spread and impact of the COVID-19 pandemic across the United States, most of which is available at the
+This is the documentation for accessing all Delphi's indicators via the `covidcast` endpoint of [Delphi](https://delphi.cmu.edu/)'s
+epidemiological data API. This API provides data on the spread and impact of infectious diseases, including COVID-19, across the United States, most of which is available at the
 county level and updated daily. This data powers our public [COVIDcast
 map](https://delphi.cmu.edu/covidcast/) which includes testing, cases, and death data,
 as well as unique healthcare and survey data Delphi acquires through its
-partners. The API allows users to select specific signals and download data for
-selected geographical areas---counties, states, metropolitan statistical areas,
-and other divisions.
+partners. Many additional data sources and pathogen indicator types are available. The API allows users to select specific signals and download data for
+selected geographical areas. For a comprehensive look at the sources, signals, and geographic regions available through the API, please visit [EpiPortal](https://delphi.cmu.edu/epiportal/?hosted_by_delphi=on).
 
 
-> **Get updates:** Delphi operates a [mailing list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api) for users of the COVIDcast API. We will use the list to announce API changes, corrections to data, and new features; API users may also use the mailing list to ask general questions about its use. If you use the API, we strongly encourage you to [subscribe](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api).
+> **Get updates:** Delphi operates a [mailing list](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api) for users of the main Epidata API. We will use the list to announce API changes, corrections to data, and new features; API users may also use the mailing list to ask general questions about its use. If you use the API, we strongly encourage you to [subscribe](https://lists.andrew.cmu.edu/mailman/listinfo/delphi-covidcast-api).
 {: .important }
 
 ## Table of contents
@@ -28,7 +27,7 @@ and other divisions.
 {:toc}
 
 ## Licensing
-Like all other Delphi Epidata datasets, our COVIDcast data is freely available to the public. However, our COVID-19 indicators include data from many different sources, with data licensing handled separately for each source. For a summary of the licenses used and a list of the indicators each license applies to, we suggest users visit our [COVIDcast licensing](covidcast_licensing.md) page. Licensing information is also summarized on each indicator's details page.
+Like all other Delphi Epidata datasets, our data is freely available to the public. However, our indicators include data from many different sources, with data licensing handled separately for each source. For a summary of the licenses used and a list of the indicators each license applies to, we suggest users visit our [licensing](covidcast_licensing.md) page. Licensing information is also summarized on each indicator's details page.
 We encourage academic users to [cite](README.md#citing) the data if they
 use it in any publications. Our [data ingestion
 code](https://github.com/cmu-delphi/covidcast-indicators) and [API server
@@ -39,9 +38,9 @@ in the [API overview](README.md).
 ## Accessing the Data
 
 Our [COVIDcast site](https://delphi.cmu.edu/covidcast/) provides an interactive
-visualization of a select set of the data signals available in the COVIDcast
-API, and provides a data export feature to download any data range as a
-CSV file.
+visualization of a select set of the data signals available and relevant
+during the COVID-19 pandemic, and provides a data export feature to download
+any data range as a CSV file.
 
 Several [API clients are available](covidcast_clients.md) for common programming
 languages, so you do not need to construct API calls yourself to obtain
@@ -93,13 +92,13 @@ Alternatively, users can [manually construct URLs and parse responses to access 
 The API provides multiple data sources, each with several signals. Each source
 represents one provider of data, such as a medical testing provider or a symptom
 survey, and each signal represents one quantity computed from data provided by
-that source. Our sources provide detailed data about COVID-related topics,
+that source. Our sources provide detailed data about infectious disease related topics,
 including confirmed cases, symptom-related search queries, hospitalizations,
 outpatient doctor's visits, and other sources. Many of these are publicly
-available *only* through the COVIDcast API.
+available *only* through the main Epidata API.
 
-Delphi's COVID-19 indicators data includes the following data sources.
-Data from most of these sources is typically updated daily. You can use the
+Update cadence varies by source, reflecting what is most relevant for each
+pathogen and context. You can use the
 [`covidcast_meta`](covidcast_meta.md) endpoint to get summary information
 about the ranges of the different attributes for the different data sources.
 

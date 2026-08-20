@@ -1,6 +1,6 @@
 ---
 title: Date Formats
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 nav_order: 901
 ---
 

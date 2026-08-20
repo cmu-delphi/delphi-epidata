@@ -1,6 +1,6 @@
 ---
 title: Geographic Codes
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 nav_order: 900
 ---
 
@@ -314,6 +314,65 @@ Selected US cities used by multiple endpoints.
 | `Tulsa_OK` | Tulsa, OK |
 | `Washington_DC` | Washington, DC |
 | `Wichita_KS` | Wichita, KS |
+
+## Canada
+
+Canada-specific geographic codes used by the [RVDSS](rvdss.md) endpoint.
+
+### Canada National Code {#canada-nation}
+
+The national level for Canada.
+
+| Code | Name |
+|---|---|
+| `ca` | Canada |
+
+### Canada Regions {#canada-regions}
+
+Provinces and territories aggregated into six geographic regions.
+
+| Code | Region | Provinces/Territories |
+|---|---|---|
+| `atlantic` | Atlantic | NL, PE, NS, NB |
+| `prairies` | Prairies | MB, SK, AB |
+| `territories` | Territories | NU, NT, YT |
+| `on` | Ontario | Ontario |
+| `qc` | Quebec | Quebec |
+| `bc` | British Columbia | British Columbia |
+
+{: .note}
+> **Note:** Ontario, Quebec, and British Columbia are single-province regions, so data for these provinces is the same whether using `geo_type = region` or `geo_type = province`.
+
+### Canada Provinces and Territories {#canada-provinces}
+
+The 10 provinces and three territories of Canada, abbreviated using [standard 2-letter alpha codes](https://www.canada.ca/en/government/system/digital-government/digital-government-innovations/enabling-interoperability/gc-enterprise-data-reference-standards/data-reference-standard-canadian-provinces-territories.html).
+
+| Code | Name |
+|---|---|
+| `ab` | Alberta |
+| `bc` | British Columbia |
+| `mb` | Manitoba |
+| `nb` | New Brunswick |
+| `nl` | Newfoundland and Labrador |
+| `ns` | Nova Scotia |
+| `nt` | Northwest Territories |
+| `nu` | Nunavut |
+| `on` | Ontario |
+| `pe` | Prince Edward Island |
+| `qc` | Quebec |
+| `sk` | Saskatchewan |
+| `yt` | Yukon |
+
+### Canada Laboratories {#canada-labs}
+
+The laboratories reporting lab tests. Only Ontario, Quebec, and occasionally Saskatchewan report counts for individual lab facilities.
+
+{: .note}
+> **Note:** Over time, some laboratory networks were expanded and the responsible laboratories were renamed:
+>
+> - **CHEO** (Children's Hospital of Eastern Ontario) &rarr; **EORLA** (Eastern Ontario Regional Laboratory Association)
+> - **Sunnybrook Women’s College Health Sciences Centre** &rarr; **Shared Hospital Laboratory**
+> - **Toronto Medical Laboratory** &rarr; **University Health Network/Mount Sinai Hospital**
 
 ## NIDSS
 
