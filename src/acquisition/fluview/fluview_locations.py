@@ -12,7 +12,7 @@ See also:
 
 # These keys come from CDC's metadata object, which is currently returned in a
 # JSON response from:
-# https://gis.cdc.gov/grasp/flu2/GetPhase02InitApp?appVersion=Public
+# https://gis.cdc.gov/flu2/GetPhase02InitApp?appVersion=Public
 # The values are used in queries of Delphi's Epidata API.
 cdc_to_delphi = {
     "national": {

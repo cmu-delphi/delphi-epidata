@@ -70,7 +70,7 @@ def fetch_metadata(sess):
     Return metadata indicating the current issue and also numeric constants
     representing the various locations.
     """
-    url = "https://gis.cdc.gov/grasp/flu2/GetPhase02InitApp?appVersion=Public"
+    url = "https://gis.cdc.gov/flu2/GetPhase02InitApp?appVersion=Public"
     resp = sess.get(url)
     check_status(resp, 200, "application/json")
     return resp.json()
@@ -143,7 +143,7 @@ def download_data(tier_id, location_ids, season_ids, filename):
         return {"ID": num, "Name": (name if name else num)}
 
     # download the data (in memory)
-    url = "https://gis.cdc.gov/grasp/flu2/PostPhase02DataDownload"
+    url = "https://gis.cdc.gov/flu2/PostPhase02DataDownload"
     data = {
         "AppVersion": "Public",
         "DatasourceDT": [get_entry(1, "ILINet"), get_entry(0, "WHO_NREVSS")],
