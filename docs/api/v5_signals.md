@@ -75,3 +75,15 @@ Daily outpatient visit percentages derived from medical billing claims.
 | Geographies | State, County, MSA, HRR |
 
 Daily inpatient admissions derived from medical billing claims.
+
+---
+
+### VA Respiratory ([`va_respiratory`](v5-signals/va_respiratory.md))
+
+| Attribute | Details |
+| :--- | :--- |
+| Data Source | U.S. Department of Veterans Affairs |
+| Cadence | Daily (season-to-date cumulative) |
+| Geographies | VA facility, State, MSA, HHS region, Census division/region, Nation |
+
+Daily seasonal respiratory cumulative case and vaccination counts (COVID-19, influenza, RSV) reported through the VA's Access to Care portal.
