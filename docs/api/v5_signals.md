@@ -7,8 +7,26 @@ has_children: true
 
 # Delphi V5 Sources and Signals
 
+> **The legacy V4 API is being phased out.** See the [V4 to V5 Migration Guide](v5_migration.md) for guidance on migrating existing queries.
+{: .warning }
 
-### National Syndromic Surveillance Program ED Visits ([`nssp`](v5-signals/nssp.md))
+## V4 to V5 Source Coverage
+
+Not all V4 sources have migrated to V5. The table below lists available V5 sources as of August 25, 2026:
+
+| V4 Source | V5 Source |
+| :--- | :--- |
+| `nssp` | `nssp` |
+| `nhsn` | `nhsn` |
+| `doctor-visits` | `claims_data_outpatient` |
+| `hospital-admissions` | `claims_data_inpatient` |
+| None (new in V5) | [`pophive`](v5-signals/epic-cosmos.md), [`nwss`](v5-signals/nwss.md), [`va_respiratory`](v5-signals/va_respiratory.md) |
+
+All other sources remain V4-only. Because this documentation is updated periodically, query the [`/epidata/v5/metadata/`](v5_meta.md) endpoint (e.g. `https://delphi.cmu.edu/epidata/v5/metadata/`) to check live source availability in V5.
+
+---
+
+### National Syndromic Surveillance Program ED Visits (`nssp`)
 
 | Attribute | Details |
 | :--- | :--- |
@@ -20,7 +38,7 @@ Weekly percentage of emergency department visits associated with respiratory pat
 
 ---
 
-### NHSN Respiratory Hospitalizations ([`nhsn`](v5-signals/nhsn.md))
+### NHSN Respiratory Hospitalizations (`nhsn`)
 
 | Attribute | Details |
 | :--- | :--- |
@@ -55,7 +73,7 @@ Daily ED visit counts and percentages from Epic Cosmos, stratified by pathogen. 
 
 ---
 
-### Outpatient Claims ([`claims_data_outpatient`](v5-signals/claims_data_outpatient.md))
+### Outpatient Claims (`claims_data_outpatient`)
 
 | Attribute | Details |
 | :--- | :--- |
@@ -66,7 +84,7 @@ Daily ED visit counts and percentages from Epic Cosmos, stratified by pathogen. 
 Daily outpatient visit percentages derived from medical billing claims.
 ---
 
-### Inpatient Claims ([`claims_data_inpatient`](v5-signals/claims_data_inpatient.md))
+### Inpatient Claims (`claims_data_inpatient`)
 
 | Attribute | Details |
 | :--- | :--- |

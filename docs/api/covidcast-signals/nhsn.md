@@ -4,6 +4,10 @@ parent: Data Sources and Signals
 grand_parent: Main Endpoint (COVIDcast)
 nav_order: 1
 ---
+
+> **Heads up:** This COVIDcast source is part of the legacy V4 API, which is being phased out. An actively maintained equivalent is available in V5 under the source `nhsn`. See the [V4 to V5 Migration Guide](../v5_migration.md) for full details.
+{: .warning }
+
 # National Healthcare Safety Network Respiratory Hospitalizations
 {: .no_toc}
 
