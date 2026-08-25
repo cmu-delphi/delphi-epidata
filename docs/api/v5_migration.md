@@ -26,7 +26,7 @@ Most `covidcast` query parameters carry over to V5 with the same name, but some 
 
 | V4 Parameter (`covidcast`) | V4 (Other Endpoints, e.g. `fluview`) | V5 Equivalent | Notes |
 | :--- | :--- | :--- | :--- |
-| `data_source` | `endpoint` | `source` | Identifies the source dataset in V5 (replaces V4 `data_source` and endpoint names). |
+| `data_source` | not exposed (identified by the endpoint URL, e.g. `/fluview/`) | `source` | Identifies the source dataset in V5 (replaces V4 `data_source` and endpoint names). |
 | `signal` | none | `signal` | Identifies the specific signal name within the source. |
 | `geo_type` | not exposed (`fluview` supports only `regions`) | `geo_type` | Specifies geographic resolution (e.g., `state`, `county`). |
 | `geo_value` | `regions` for `fluview` | none | Removed in V5. Both `/snapshot/` and `/archive/` return all locations for the requested `geo_type`. Filter locations client-side. |
