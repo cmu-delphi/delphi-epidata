@@ -128,7 +128,7 @@ Sources available in V5, and the legacy V4 source each one replaces. A V4 source
 
       document.querySelector('#v5-sources-table tbody').innerHTML = sourceRows.join('');
       document.querySelector('#v5-sources-table-status').textContent =
-        'This table\'s entries are updated in realtime from /epidata/v5/metadata/.';
+        'This table\'s entries are updated in realtime.';
     })
     .catch(function () { /* Preserve static fallback table and message if fetch fails */ });
 })();
