@@ -1,0 +1,62 @@
+name: Preview Docs
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  preview:
+    if: ${{ github.event.issue.pull_request && (github.event.comment.author_association == 'COLLABORATOR' || github.event.comment.author_association == 'CONTRIBUTOR' || github.event.comment.author_association == 'MEMBER' || github.event.comment.author_association == 'OWNER') && startsWith(github.event.comment.body, '/preview-docs') }}
+
+    runs-on: ubuntu-latest
+    permissions:
+      # Needed to write a comment on the PR
+      pull-requests: write
+      # Needed to read the PR branch
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Checkout the PR branch
+          ref: refs/pull/${{ github.event.issue.number }}/head
+
+      - uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          # Gemfile.lock pins nokogiri, which needs ruby >= 3.2
+          ruby-version: '3.2.11'
+          bundler-cache: true
+          working-directory: ./docs
+
+      - name: Build site
+        # baseurl is '/delphi-epidata' for GitHub Pages, but Netlify serves the
+        # preview from the root of its own domain
+        run: bundle exec jekyll build --baseurl ""
+        working-directory: ./docs
+        env:
+          JEKYLL_ENV: production
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@d22a32a27c918fe470bbc562e984f80ec48c2668 # v4.0.0
+        with:
+          # Standard config
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions"
+          # 'docs/_site' is the default output directory for `jekyll build`
+          publish-dir: './docs/_site'
+          # Development deploys only
+          production-deploy: false
+          # Enable pull request comment (default)
+          enable-pull-request-comment: true
+          # Overwrite the pull request comment with updated link (default)
+          overwrites-pull-request-comment: true
+          # Don't deploy to GitHub
+          enable-github-deployment: false
+          # Don't update the status of the commit
+          enable-commit-status: false
+          # Don't comment on the commit
+          enable-commit-comment: false
+        env:
+          # Netlify credentials (currently from Dmitry's account)
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
