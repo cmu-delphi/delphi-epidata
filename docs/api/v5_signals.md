@@ -12,7 +12,7 @@ has_children: true
 
 ## V5 Sources
 
-Sources available in V5, and the legacy V4 source each one replaces. A V4 source not listed here has not migrated and remains V4-only.
+Sources available in V5, and the legacy V4 source each one replaces. A V4 source not listed here has not migrated and remains V4-only. The table entries are filled real-time using [`/epidata/v5/metadata/`](v5_meta.md).
 
 | Source | V4 Equivalent | Geographies | Extra Key Columns |
 | :--- | :--- | :--- | :--- |
