@@ -126,11 +126,9 @@ Sources available in V5, and the legacy V4 source each one replaces. A V4 source
           + '</tr>';
       });
 
-      var fetchedOn = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
       document.querySelector('#v5-sources-table tbody').innerHTML = sourceRows.join('');
       document.querySelector('#v5-sources-table-status').textContent =
-        'V5 sources table fetched from /epidata/v5/metadata/ on ' + fetchedOn;
+        'This table\'s entries are updated in realtime from /epidata/v5/metadata/.';
     })
     .catch(function () { /* Preserve static fallback table and message if fetch fails */ });
 })();
