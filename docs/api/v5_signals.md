@@ -10,8 +10,6 @@ has_children: true
 > **The legacy V4 API is being phased out.** See the [V4 to V5 Migration Guide](v5_migration.md) for guidance on migrating existing queries.
 {: .warning }
 
-<a id="v4-to-v5-source-coverage"></a>
-
 ## V5 Sources
 
 Sources available in V5, and the legacy V4 source each one replaces. A V4 source not listed here has not migrated and remains V4-only.

@@ -6,7 +6,7 @@ has_children: true
 
 ---
 
-> **Heads up:** The legacy v4 Epidata API is being phased out. See the [V4 to V5 Migration Guide](v5_migration.md) and the [V4 to V5 Source Coverage](v5_signals.md#v4-to-v5-source-coverage) table for full details.
+> **Heads up:** The legacy v4 Epidata API is being phased out. See the [V4 to V5 Migration Guide](v5_migration.md) and the [V5 Sources](v5_signals.md#v5-sources) table for full details.
 {: .warning }
 
 # Delphi's COVID-19 Data Sources and Signals
