@@ -14,8 +14,10 @@ jobs:
       pull-requests: write
       # Needed to read the PR branch
       contents: read
+      # Needed for setup-ruby's bundler cache to save
+      actions: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Checkout the PR branch
           ref: refs/pull/${{ github.event.issue.number }}/head
