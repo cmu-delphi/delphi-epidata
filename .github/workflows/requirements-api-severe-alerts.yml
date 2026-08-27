@@ -1,0 +1,287 @@
+name: Track severe alerts for requirements.api.txt
+
+on:
+  schedule:
+    - cron: "0 13 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "When true, do not create/update issue"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  issues: write
+  security-events: read
+
+jobs:
+  track-severe-alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build severe-alert report for requirements.api.txt packages
+        id: report
+        uses: actions/github-script@v7
+        env:
+          REQUIREMENTS_FILE: requirements.api.txt
+        with:
+          script: |
+            const fs = require("fs");
+
+            const normalize = (name) =>
+              (name || "")
+                .trim()
+                .toLowerCase()
+                .replace(/[_.]+/g, "-");
+
+            const reqFile = process.env.REQUIREMENTS_FILE;
+            const raw = fs.readFileSync(reqFile, "utf8");
+            const packages = new Set();
+
+            for (const line of raw.split(/\r?\n/)) {
+              const trimmed = line.trim();
+              if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("-")) {
+                continue;
+              }
+
+              const withoutComment = trimmed.split("#", 1)[0].trim();
+              const withoutMarker = withoutComment.split(";", 1)[0].trim();
+              const nameMatch = withoutMarker.match(/^([A-Za-z0-9._-]+)/);
+              if (!nameMatch) {
+                continue;
+              }
+              packages.add(normalize(nameMatch[1]));
+            }
+
+            const alerts = await github.paginate(
+              "GET /repos/{owner}/{repo}/dependabot/alerts",
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "open",
+                severity: "high,critical",
+                per_page: 100
+              }
+            );
+
+            const filtered = alerts.filter((alert) => {
+              const depName = normalize(alert.dependency?.package?.name || "");
+              return packages.has(depName);
+            });
+
+            filtered.sort((a, b) => {
+              const aSev = a.security_vulnerability?.severity || "";
+              const bSev = b.security_vulnerability?.severity || "";
+              if (aSev !== bSev) {
+                return aSev === "critical" ? -1 : 1;
+              }
+              const aPkg = normalize(a.dependency?.package?.name || "");
+              const bPkg = normalize(b.dependency?.package?.name || "");
+              return aPkg.localeCompare(bPkg);
+            });
+
+            const now = new Date().toISOString();
+            const header = [
+              "# Severe dependency alerts for requirements.api.txt",
+              "",
+              `- Repository: ${context.repo.owner}/${context.repo.repo}`,
+              `- Generated: ${now}`,
+              `- Severity filter: high, critical`,
+              `- Source file: ${reqFile}`,
+              `- Matched open alerts: ${filtered.length}`,
+              ""
+            ];
+
+            const rows = filtered.map((alert) => {
+              const sev = (alert.security_vulnerability?.severity || "unknown").toUpperCase();
+              const pkg = alert.dependency?.package?.name || "unknown";
+              const summary = (alert.security_advisory?.summary || "(no summary)")
+                .replace(/\|/g, "\\|")
+                .replace(/\r?\n/g, " ");
+              const url = alert.html_url || "";
+              return `| ${sev} | ${pkg} | ${summary} | [Alert](${url}) |`;
+            });
+
+            const criticalIds = filtered
+              .filter((alert) => (alert.security_vulnerability?.severity || "") === "critical")
+              .map((alert) => String(alert.number))
+              .sort((a, b) => Number(a) - Number(b));
+
+            const table = [
+              "| Severity | Package | Summary | Link |",
+              "|---|---|---|---|",
+              ...(rows.length ? rows : ["| N/A | N/A | No open high/critical alerts for requirements.api.txt packages. | N/A |"])
+            ];
+
+            const body = [...header, ...table, ""].join("\n");
+            core.setOutput("count", String(filtered.length));
+            core.setOutput("body", body);
+            core.setOutput("critical_ids", JSON.stringify(criticalIds));
+
+      - name: Reconcile tracker issue state
+        id: tracker
+        if: ${{ github.event_name == 'schedule' || inputs.dry_run == false }}
+        uses: actions/github-script@v7
+        env:
+          ISSUE_TITLE: "Security tracker: severe alerts for requirements.api.txt"
+          ISSUE_BODY: ${{ steps.report.outputs.body }}
+          CURRENT_COUNT: ${{ steps.report.outputs.count }}
+          CURRENT_CRITICAL_IDS: ${{ steps.report.outputs.critical_ids }}
+        with:
+          script: |
+            const title = process.env.ISSUE_TITLE;
+            const bodyBase = process.env.ISSUE_BODY;
+            const count = Number(process.env.CURRENT_COUNT || "0");
+            const currentCriticalIds = JSON.parse(process.env.CURRENT_CRITICAL_IDS || "[]");
+
+            const markerPrefix = "<!-- critical-alert-ids:";
+            const markerSuffix = "-->";
+
+            const trackerBody =
+              `${bodyBase}\n${markerPrefix}${JSON.stringify(currentCriticalIds)}${markerSuffix}\n`;
+
+            const allIssues = await github.paginate(
+              "GET /repos/{owner}/{repo}/issues",
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "all",
+                per_page: 100
+              }
+            );
+
+            const candidates = allIssues
+              .filter((issue) => issue.title === title && !issue.pull_request)
+              .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
+            const latest = candidates[0];
+            const previousBody = latest?.body || "";
+            const markerMatch = previousBody.match(/<!-- critical-alert-ids:(.*?)-->/s);
+            const previousCriticalIds = markerMatch
+              ? JSON.parse(markerMatch[1].trim())
+              : [];
+
+            const previousSet = new Set(previousCriticalIds.map((id) => String(id)));
+            const newCriticalIds = currentCriticalIds.filter((id) => !previousSet.has(String(id)));
+
+            core.setOutput("new_critical_count", String(newCriticalIds.length));
+            core.setOutput("new_critical_ids", JSON.stringify(newCriticalIds));
+
+            if (count > 0) {
+              if (latest) {
+                if (latest.state === "closed") {
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: latest.number,
+                    state: "open"
+                  });
+                }
+
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: latest.number,
+                  body: trackerBody
+                });
+                core.info(`Updated issue #${latest.number}`);
+                core.setOutput("tracker_issue_number", String(latest.number));
+              } else {
+                const created = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body: trackerBody,
+                  labels: ["security", "dependencies"]
+                });
+                core.info(`Created issue #${created.data.number}`);
+                core.setOutput("tracker_issue_number", String(created.data.number));
+              }
+            } else if (latest && latest.state === "open") {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: latest.number,
+                body: "All matching high/critical alerts are currently resolved. Auto-closing tracker issue."
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: latest.number,
+                state: "closed",
+                state_reason: "completed"
+              });
+              core.info(`Closed issue #${latest.number} because no severe alerts remain.`);
+              core.setOutput("tracker_issue_number", String(latest.number));
+            } else {
+              core.info("No severe alerts and no open tracker issue to close.");
+            }
+
+      - name: Check SMTP configuration
+        id: smtp
+        if: ${{ github.event_name == 'schedule' || inputs.dry_run == false }}
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+        run: |
+          if [[ -n "$SMTP_SERVER" && -n "$SMTP_PORT" && -n "$SMTP_USERNAME" && -n "$SMTP_PASSWORD" && -n "$SMTP_FROM" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Write workflow summary
+        run: |
+          {
+            echo "## requirements.api.txt severe alert report"
+            echo ""
+            echo "Matched open alerts: ${{ steps.report.outputs.count }}"
+            echo ""
+            echo "${{ steps.report.outputs.body }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Email new critical alert notification
+        if: ${{ (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready == 'true' }}
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: >-
+            [${{ github.repository }}] New CRITICAL dependency alerts for requirements.api.txt
+          to: delphi+sysadmin@andrew.cmu.edu
+          from: ${{ secrets.SMTP_FROM }}
+          body: |
+            New CRITICAL dependency alerts were detected for packages listed in requirements.api.txt.
+
+            Repository: ${{ github.repository }}
+            Workflow: ${{ github.workflow }}
+            Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Tracker issue: #${{ steps.tracker.outputs.tracker_issue_number }}
+            New critical alert IDs: ${{ steps.tracker.outputs.new_critical_ids }}
+
+            Full severe-alert report:
+            ${{ steps.report.outputs.body }}
+
+      - name: Email config missing note
+        if: ${{ (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready != 'true' }}
+        run: |
+          echo "New critical alerts were found, but SMTP secrets are missing so email notification was skipped." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Dry run note
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run != false }}
+        run: |
+          echo "Dry run enabled: issue creation/update skipped."
+
+      - name: No severe alerts note
+        if: ${{ fromJSON(steps.report.outputs.count) == 0 }}
+        run: |
+          echo "No matching high/critical alerts found, so tracker issue update was skipped."
