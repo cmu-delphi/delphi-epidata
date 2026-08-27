@@ -1,6 +1,9 @@
 name: Track severe alerts for requirements.api.txt
 
 on:
+  push:
+    branches:
+      - bc/add-dependabot-workflow
   schedule:
     - cron: "0 13 * * 1-5"
   workflow_dispatch:
