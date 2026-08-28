@@ -22,15 +22,28 @@ jobs:
   track-severe-alerts:
     runs-on: ubuntu-latest
     steps:
+      - name: Check required token secret
+        id: token_check
+        env:
+          DEPENDABOT_ALERTS_TOKEN: ${{ secrets.DEPENDABOT_ALERTS_TOKEN }}
+        run: |
+          if [[ -n "$DEPENDABOT_ALERTS_TOKEN" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Build severe-alert report for requirements.api.txt packages
         id: report
+        if: ${{ steps.token_check.outputs.ready == 'true' }}
         uses: actions/github-script@v7
         env:
           REQUIREMENTS_FILE: requirements.api.txt
         with:
+          github-token: ${{ secrets.DEPENDABOT_ALERTS_TOKEN }}
           script: |
             const fs = require("fs");
 
@@ -126,7 +139,7 @@ jobs:
 
       - name: Reconcile tracker issue state
         id: tracker
-        if: ${{ github.event_name == 'schedule' || inputs.dry_run == false }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
         uses: actions/github-script@v7
         env:
           ISSUE_TITLE: "Security tracker: severe alerts for requirements.api.txt"
@@ -134,6 +147,7 @@ jobs:
           CURRENT_COUNT: ${{ steps.report.outputs.count }}
           CURRENT_CRITICAL_IDS: ${{ steps.report.outputs.critical_ids }}
         with:
+          github-token: ${{ secrets.DEPENDABOT_ALERTS_TOKEN }}
           script: |
             const title = process.env.ISSUE_TITLE;
             const bodyBase = process.env.ISSUE_BODY;
@@ -226,7 +240,7 @@ jobs:
 
       - name: Check SMTP configuration
         id: smtp
-        if: ${{ github.event_name == 'schedule' || inputs.dry_run == false }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
         env:
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -241,6 +255,7 @@ jobs:
           fi
 
       - name: Write workflow summary
+        if: ${{ steps.token_check.outputs.ready == 'true' }}
         run: |
           {
             echo "## requirements.api.txt severe alert report"
@@ -250,8 +265,19 @@ jobs:
             echo "${{ steps.report.outputs.body }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Token missing fallback note
+        if: ${{ steps.token_check.outputs.ready != 'true' }}
+        run: |
+          {
+            echo "## requirements.api.txt severe alert report"
+            echo ""
+            echo "Skipped: missing secret DEPENDABOT_ALERTS_TOKEN."
+            echo ""
+            echo "Create a fine-grained PAT with repository permissions: Dependabot alerts (read) and Issues (read/write), then save it as DEPENDABOT_ALERTS_TOKEN."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Email new critical alert notification
-        if: ${{ (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready == 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready == 'true' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
@@ -274,10 +300,24 @@ jobs:
             Full severe-alert report:
             ${{ steps.report.outputs.body }}
 
-      - name: Email config missing note
-        if: ${{ (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready != 'true' }}
+      - name: SMTP fallback note
+        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && steps.smtp.outputs.ready != 'true' }}
+        env:
+          NEW_CRITICAL_COUNT: ${{ steps.tracker.outputs.new_critical_count }}
         run: |
-          echo "New critical alerts were found, but SMTP secrets are missing so email notification was skipped." >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## Email notification status"
+            echo ""
+            echo "SMTP secrets are not fully configured; email notification is skipped."
+            echo ""
+            if [[ "${NEW_CRITICAL_COUNT:-0}" != "0" ]]; then
+              echo "New critical alerts found in this run: ${NEW_CRITICAL_COUNT}"
+            else
+              echo "No new critical alerts in this run."
+            fi
+            echo ""
+            echo "Required secrets: SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_FROM"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Dry run note
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run != false }}
@@ -285,6 +325,6 @@ jobs:
           echo "Dry run enabled: issue creation/update skipped."
 
       - name: No severe alerts note
-        if: ${{ fromJSON(steps.report.outputs.count) == 0 }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && fromJSON(steps.report.outputs.count) == 0 }}
         run: |
           echo "No matching high/critical alerts found, so tracker issue update was skipped."
