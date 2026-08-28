@@ -47,6 +47,62 @@ jobs:
           script: |
             const fs = require("fs");
 
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+            const shouldRetry = (error) => {
+              const status = error?.status;
+              const message = (error?.response?.data?.message || error?.message || "").toLowerCase();
+              return [403, 429, 502, 503, 504].includes(status)
+                || message.includes("secondary rate limit")
+                || message.includes("rate limit");
+            };
+
+            const getRetryDelayMs = (error, attempt) => {
+              const headers = error?.response?.headers || {};
+              const retryAfter = Number(headers["retry-after"] || 0);
+              if (Number.isFinite(retryAfter) && retryAfter > 0) {
+                return retryAfter * 1000;
+              }
+
+              const resetEpoch = Number(headers["x-ratelimit-reset"] || 0);
+              if (Number.isFinite(resetEpoch) && resetEpoch > 0) {
+                const msUntilReset = (resetEpoch * 1000) - Date.now();
+                if (msUntilReset > 0) {
+                  return Math.min(msUntilReset + 1000, 60000);
+                }
+              }
+
+              return Math.min(1000 * (2 ** attempt), 30000);
+            };
+
+            const listDependabotAlertsWithBackoff = async () => {
+              const maxAttempts = 5;
+              for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+                try {
+                  return await github.paginate(
+                    "GET /repos/{owner}/{repo}/dependabot/alerts",
+                    {
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      state: "open",
+                      severity: "high,critical",
+                      per_page: 100
+                    }
+                  );
+                } catch (error) {
+                  if (!shouldRetry(error) || attempt === maxAttempts - 1) {
+                    throw error;
+                  }
+
+                  const delayMs = getRetryDelayMs(error, attempt);
+                  core.warning(`Dependabot alerts request failed (attempt ${attempt + 1}/${maxAttempts}). Retrying in ${delayMs}ms.`);
+                  await sleep(delayMs);
+                }
+              }
+
+              return [];
+            };
+
             const normalize = (name) =>
               (name || "")
                 .trim()
@@ -72,16 +128,7 @@ jobs:
               packages.add(normalize(nameMatch[1]));
             }
 
-            const alerts = await github.paginate(
-              "GET /repos/{owner}/{repo}/dependabot/alerts",
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: "open",
-                severity: "high,critical",
-                per_page: 100
-              }
-            );
+            const alerts = await listDependabotAlertsWithBackoff();
 
             const filtered = alerts.filter((alert) => {
               const depName = normalize(alert.dependency?.package?.name || "");
@@ -160,21 +207,32 @@ jobs:
             const trackerBody =
               `${bodyBase}\n${markerPrefix}${JSON.stringify(currentCriticalIds)}${markerSuffix}\n`;
 
-            const allIssues = await github.paginate(
-              "GET /repos/{owner}/{repo}/issues",
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: "all",
-                per_page: 100
-              }
-            );
+            const findLatestTrackerIssue = async (state) => {
+              const issues = await github.paginate(
+                "GET /repos/{owner}/{repo}/issues",
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  state,
+                  per_page: 100
+                }
+              );
 
-            const candidates = allIssues
-              .filter((issue) => issue.title === title && !issue.pull_request)
-              .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+              const candidates = issues
+                .filter((issue) => issue.title === title && !issue.pull_request)
+                .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
-            const latest = candidates[0];
+              return candidates[0];
+            };
+
+            const latestOpen = await findLatestTrackerIssue("open");
+
+            // Minimize API calls: only scan closed issues when we need to reopen/update an existing tracker.
+            let latest = latestOpen;
+            if (count > 0 && !latest) {
+              latest = await findLatestTrackerIssue("closed");
+            }
+
             const previousBody = latest?.body || "";
             const markerMatch = previousBody.match(/<!-- critical-alert-ids:(.*?)-->/s);
             const previousCriticalIds = markerMatch
@@ -217,23 +275,23 @@ jobs:
                 core.info(`Created issue #${created.data.number}`);
                 core.setOutput("tracker_issue_number", String(created.data.number));
               }
-            } else if (latest && latest.state === "open") {
+            } else if (latestOpen) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: latest.number,
+                issue_number: latestOpen.number,
                 body: "All matching high/critical alerts are currently resolved. Auto-closing tracker issue."
               });
 
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: latest.number,
+                issue_number: latestOpen.number,
                 state: "closed",
                 state_reason: "completed"
               });
-              core.info(`Closed issue #${latest.number} because no severe alerts remain.`);
-              core.setOutput("tracker_issue_number", String(latest.number));
+              core.info(`Closed issue #${latestOpen.number} because no severe alerts remain.`);
+              core.setOutput("tracker_issue_number", String(latestOpen.number));
             } else {
               core.info("No severe alerts and no open tracker issue to close.");
             }
