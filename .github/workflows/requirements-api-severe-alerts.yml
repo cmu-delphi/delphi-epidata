@@ -49,12 +49,18 @@ jobs:
 
             const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+            const isRateLimitedError = (error) => {
+              const message = (error?.response?.data?.message || error?.message || "").toLowerCase();
+              return message.includes("secondary rate limit")
+                || message.includes("rate limit");
+            };
+
             const shouldRetry = (error) => {
               const status = error?.status;
-              const message = (error?.response?.data?.message || error?.message || "").toLowerCase();
-              return [403, 429, 502, 503, 504].includes(status)
-                || message.includes("secondary rate limit")
-                || message.includes("rate limit");
+              if (status === 403) {
+                return isRateLimitedError(error);
+              }
+              return [429, 502, 503, 504].includes(status);
             };
 
             const getRetryDelayMs = (error, attempt) => {
@@ -68,15 +74,18 @@ jobs:
               if (Number.isFinite(resetEpoch) && resetEpoch > 0) {
                 const msUntilReset = (resetEpoch * 1000) - Date.now();
                 if (msUntilReset > 0) {
-                  return Math.min(msUntilReset + 1000, 60000);
+                  return msUntilReset + 1000;
                 }
               }
 
-              return Math.min(1000 * (2 ** attempt), 30000);
+              return Math.min(2000 * (2 ** attempt), 120000);
             };
 
             const listDependabotAlertsWithBackoff = async () => {
               const maxAttempts = 5;
+              const maxTotalWaitMs = 10 * 60 * 1000;
+              let totalWaitMs = 0;
+
               for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
                 try {
                   return await github.paginate(
@@ -94,7 +103,18 @@ jobs:
                     throw error;
                   }
 
-                  const delayMs = getRetryDelayMs(error, attempt);
+                  const jitterMs = Math.floor(Math.random() * 1000);
+                  const delayMs = getRetryDelayMs(error, attempt) + jitterMs;
+                  if (totalWaitMs + delayMs > maxTotalWaitMs) {
+                    const bounded = new Error("Rate-limit retry budget exceeded.");
+                    bounded.status = error?.status;
+                    bounded.response = error?.response;
+                    bounded.retryBudgetExceeded = true;
+                    bounded.originalError = error;
+                    throw bounded;
+                  }
+
+                  totalWaitMs += delayMs;
                   core.warning(`Dependabot alerts request failed (attempt ${attempt + 1}/${maxAttempts}). Retrying in ${delayMs}ms.`);
                   await sleep(delayMs);
                 }
@@ -128,7 +148,43 @@ jobs:
               packages.add(normalize(nameMatch[1]));
             }
 
-            const alerts = await listDependabotAlertsWithBackoff();
+            let alerts;
+            try {
+              alerts = await listDependabotAlertsWithBackoff();
+            } catch (error) {
+              if (isRateLimitedError(error) || error?.retryBudgetExceeded === true) {
+                const now = new Date().toISOString();
+                const message = error?.response?.data?.message || error?.message || "Rate limited";
+                const headers = error?.response?.headers || {};
+                const resetEpoch = Number(headers["x-ratelimit-reset"] || 0);
+                const resetIso = Number.isFinite(resetEpoch) && resetEpoch > 0
+                  ? new Date(resetEpoch * 1000).toISOString()
+                  : "unknown";
+
+                const fallbackBody = [
+                  "# Severe dependency alerts for requirements.api.txt",
+                  "",
+                  `- Repository: ${context.repo.owner}/${context.repo.repo}`,
+                  `- Generated: ${now}`,
+                  "- Status: skipped due to API throttling",
+                  `- API message: ${message}`,
+                  `- Rate limit reset (if provided): ${resetIso}`,
+                  "",
+                  "No issue/email actions were executed for this run.",
+                  ""
+                ].join("\n");
+
+                core.setOutput("fetch_ok", "false");
+                core.setOutput("count", "0");
+                core.setOutput("body", fallbackBody);
+                core.setOutput("critical_ids", "[]");
+                return;
+              }
+
+              throw error;
+            }
+
+            core.setOutput("fetch_ok", "true");
 
             const filtered = alerts.filter((alert) => {
               const depName = normalize(alert.dependency?.package?.name || "");
@@ -186,7 +242,7 @@ jobs:
 
       - name: Reconcile tracker issue state
         id: tracker
-        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
         uses: actions/github-script@v7
         env:
           ISSUE_TITLE: "Security tracker: severe alerts for requirements.api.txt"
@@ -298,7 +354,7 @@ jobs:
 
       - name: Check SMTP configuration
         id: smtp
-        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
         env:
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -323,6 +379,11 @@ jobs:
             echo "${{ steps.report.outputs.body }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: API throttling fallback note
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok != 'true' }}
+        run: |
+          echo "Dependabot alerts API was throttled; issue reconciliation and email notification steps were skipped for this run." >> "$GITHUB_STEP_SUMMARY"
+
       - name: Token missing fallback note
         if: ${{ steps.token_check.outputs.ready != 'true' }}
         run: |
@@ -335,7 +396,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Email new critical alert notification
-        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready == 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready == 'true' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
@@ -359,7 +420,7 @@ jobs:
             ${{ steps.report.outputs.body }}
 
       - name: SMTP fallback note
-        if: ${{ steps.token_check.outputs.ready == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && steps.smtp.outputs.ready != 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && steps.smtp.outputs.ready != 'true' }}
         env:
           NEW_CRITICAL_COUNT: ${{ steps.tracker.outputs.new_critical_count }}
         run: |
@@ -383,6 +444,6 @@ jobs:
           echo "Dry run enabled: issue creation/update skipped."
 
       - name: No severe alerts note
-        if: ${{ steps.token_check.outputs.ready == 'true' && fromJSON(steps.report.outputs.count) == 0 }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && fromJSON(steps.report.outputs.count) == 0 }}
         run: |
           echo "No matching high/critical alerts found, so tracker issue update was skipped."
