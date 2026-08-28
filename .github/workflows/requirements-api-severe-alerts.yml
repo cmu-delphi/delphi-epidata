@@ -36,9 +36,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Preflight token access and policy check
+        id: preflight
+        if: ${{ steps.token_check.outputs.ready == 'true' }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.DEPENDABOT_ALERTS_TOKEN }}
+          script: |
+            try {
+              await github.request("GET /repos/{owner}/{repo}", {
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+              core.setOutput("ready", "true");
+              core.setOutput("reason", "ok");
+              core.setOutput("message", "Token preflight succeeded.");
+            } catch (error) {
+              const status = String(error?.status || "unknown");
+              const message = (error?.response?.data?.message || error?.message || "Unknown token preflight failure")
+                .replace(/\r?\n/g, " ");
+              const lower = message.toLowerCase();
+
+              let reason = "access_check_failed";
+              if (lower.includes("forbids access via a fine-grained personal access tokens") || lower.includes("lifetime is greater than 366 days")) {
+                reason = "token_lifetime_policy";
+              } else if (lower.includes("resource not accessible by integration")) {
+                reason = "integration_access_denied";
+              } else if (lower.includes("sso")) {
+                reason = "sso_authorization_required";
+              }
+
+              core.setOutput("ready", "false");
+              core.setOutput("reason", reason);
+              core.setOutput("status", status);
+              core.setOutput("message", message);
+            }
+
       - name: Build severe-alert report for requirements.api.txt packages
         id: report
-        if: ${{ steps.token_check.outputs.ready == 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' }}
         uses: actions/github-script@v7
         env:
           REQUIREMENTS_FILE: requirements.api.txt
@@ -242,7 +278,7 @@ jobs:
 
       - name: Reconcile tracker issue state
         id: tracker
-        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
         uses: actions/github-script@v7
         env:
           ISSUE_TITLE: "Security tracker: severe alerts for requirements.api.txt"
@@ -354,7 +390,7 @@ jobs:
 
       - name: Check SMTP configuration
         id: smtp
-        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) }}
         env:
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -369,7 +405,7 @@ jobs:
           fi
 
       - name: Write workflow summary
-        if: ${{ steps.token_check.outputs.ready == 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' }}
         run: |
           {
             echo "## requirements.api.txt severe alert report"
@@ -379,8 +415,29 @@ jobs:
             echo "${{ steps.report.outputs.body }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Preflight fallback note
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready != 'true' }}
+        env:
+          PREFLIGHT_REASON: ${{ steps.preflight.outputs.reason }}
+          PREFLIGHT_STATUS: ${{ steps.preflight.outputs.status }}
+          PREFLIGHT_MESSAGE: ${{ steps.preflight.outputs.message }}
+        run: |
+          {
+            echo "## requirements.api.txt severe alert report"
+            echo ""
+            echo "Skipped: token preflight check failed."
+            echo ""
+            echo "HTTP status: ${PREFLIGHT_STATUS:-unknown}"
+            echo "Reason: ${PREFLIGHT_REASON:-access_check_failed}"
+            echo "Message: ${PREFLIGHT_MESSAGE:-unknown}"
+            if [[ "${PREFLIGHT_REASON:-}" == "token_lifetime_policy" ]]; then
+              echo ""
+              echo "Action: recreate DEPENDABOT_ALERTS_TOKEN with fine-grained PAT lifetime <= 366 days, then update the repository secret."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: API throttling fallback note
-        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok != 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' && steps.report.outputs.fetch_ok != 'true' }}
         run: |
           echo "Dependabot alerts API was throttled; issue reconciliation and email notification steps were skipped for this run." >> "$GITHUB_STEP_SUMMARY"
 
@@ -396,7 +453,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Email new critical alert notification
-        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready == 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && fromJSON(steps.tracker.outputs.new_critical_count) > 0 && steps.smtp.outputs.ready == 'true' }}
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_SERVER }}
@@ -420,7 +477,7 @@ jobs:
             ${{ steps.report.outputs.body }}
 
       - name: SMTP fallback note
-        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && steps.smtp.outputs.ready != 'true' }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && (github.event_name == 'schedule' || inputs.dry_run == false) && steps.smtp.outputs.ready != 'true' }}
         env:
           NEW_CRITICAL_COUNT: ${{ steps.tracker.outputs.new_critical_count }}
         run: |
@@ -444,6 +501,6 @@ jobs:
           echo "Dry run enabled: issue creation/update skipped."
 
       - name: No severe alerts note
-        if: ${{ steps.token_check.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && fromJSON(steps.report.outputs.count) == 0 }}
+        if: ${{ steps.token_check.outputs.ready == 'true' && steps.preflight.outputs.ready == 'true' && steps.report.outputs.fetch_ok == 'true' && fromJSON(steps.report.outputs.count) == 0 }}
         run: |
           echo "No matching high/critical alerts found, so tracker issue update was skipped."
