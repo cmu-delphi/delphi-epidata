@@ -18,6 +18,12 @@ grand_parent: Delphi V5 API
 | **Temporal Scope Start** | 2018-01-07 |
 | **License** | [PopHIVE Attribution](https://github.com/PopHIVE/Ingest) / [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.en)|
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
 ## Changelog
 
 <details markdown="1">
@@ -33,12 +39,6 @@ grand_parent: Delphi V5 API
 [Epic Cosmos](https://cosmos.epic.com/) is a collaborative research platform containing de-identified patient data from over 300 million patients across more than 1,600 hospitals and health systems using Epic electronic health record systems. Data is accessed via SlicerDicer, a self-service analytics tool. The dataset includes emergency department visits, diagnoses, immunizations, laboratory results, and other clinical data.
 
 Note that while data updates are expected to be biweekly, the actual reporting cadence is irregular. Historically, the interval between releases has ranged from weekly to monthly, with occasional lags exceeding four weeks.
-
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
 
 ---
 
@@ -56,7 +56,7 @@ Note that while data updates are expected to be biweekly, the actual reporting c
 
 ---
 
-## Estimation
+## Estimation and Indicator Processing
 
 Epic Cosmos data is aggregated from electronic health records of participating healthcare systems. Percentages are calculated as the ratio of encounters with a specific diagnosis or result to the total number of relevant encounters.
 
@@ -68,7 +68,7 @@ Dates in this dataset represent epiweeks, where the reported dates (`time_value`
 
 ---
 
-## Available Additional Columns
+## Schema Details
 
 Each row in this dataset includes two extra columns: `age_group` and `fill_method`. You can use these to filter data by population subgroup and decide how to treat missing values.
 

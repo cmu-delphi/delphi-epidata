@@ -19,6 +19,12 @@ nav_order: 4
 | **Temporal Scope Start** | 2020-01-14 |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
+## Table of contents
+{: .no_toc .text-delta}
+
+1. TOC
+{:toc}
+
 ## Changelog
 
 <details markdown="1">
@@ -42,12 +48,6 @@ NWSS data is collected from wastewater monitoring sites within the sewer network
 
 The CDC coordinates data collection across a national network of public health laboratories and contracted testing providers. For more detail on how sampling sites are selected and how surveys are conducted, see the [CDC NWSS data sources documentation](https://www.cdc.gov/wastewater/about/index.html#cdc_survey_profile_how_surveys_are_conducted-data-sources).
 
-## Table of contents
-{: .no_toc .text-delta}
-
-1. TOC
-{:toc}
-
 ## Available Signals
 
 Wastewater signals are constructed by combining a pathogen prefix with a post-processing suffix in the format `<pathogen_prefix>_<suffix>`. For example, combining the prefix `covid` with the suffix `avg_conc_lin` constructs the signal `covid_avg_conc_lin`.
@@ -58,7 +58,7 @@ Wastewater signals are constructed by combining a pathogen prefix with a post-pr
 |---|---|---|---|
 | `covid` | COVID-19 | `sars-cov-2` | [j9g8-acpt](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-SARS-CoV-2/j9g8-acpt/about_data) |
 | `flu` | Influenza | `fluav` | [ymmh-divb](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Influenza-A/ymmh-divb/about_data) |
-| `flu_h5` | Avian Flu | `fluav a h5` | [mtpu-urpp](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-H5-Influenza-A/mtpu-urpp/about_data) |
+| `flu_h5` | Avian Influenza A (H5) | `fluav a h5` | [mtpu-urpp](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-H5-Influenza-A/mtpu-urpp/about_data) |
 | `rsv` | RSV | `rsv` | [45cq-cw4i](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i/about_data) |
 | `measles` | Measles | `mev_wt` | [akvg-8vrb](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Measles/akvg-8vrb/about_data) |
 | `mpox_all` | Mpox (All Clades) | `hmpxv` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
@@ -72,13 +72,13 @@ Wastewater signals are constructed by combining a pathogen prefix with a post-pr
 | Suffix | Metric Type | Description |
 |---|---|---|
 | `avg_conc` | Average Concentration | Concentration of the PCR target back-calculated to unconcentrated sample basis |
-| `avg_conc_lin` | Average Concentration | Concentration of the PCR target on a per sample amount basis where all values are on a linear (not log10) concentration basis |
+| `avg_conc_lin` | Linearized Average Concentration | Concentration of the PCR target on a per sample amount basis where all values are on a linear (not log10) concentration basis |
 | `flowpop_lin` | Flow-Population | Flow-population normalized concentration (copies/person/day) |
 | `mic_lin` | Microbial | Microbial normalized concentration (unitless ratio) |
 
 For more details on the columns, see one of the socrata endpoints, e.g. [RSV](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i/about_data) which provides descriptions of all columns.
 
-## Source-Specific Keys
+## Schema Details
 
 Wastewater data has unique properties, including multiple facilities, replicate samples, and laboratory PCR targets. To support this granularity, the V5 table schema includes:
 
@@ -134,12 +134,18 @@ Regardless of normalization method, the daily wastewater data is noisy; to make 
 | **Average Concentration** | `avg_conc` | Concentration of the PCR target back-calculated to unconcentrated sample basis. Non-detections are typically reported as zero. |
 | **Linearized Average Concentration** | `avg_conc_lin` | Concentration of the PCR target on a per sample amount basis where all values are on a linear (not log10) concentration basis. |
 
-## Estimation
+## Estimation and Indicator Processing
 
 ### Aggregation
 
 The `nwss` source serves sewershed-level directly as reported by the facilities and laboratories. This preserves the local resolution of the data without introducing smoothing or aggregation assumptions.
 
+
+## Missingness
+
+If a sample site has too few individuals, the NWSS does not provide the detailed data, so we cannot include it in our aggregations.
+
+Also, data from sewersheds serving fewer than 3,000 people, as well as data from facility or institution specific sampling locations and tribal communities, are generally not available unless approved by the local jurisdiction.
 
 ## Limitations
 
@@ -149,23 +155,17 @@ Standard errors and sample sizes are not applicable to these signals.
 
 <!-- TODO: cubic spline method may change over time -->
 
-## Missingness
-
-If a sample site has too few individuals, the NWSS does not provide the detailed data, so we cannot include it in our aggregations.
-
-Also, data from sewersheds serving fewer than 3,000 people, as well as data from facility or institution specific sampling locations and tribal communities, are generally not available unless approved by the local jurisdiction.
-
 ## Lag and Backfill
 
 These signals are released weekly with ~4 days of latency
 
 ## Source and Licensing
 
-This indicator aggregates data originating from the [NWSS](https://www.cdc.gov/nwss/index.html).
+This indicator collects data originating from the [NWSS](https://www.cdc.gov/nwss/index.html).
 The site-level data is provided un-versioned via the Socrata API across pathogen-specific datasets: [SARS-CoV-2](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-SARS-CoV-2/j9g8-acpt) (`j9g8-acpt`), [Influenza A](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Influenza-A/ymmh-divb) (`ymmh-divb`), [H5 Influenza A / Avian Flu](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-H5-Influenza-A/mtpu-urpp) (`mtpu-urpp`), [RSV](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i) (`45cq-cw4i`), [Mpox](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz) (`xpxn-rzgz`), and [Measles](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Measles/akvg-8vrb) (`akvg-8vrb`).
 
 
-The NWSS is aggregating data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, and [Wastewater Scan](https://www.wastewaterscan.org/en).
+The NWSS is collecting data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, and [Wastewater Scan](https://www.wastewaterscan.org/en).
 
 The WastewaterSCAN data were collected as part of the [WastewaterSCAN](https://www.wastewaterscan.org/en) / SCAN project, a partnership between Stanford University, Emory University, and Verily funded philanthropically through a gift to Stanford University, and then shared with the NWSS. Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (as described [here](https://data.wastewaterscan.org/about/#18)).
 

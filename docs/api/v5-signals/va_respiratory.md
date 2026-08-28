@@ -18,18 +18,18 @@ nav_order: 5
 | **Temporal Scope Start** | Seasonal reporting (starts October 1st of each surveillance season) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
-## Overview
-{: .no_toc}
-
-The Department of Veterans Affairs (VA) automated biosurveillance system tracks seasonal respiratory disease cases and vaccinations across VA medical facilities. Data is reported through the VA Access to Care portal for three key respiratory pathogens: COVID-19, Influenza, and RSV.
-
-Delphi ingests two daily feeds: facility-level cumulative case counts from `SeasonalReviewCases.csv` and state-level cumulative vaccination counts from `SeasonalReviewVaccines.csv`.
-
 ## Table of contents
 {: .no_toc .text-delta}
 
 1. TOC
 {:toc}
+
+## Overview
+{: .no_toc}
+
+The Department of Veterans Affairs (VA) automated biosurveillance system tracks seasonal respiratory disease cases and vaccinations across VA medical facilities. Data is reported through the VA Access to Care portal for three key respiratory diseases: COVID-19, Influenza, and RSV.
+
+Delphi ingests two daily feeds: facility-level cumulative case counts and state-level cumulative vaccination counts. Both feeds are available for download at the data source linked above.
 
 ---
 
@@ -114,7 +114,7 @@ The V5 table schema for `va_respiratory` includes:
 | :--- | :--- | :--- |
 | `signal` | Primary Key | Name of the signal. |
 | `geo_type` | Primary Key | Geographic resolution (`va_facility`, `state`, `msa`, `hhs`, `census_division`, `census_region`, `nation`). |
-| `geo_value` | Primary Key | Geographic identifier. |
+| `geo_value` | Primary Key | Geographic identifier, formatted per `geo_type` (e.g. `mi` for Michigan when `geo_type` is `state`). |
 | `fill_method` | Primary Key | Imputation method: `source` for reported facility/state grain, `zero` for zero-filled aggregations. |
 | `time_value` | Primary Key | Reference date of observation (`YYYY-MM-DD`). |
 | `value` | Value Column | Estimated signal value (count or rate per 100,000 enrollees). |
@@ -125,7 +125,7 @@ The V5 table schema for `va_respiratory` includes:
 
 ## Missingness and Privacy Suppression
 
-Counts fewer than 11 are suppressed by the VA for privacy and reported as `< 11`. These values are parsed as null during ingestion and approximated as 0 during geographic aggregation.
+Counts fewer than 11 are suppressed by the VA for privacy and reported as `< 11`; the source does not report true zero counts, so a suppressed value always represents 1-10 cases. These values are parsed as null during ingestion, and are only approximated as 0 when computing geographic aggregations — the underlying suppressed observations are not otherwise imputed.
 
 Higher-level cumulative totals are published only when all underlying locations report for a given date; if any location is entirely absent from that day's source file, the aggregate cumulative count is withheld.
 
