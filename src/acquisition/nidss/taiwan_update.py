@@ -105,7 +105,7 @@ def update(test_mode=False):
 
     # Database connection
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     rows1 = get_rows(cnx)
     print(f"rows before (flu): {int(rows1[0])}")
     print(f"rows before (dengue): {int(rows1[1])}")
