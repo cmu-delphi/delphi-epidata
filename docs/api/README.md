@@ -1,15 +1,18 @@
 ---
-title: Other Endpoints (COVID-19 and Other Diseases)
+title: Other Endpoints
 has_children: true
 nav_order: 4
 ---
 
-# Other Endpoints (COVID-19 and Other Diseases)
+# Other Endpoints
+
+> **Active endpoints are part of the legacy V4 API, which is being phased out.** See the [V4 to V5 Migration Guide](v5_migration.md) for details on the Delphi V5 transition.
+{: .warning }
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
-API for tracking epidemics such as influenza, dengue, and norovirus. Note that
-additional data, including most COVID-19 signals, is available in the
-[main Epidata API (formerly known as COVIDcast)](covidcast.md).
+API for tracking infectious diseases such as influenza, dengue,
+and norovirus. Note that additional data, including most COVID-19 signals, is
+available in the [main Epidata API (formerly known as COVIDcast)](covidcast.md).
 
 ## Table of Contents
 {: .no_toc .text-delta}

@@ -5,6 +5,9 @@ grand_parent: Main Endpoint (COVIDcast)
 nav_order: 1
 ---
 
+> **Heads up:** The legacy v4 Epidata API is being phased out. Check the [V5 Sources](../v5_signals.md#v5-sources) table or query [`/epidata/v5/metadata/`](../v5_meta.md) directly (more up to date) for whether this source is available in V5 yet. See the [V4 to V5 Migration Guide](../v5_migration.md) for full details.
+{: .warning }
+
 # Quidel
 {: .no_toc}
 

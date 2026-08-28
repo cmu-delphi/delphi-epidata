@@ -1,6 +1,6 @@
 ---
 title: Data Sources and Signals
-parent: Other Endpoints (COVID-19 and Other Diseases)
+parent: Other Endpoints
 nav_order: 2
 has_children: true
 

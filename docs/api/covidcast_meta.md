@@ -5,6 +5,9 @@ grand_parent: Main Endpoint (COVIDcast)
 nav_order: 0
 ---
 
+> **Heads up:** The legacy v4 Epidata API is being phased out. Please use the [V5 Metadata Discovery Endpoints](v5_meta.md) instead of this endpoint. See the [V4 to V5 Migration Guide](v5_migration.md) for full details.
+{: .warning }
+
 # COVIDcast Metadata
 
 The COVIDcast metadata endpoint (endpoint `covidcast_meta`) provides a list of all

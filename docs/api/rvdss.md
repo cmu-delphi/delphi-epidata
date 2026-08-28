@@ -1,6 +1,6 @@
 ---
 parent: Data Sources and Signals
-grand_parent: Other Endpoints (COVID-19 and Other Diseases)
+grand_parent: Other Endpoints
 title: Respiratory Virus Detections in Canada
 nav_order: 4
 ---
