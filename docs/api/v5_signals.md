@@ -22,7 +22,7 @@ Sources available in V5, and the legacy V4 source each one replaces. A V4 source
 | [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
 | [`claims_outpatient`](v5-signals/claims_outpatient.md) | [`doctor-visits`](covidcast-signals/doctor-visits.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 | [`claims_inpatient`](v5-signals/claims_inpatient.md) | [`hospital-admissions`](covidcast-signals/hospital-admissions.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
-| `va_respiratory` | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
+| [`va_respiratory`](v5-signals/va_respiratory.md) | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
 | `sleepcycle` | Not yet verified | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 {: #v5-sources-table}
 
@@ -73,12 +73,13 @@ Sources available in V5, and the legacy V4 source each one replaces. A V4 source
 
   // V5 source name -> its V5 documentation page.
   var V5_DOCS = {
-  //  'nssp': 'v5-signals/nssp.html',
-  //  'nhsn': 'v5-signals/nhsn.html',
+    'nssp': 'v5-signals/nssp.html',
+    'nhsn': 'v5-signals/nhsn.html',
     'pophive': 'v5-signals/epic-cosmos.html',
-    'nwss': 'v5-signals/nwss.html'
-  //  'claims_outpatient': 'v5-signals/claims_outpatient.html',
-  //  'claims_inpatient': 'v5-signals/claims_inpatient.html'
+    'nwss': 'v5-signals/nwss.html',
+    'claims_outpatient': 'v5-signals/claims_outpatient.html',
+    'claims_inpatient': 'v5-signals/claims_inpatient.html',
+    'va_respiratory': 'v5-signals/va_respiratory.html'
   };
 
   var code = function (s) { return '<code>' + s + '</code>'; };
