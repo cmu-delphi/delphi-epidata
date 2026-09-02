@@ -8,7 +8,7 @@ nav_exclude: true
 # V5 Signal Documentation Standard
 {: .no_toc}
 
-This guide outlines the structure, section titles, and writing guidelines for Delphi V5 data source documentation in `docs/api/v5-signals/<source>.md`.
+This guide describes the structure, section titles, and writing conventions for Delphi V5 data source documentation in `docs/api/v5-signals/<source>.md`.
 
 ---
 
@@ -20,131 +20,138 @@ This guide outlines the structure, section titles, and writing guidelines for De
 
 ---
 
-## Standard Section Hierarchy
+## Section hierarchy
 
-Every V5 data source page follows a consistent hierarchy to keep pages predictable and easy to navigate:
+Every V5 source page follows the same order so pages stay predictable:
 
 ```
-1. Jekyll Frontmatter (title, parent, grand_parent, nav_order)
-2. Title and Summary Table
-3. Table of Contents ({:toc})
+1. Frontmatter and summary table
+2. Lineage callout            which V4 or V3 source this reproduces, or "new in V5"
+3. Table of contents
 4. Overview
 5. Signals
 6. Estimation
-   ├── Geographic Aggregation (Optional)
-   ├── Temporal Handling (Optional)
-   ├── Normalization (Optional)
-   ├── Smoothing (Optional)
-   └── Uncertainty (Optional)
-7. Schema
-   ├── Columns (Optional)
-   ├── Extra Keys (Required if extra_keys exist)
-   ├── Auxiliary Tables (Required if aux_data exists)
-   └── Example Query (Recommended)
-8. Missingness & Privacy
-9. Limitations
-10. Lag & Backfill
-11. Source & Licensing
-12. Changelog (<details>)
+   ├── Geographic Aggregation   (when the source is aggregated or crosswalked)
+   ├── Temporal Handling        (only when it does more than name the week-ending day)
+   ├── Smoothing                (when a rolling window is applied)
+   ├── Metric Definition        (the formula that turns raw data into the signal)
+   └── Uncertainty              (confidence intervals, or an explicit "none")
+7. Relationship to V4           (or V3; omit for sources with no predecessor)
+8. Schema
+   ├── Columns
+   ├── Fill methods             (when the source has more than one aggregation path)
+   ├── Extra keys               (only for real extra dimensions such as age_group)
+   ├── Auxiliary tables         (when the source serves an /aux_data/ table)
+   └── Example query
+9. Missingness & Privacy
+10. Limitations
+11. Lag & Backfill
+12. Changelog                   (optional; only when there is a real change to record)
 ```
+
+Keep a section only when it has something to say. A one-line "aligns to Saturday" belongs in the summary table, not in its own subheading. Do not add a Changelog with a placeholder "initial release" entry, and do not add a standalone "Source & Licensing" section; the license lives in the summary table, and a citation line goes in the Overview only when the license requires attribution.
 
 ---
 
-## Section Guidelines
+## Section guidelines
 
-### 1. Frontmatter and Summary Table
+### 1. Frontmatter and summary table
 
-Each document begins with Jekyll frontmatter followed by the dataset title and a summary table of core attributes.
+Jekyll frontmatter, then the dataset title, then a table of core attributes.
 
 ```yaml
 ---
-title: Short Name (e.g., PopHive Claims, VA Respiratory)
+title: Short Name (e.g. NSSP ED Visits, VA Respiratory)
 parent: Delphi V5 Sources and Signals
 grand_parent: Delphi V5 API
 nav_order: <integer>
 ---
 ```
 
-Below the top-level heading, include a table summarizing key attributes:
-
 | Attribute | Description |
 | :--- | :--- |
-| `Source Name` | Exact API source identifier (e.g., `pophive`, `va_respiratory`). |
-| `Data Source` | Link to the upstream data provider or public portal. |
-| `Geographic Levels` | Supported `geo_type` values (e.g., `nation`, `state`, `hhs`, `county`). |
-| `Temporal Granularity` | Reporting frequency (e.g., daily or weekly, noting the week-ending day). |
-| `Reporting Cadence` | How often Delphi updates the feed (e.g., daily, weekly on Fridays, or irregular). |
-| `Temporal Scope Start` | Earliest available observation date in `YYYY-MM-DD` format. |
-| `Date of Last Revision` | How revisions are handled (e.g., static snapshot or a 14-day rolling window). |
-| `Extra Key Columns` | Any extra primary key columns (e.g., `age_group`, `fill_method`), or `None`. |
-| `License` | Dataset license and link (e.g., Public Domain, CC BY 4.0). |
+| `Source Name` | API source identifier (e.g. `nssp`, `va_respiratory`). |
+| `Data Source` | Link to the upstream provider or portal. |
+| `Geographic Levels` | Supported `geo_type` values. |
+| `Temporal Granularity` | Frequency of the data, with the week-ending day for weekly sources. |
+| `Reporting Cadence` | How often Delphi updates the feed. |
+| `Temporal Scope Start` | Earliest observation date, `YYYY-MM-DD`. |
+| `Date of Last Revision` | How revisions work (static, rolling window, revised on backfill). |
+| `Extra Key Columns` | Real extra key columns (e.g. `age_group`), or `None`. `fill_method` is a core column, not an extra key. |
+| `License` | License and link. |
 
----
+### 2. Lineage callout
 
-### 2. Overview
+Immediately after the summary table, add a `{: .note }` blockquote stating whether the source reproduces a legacy endpoint. This mirrors the "Heads up" callout on the V4 page.
 
-Provide a short summary in one or two paragraphs describing what the source measures, the reporting agency or partner, and the primary public health context.
+For a migrated source:
 
----
+```markdown
+> This source reproduces the legacy V4 COVIDcast [`<source>`](../covidcast-signals/<source>.md) source.
+> One sentence on what changed. See [Relationship to V4](#relationship-to-v4).
+{: .note }
+```
 
-### 3. Signals
+For a source with no predecessor:
 
-Present all available signals in a markdown table. For sources covering a single domain, list the signal name, pathogen or condition, metric type (count, rate, or percentage), and a clear description. When a source provides distinct metric groups (such as case counts versus vaccination metrics), organize them under subheadings like `### Case Signals` or `### Vaccination Signals`. For sources built from combinatoric naming schemes (such as wastewater), separate the table into prefixes and suffixes and describe the combination rules.
+```markdown
+> This source is new in V5. It has no V4 COVIDcast or classic Epidata predecessor.
+{: .note }
+```
 
----
+### 3. Overview
 
-### 4. Estimation
+One or two paragraphs: what the source measures, who collects it, and the surveillance context. Add a single citation sentence here only if the license requires attribution.
 
-Describe the epidemiological and statistical methods used to produce each indicator from raw data.
+### 4. Signals
 
-Use dedicated subheadings when applicable:
-- `### Geographic Aggregation` for crosswalking between geographic levels, facility catchment disaggregation, and population weighting.
-- `### Temporal Handling` for reference date conventions and observation window definitions.
-- `### Normalization` to specify the baseline population source used when converting raw counts into rates per 100,000.
-- `### Smoothing` to explain rolling windows (such as a 7-day trailing average) and any adjustments made for reporting anomalies.
-- `### Uncertainty` to document standard errors or confidence intervals. When providing mathematical formulas, use KaTeX notation with double dollar signs (`$$`) separated by blank lines.
+A markdown table listing each signal with its pathogen or condition, metric type (count, rate, percentage), and a short description. Group with subheadings (`### Case Signals`, `### Vaccination Signals`) when a source spans distinct metric families. For combinatoric naming schemes such as wastewater, give the prefix and suffix tables and the combination rule.
 
----
+### 5. Estimation
 
-### 5. Schema
+Describe how raw data becomes each signal.
 
-Document the table schema and query structure so users understand how to fetch data from the endpoint.
+`### Geographic Aggregation` covers crosswalking, catchment disaggregation, and population weighting, including which levels are native and which are derived.
 
-Include:
-- `### Columns` to list each column in the table, its role (such as primary key, extra key, or value column), and its description.
-- `### Extra Keys` when the source uses additional dimensions like `age_group` or `fill_method`. Provide a table of valid values, explain how missing selections behave, and show sample query parameters.
-- `### Auxiliary Tables` if the indicator serves companion metadata through the `/epidata/v5/aux_data/` endpoint.
-- `### Example Query` with a clear, realistic request URL or code example.
+`### Temporal Handling` is only needed when the source drops days, shifts reference dates, or uses season-to-date accumulation. Skip it if the only fact is the week-ending day.
 
----
+`### Smoothing` explains any rolling window and who computes it (Delphi or the upstream provider).
 
-### 6. Missingness & Privacy
+`### Metric Definition` gives the formula. State it in words and in KaTeX, using `$$` on its own lines for display math and `$$...$$` inline. Define every symbol, name the estimator (for example a windowed positivity ratio or a population-weighted mean), and cite the standard form it follows.
 
-Explain the conditions under which data points may be suppressed, missing, or imputed. Detail any small-cell suppression thresholds (such as masking counts below 10 for patient privacy), clarify whether suppressed records appear as `null` or are excluded, and describe how upward geographic aggregations handle missing subunits.
+`### Uncertainty` documents confidence intervals or standard errors. If the source has none, say so in one line.
 
----
+### 6. Relationship to V4
 
-### 7. Limitations
+For a migrated source, a short section on how the V5 method differs from the V4 (or V3) one. Cover the estimator, the signal set, the geographies, and revision handling. Keep it to what changed; the query-level mechanics belong in the [V4 to V5 Migration Guide](../v5_migration.md). Omit this section entirely for sources with no predecessor.
 
-Describe known caveats, potential biases, and interpretation limits. This includes coverage gaps, EHR platform market share representation, differences between clinical diagnosis dates and encounter dates, and demographic differences in the underlying patient population.
+### 7. Schema
 
----
+`### Columns` lists each column, its key role, and its meaning.
 
-### 8. Lag & Backfill
+`### Fill methods` is included when the source computes more than one aggregation path. Give the `fill_method` values (`source`, `fill_zero`, `fill_ave`) and what each does. If the source has a single path, say so in one line instead.
 
-Explain the operational timeline of the dataset. Note the typical lag between an event and its initial publication, and explain whether past records receive retroactive updates over time or remain static after publication.
+`### Extra keys` is for genuine extra dimensions such as `age_group`. Give the valid values and how an unfiltered query behaves.
 
----
+`### Auxiliary tables` documents any companion table served through `/epidata/v5/aux_data/`.
 
-### 9. Source & Licensing
+`### Example query` gives one realistic V5 request URL. Use the `/snapshot/` or `/archive/` form with `source`, `signal`, and `geo_type`; V5 does not take `geo_value` or `time_values`.
 
-Credit the upstream data owners, provide links to source documentation or terms of use, and specify the suggested citation format for downstream publications.
+### 8. Missingness & Privacy
 
----
+Suppression thresholds, whether suppressed points read as `null` or are dropped, and how aggregation treats missing sub-units.
 
-### 10. Changelog
+### 9. Limitations
 
-Record significant updates, methodology changes, and initial release dates. Place this section at the bottom of the page within a collapsible `<details>` element to keep the main reference concise.
+Interpretation caveats: coverage gaps, market-share bias, coding versus laboratory confirmation, demographic skew.
+
+### 10. Lag & Backfill
+
+Typical lag from event to first publication, and whether past values revise or stay fixed.
+
+### 11. Changelog
+
+Optional. Include only when there is a real methodology change or a meaningful ingestion-start date to record. Place it at the bottom in a collapsible block.
 
 ```markdown
 ## Changelog
@@ -152,16 +159,16 @@ Record significant updates, methodology changes, and initial release dates. Plac
 <details markdown="1">
 <summary>Click to expand</summary>
 
-- **YYYY-MM-DD**. Description of update.
+- **YYYY-MM-DD**. Description of the change.
 
 </details>
 ```
 
 ---
 
-## Markdown Template
+## Template
 
-Below is a template you can copy and adapt when adding documentation for new V5 indicators:
+Copy and adapt this when adding a new V5 source page.
 
 ````markdown
 ---
@@ -176,15 +183,18 @@ nav_order: 10
 
 | Attribute | Details |
 | :--- | :--- |
-| Source Name | `source_id` |
-| Data Source | [Data Provider Name](https://example.com) |
-| Geographic Levels | `nation`, `state`, `hhs`, `county` |
-| Temporal Granularity | Weekly (Epiweeks; Saturdays) / Daily |
-| Reporting Cadence | Weekly / Daily |
-| Temporal Scope Start | YYYY-MM-DD |
-| Date of Last Revision | Never (see [Changelog](#changelog)) / Lookback window |
-| Extra Key Columns | `extra_col_1` (or `None`) |
-| License | [License Title](https://example.com/license) |
+| **Source Name** | `source_id` |
+| **Data Source** | [Provider](https://example.com) |
+| **Geographic Levels** | `nation`, `state`, `hhs`, `county` |
+| **Temporal Granularity** | Weekly, week ending Saturday |
+| **Reporting Cadence** | Weekly |
+| **Temporal Scope Start** | YYYY-MM-DD |
+| **Date of Last Revision** | Revised on backfill (see [Lag & Backfill](#lag--backfill)) |
+| **Extra Key Columns** | None |
+| **License** | [License](https://example.com/license) |
+
+> This source reproduces the legacy V4 COVIDcast [`source_id`](../covidcast-signals/source_id.md) source. One sentence on what changed. See [Relationship to V4](#relationship-to-v4).
+{: .note }
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -196,7 +206,7 @@ nav_order: 10
 
 ## Overview
 
-A brief description of what this data source measures, who collects it, and how it is used in surveillance.
+What the source measures, who collects it, and how it is used.
 
 ---
 
@@ -204,28 +214,33 @@ A brief description of what this data source measures, who collects it, and how 
 
 | Signal Name | Pathogen | Metric Type | Description |
 | :--- | :--- | :--- | :--- |
-| `signal_name_1` | COVID-19 | Count | Total confirmed counts over the reference period. |
-| `signal_name_1_per_100k` | COVID-19 | Rate | Population-adjusted rate per 100,000 residents, including 90% confidence intervals (`ci_lower`, `ci_upper`). |
+| `signal_name` | COVID-19 | Percentage | Short description. |
 
 ---
 
 ## Estimation
 
 ### Geographic Aggregation
-Explain catchment disaggregation, county mappings, or rollups across geographic boundaries.
 
-### Normalization
-Specify the population baseline used for rate calculations.
+Which levels are native and which are derived, and the weighting used.
 
-### Smoothing
-Describe rolling averages or smoothing windows applied to raw counts.
+### Metric Definition
+
+For a location $$i$$ and time $$t$$, with numerator count $$Y_{it}$$ and denominator $$N_{it}$$,
+
+$$
+\hat{p}_{it} = 100 \cdot \frac{Y_{it}}{N_{it}}.
+$$
 
 ### Uncertainty
-Detail confidence interval or standard error formulas:
 
-$$
-\hat{p} \pm z_{1-\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
-$$
+Confidence interval formula, or "This source publishes no standard errors, sample sizes, or confidence intervals."
+
+---
+
+## Relationship to V4
+
+How the V5 method differs from the V4 estimator, signal set, geographies, and revision handling. Omit this section for a source with no predecessor.
 
 ---
 
@@ -236,60 +251,37 @@ $$
 | Column | Key Type | Description |
 | :--- | :--- | :--- |
 | `signal` | Primary Key | Signal identifier. |
-| `geo_type` | Primary Key | Geographic granularity level. |
-| `geo_value` | Primary Key | Geographic entity identifier. |
-| `time_value` | Primary Key | Reference date of the observation (`YYYY-MM-DD`). |
-| `extra_col_1` | Primary Key (Extra Key) | Population subgroup identifier. |
+| `geo_type` | Primary Key | Geographic level. |
+| `geo_value` | Primary Key | Geographic entity code. |
+| `fill_method` | Primary Key | Aggregation path. |
+| `time_value` | Primary Key | Reference date (`YYYY-MM-DD`). |
 | `value` | Value Column | Measured count, percentage, or rate. |
-| `ci_lower` | Value Column | Lower bound of confidence interval (where applicable). |
-| `ci_upper` | Value Column | Upper bound of confidence interval (where applicable). |
 
-### Extra Keys
+### Fill methods
 
-| Value | Description / Behavior |
-| :--- | :--- |
-| `all` | Combined population total (default when unspecified). |
-| `subgroup_a` | Filter for subgroup A. |
+`source`, `fill_zero`, `fill_ave`, and what each does. Or one line if the source has a single path.
 
 ### Example Query
 
-`extra_keys=extra_col_1:subgroup_a`
+```url
+https://delphi.cmu.edu/epidata/v5/snapshot/?source=source_id&signal=signal_name&geo_type=state
+```
 
 ---
 
 ## Missingness & Privacy
 
-Describe small-cell suppression rules, null handling, and behavior when geographic subunits are missing.
+Suppression rules, null handling, and behaviour when sub-units are missing.
 
 ---
 
 ## Limitations
 
-Document sampling limitations, demographic representation biases, and reporting delays.
+Sampling limits, representativeness, and reporting delays.
 
 ---
 
 ## Lag & Backfill
 
-Explain reporting latency and whether historical observations receive retroactive updates.
-
----
-
-## Source & Licensing
-
-Data originates from [Data Provider Name](https://example.com).
-
-Suggested citation:
-> Data provided by [Data Provider Name], processed and served via the Delphi Epidata API.
-
----
-
-## Changelog
-
-<details markdown="1">
-<summary>Click to expand</summary>
-
-- **YYYY-MM-DD**. Initial release on Delphi V5 API.
-
-</details>
+Reporting latency and whether historical values revise.
 ````

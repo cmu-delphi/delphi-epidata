@@ -13,12 +13,15 @@ nav_order: 1
 | **Source Name** | `nssp` |
 | **Data Source** | [National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) via [CDC Socrata](https://data.cdc.gov/Public-Health-Surveillance/NSSP-Emergency-Department-Visit-Trajectories-by-S/rdmq-nq56) |
 | **Geographic Levels** | `nation`, `state`, `hhs`, `census_division`, `census_region`, `hrr`, `msa`, `county`, `hsa_nci` |
-| **Temporal Granularity** | Weekly (Epiweeks; Saturdays) |
+| **Temporal Granularity** | Weekly, week ending Saturday |
 | **Reporting Cadence** | Weekly |
 | **Temporal Scope Start** | 2022-10-01 |
-| **Date of Last Revision** | Versioned snapshot (see [Lag & Backfill](#lag--backfill)) |
-| **Extra Key Columns** | `fill_method` |
+| **Date of Last Revision** | Revised on backfill (see [Lag & Backfill](#lag--backfill)) |
+| **Extra Key Columns** | None |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+
+> **Reproduces V4.** This source reproduces the legacy V4 COVIDcast [`nssp`](../covidcast-signals/nssp.md) source with the same signal definitions. V5 adds finer geographies, exposes the aggregation choice through `fill_method`, adds an acute respiratory illness signal, and serves revision history through the [`/archive/` and `/snapshot/`](../v5_api_queries.md) endpoints. See [Relationship to V4](#relationship-to-v4).
+{: .note }
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -30,7 +33,7 @@ nav_order: 1
 
 ## Overview
 
-The National Syndromic Surveillance Program (NSSP) monitors emergency department (ED) visits for respiratory illnesses across participating facilities in the United States. Ingestion processes weekly data published by the CDC, reporting percentages of ED visits associated with COVID-19, Influenza, RSV, and Acute Respiratory Illness (ARI).
+The National Syndromic Surveillance Program tracks the share of emergency department (ED) visits associated with respiratory illness across participating facilities in the United States. The CDC publishes weekly percentages for COVID-19, influenza, RSV, a combined category, and broader acute respiratory illness (ARI). Delphi ingests the CDC Socrata release, with the [CDC forecast-hub GitHub mirror](https://github.com/CDCgov/covid19-forecast-hub/tree/main/auxiliary-data/nssp-raw-data) as a fallback when Socrata is unavailable.
 
 ---
 
@@ -38,15 +41,15 @@ The National Syndromic Surveillance Program (NSSP) monitors emergency department
 
 | Signal Name | Pathogen | Metric Type | Description |
 | :--- | :--- | :--- | :--- |
-| `pct_ed_visits_covid` | COVID-19 | Percentage | Percentage of ED visits with a discharge diagnosis of COVID-19. |
-| `smoothed_pct_ed_visits_covid` | COVID-19 | Percentage (3-week average) | 3-week trailing smoothed percentage of ED visits with a discharge diagnosis of COVID-19. |
-| `pct_ed_visits_influenza` | Influenza | Percentage | Percentage of ED visits with a discharge diagnosis of Influenza. |
-| `smoothed_pct_ed_visits_influenza` | Influenza | Percentage (3-week average) | 3-week trailing smoothed percentage of ED visits with a discharge diagnosis of Influenza. |
-| `pct_ed_visits_rsv` | RSV | Percentage | Percentage of ED visits with a discharge diagnosis of RSV. |
-| `smoothed_pct_ed_visits_rsv` | RSV | Percentage (3-week average) | 3-week trailing smoothed percentage of ED visits with a discharge diagnosis of RSV. |
-| `pct_ed_visits_combined` | Combined | Percentage | Percentage of ED visits with a discharge diagnosis of COVID-19, Influenza, or RSV. |
-| `smoothed_pct_ed_visits_combined` | Combined | Percentage (3-week average) | 3-week trailing smoothed percentage of ED visits with a discharge diagnosis of COVID-19, Influenza, or RSV. |
-| `pct_ed_visits_ari` | ARI | Percentage | Percentage of ED visits with a discharge diagnosis of acute respiratory illness. |
+| `pct_ed_visits_covid` | COVID-19 | Percentage | Share of ED visits with a discharge diagnosis of COVID-19. |
+| `pct_ed_visits_influenza` | Influenza | Percentage | Share of ED visits with a discharge diagnosis of influenza. |
+| `pct_ed_visits_rsv` | RSV | Percentage | Share of ED visits with a discharge diagnosis of RSV. |
+| `pct_ed_visits_combined` | Combined | Percentage | Share of ED visits with a discharge diagnosis of COVID-19, influenza, or RSV. |
+| `pct_ed_visits_ari` | ARI | Percentage | Share of ED visits with a discharge diagnosis of acute respiratory illness. |
+| `smoothed_pct_ed_visits_covid` | COVID-19 | Percentage, 3-week mean | Trailing 3-week mean of `pct_ed_visits_covid`. |
+| `smoothed_pct_ed_visits_influenza` | Influenza | Percentage, 3-week mean | Trailing 3-week mean of `pct_ed_visits_influenza`. |
+| `smoothed_pct_ed_visits_rsv` | RSV | Percentage, 3-week mean | Trailing 3-week mean of `pct_ed_visits_rsv`. |
+| `smoothed_pct_ed_visits_combined` | Combined | Percentage, 3-week mean | Trailing 3-week mean of `pct_ed_visits_combined`. |
 
 ---
 
@@ -54,23 +57,43 @@ The National Syndromic Surveillance Program (NSSP) monitors emergency department
 
 ### Geographic Aggregation
 
-Source files natively contain values for the nation (`nation`), counties (`county`), and Health Service Areas (`hsa_nci`). Delphi extracts these levels directly.
+The CDC reports values natively for the nation (`nation`), counties (`county`), and NCI-modified Health Service Areas (`hsa_nci`), which Delphi reads directly. State values come from a separate CDC reporting path and are served as published, so a state value is not the mean of its counties.
 
-For other geographic levels, Delphi aggregates values using population weights:
-- State (`state`), HHS regions (`hhs`), census regions (`census_region`), and census divisions (`census_division`) are aggregated from state records.
-- Hospital Referral Regions (`hrr`) and Metropolitan Statistical Areas (`msa`) are aggregated from county records.
+Delphi derives the remaining levels as a population-weighted mean of the native values. State, HHS, census region, and census division are built from state records. HRR and MSA are built from county records. For a target geography $$g$$ made of sub-units $$c$$ with 2020 census population $$w_c$$ and reported percentage $$p_c$$,
 
-Because NSSP metrics are percentages, aggregating areas with missing subunits requires imputation strategies:
-- Zero-fill (`zero`): Missing subunits are treated as zero during aggregation.
-- Average-fill (`ave`): Aggregation is weighted only across reporting subunits.
+$$
+\hat{p}_g = \frac{\sum_{c \in g} w_c\, p_c}{\sum_{c \in g} w_c}.
+$$
+
+Because the source gives percentages rather than counts, a sub-unit that did not report has to be handled explicitly, and the choice is exposed as `fill_method`. With `fill_zero`, a missing sub-unit contributes $$p_c = 0$$ but still counts in the denominator. With `fill_ave`, a missing sub-unit is dropped from both sums, so $$\hat{p}_g$$ is the weighted mean over reporting sub-units only. Native values carry `fill_method = source`.
+
+This weighting assumes ED visits scale with resident population, which need not hold. Denser areas tend to have more and larger EDs and easier access, so per-capita visit rates can differ between urban and rural counties.
 
 ### Temporal Handling
 
-All weekly metrics align to the Saturday week-ending date (`time_value`).
+Each value covers one epiweek, labelled by its Saturday week-ending date.
 
 ### Smoothing
 
-Smoothed signals are computed and published directly by the CDC using a 3-week trailing moving average.
+The `smoothed_` signals are a trailing 3-week mean, computed and published by the CDC and passed through unchanged. Each smoothed value therefore averages 3 weekly points, not 21 daily points.
+
+### Uncertainty
+
+This source publishes no standard errors, sample sizes, or confidence intervals.
+
+---
+
+## Relationship to V4
+
+The V4 `nssp` source used the same CDC dataset and the same signal definitions, so the values are directly comparable. What changed in V5:
+
+Geographies. V4 served nation, HHS regions, and state. V5 adds county, `hsa_nci`, HRR, MSA, census region, and census division.
+
+Imputation is now a choice. V4 baked a single treatment of missing sub-units into each published value. V5 computes both and lets the caller pick with `fill_method` (`source`, `fill_zero`, `fill_ave`).
+
+Signals. V5 adds `pct_ed_visits_ari`. The COVID-19, influenza, RSV, and combined pairs are unchanged.
+
+Revisions. V5 exposes the full revision history through `/archive/` and point-in-time reads through `/snapshot/`.
 
 ---
 
@@ -81,59 +104,40 @@ Smoothed signals are computed and published directly by the CDC using a 3-week t
 | Column | Key Type | Description |
 | :--- | :--- | :--- |
 | `signal` | Primary Key | Signal identifier. |
-| `geo_type` | Primary Key | Geographic granularity level (`nation`, `state`, `hhs`, `census_division`, `census_region`, `hrr`, `msa`, `county`, `hsa_nci`). |
-| `geo_value` | Primary Key | Geographic entity code (e.g. `ca` for California, `06001` for Alameda County). |
-| `fill_method` | Primary Key (Extra Key) | Imputation method used during aggregation (`source`, `zero`, `ave`). |
+| `geo_type` | Primary Key | Geographic level. |
+| `geo_value` | Primary Key | Geographic code (e.g. `tx` for Texas, `06001` for Alameda County). |
+| `fill_method` | Primary Key | Aggregation treatment of missing sub-units (`source`, `fill_zero`, `fill_ave`). |
 | `time_value` | Primary Key | Saturday week-ending date (`YYYY-MM-DD`). |
-| `value` | Value Column | Percentage of ED visits (0–100). |
+| `value` | Value Column | Percentage of ED visits, 0 to 100. |
 
-### Extra Keys
+### Fill methods
 
-#### Imputation Methods (`fill_method`)
-
-| Value | Description |
+| Value | Meaning |
 | :--- | :--- |
-| `source` | Native reported data for nation, county, and HSA, plus direct state pass-through. |
-| `zero` | Geographic aggregations where missing subunits are treated as zero. |
-| `ave` | Geographic aggregations weighted only across subunits that reported data. |
+| `source` | Native CDC value for nation, county, and HSA, and the state pass-through. |
+| `fill_zero` | Derived geography with missing sub-units counted as zero. |
+| `fill_ave` | Derived geography averaged over reporting sub-units only. |
 
 ### Example Query
 
-```text
-signal=pct_ed_visits_covid&geo_type=state&geo_values=tx&extra_keys=fill_method:source&time_values=2024-01-06
+```url
+https://delphi.cmu.edu/epidata/v5/snapshot/?source=nssp&signal=pct_ed_visits_covid&geo_type=state&fill_method=fill_ave
 ```
 
 ---
 
 ## Missingness & Privacy
 
-The CDC suppresses values for facilities or counties with low patient volumes. Suppressed source values are treated as missing during ingestion and handled according to the selected `fill_method` in geographic aggregations.
+The CDC suppresses values for facilities and counties with low visit volumes. Suppressed values are read as missing and then handled by the selected `fill_method` during aggregation. Wyoming reports a literal zero that the CDC uses as a missing marker, so those points are converted to missing during ingestion. County coverage is uneven and weaker in rural and low-population areas, and several states report no county-level data at all.
 
 ---
 
 ## Limitations
 
-Emergency department participation varies by state and healthcare facility network. Discharge diagnoses reflect clinical coding upon patient discharge and are not verified by centralized laboratory testing.
+Percentages are computed over visits at facilities that report to NSSP, not all EDs in an area, and coverage has grown over time. Discharge diagnoses reflect clinical coding at discharge and are not confirmed by laboratory testing. Not every ED patient is tested for these conditions, so percentages can be biased downward. Low-volume counties occasionally report extreme values such as 50 or 100 percent by chance.
 
 ---
 
 ## Lag & Backfill
 
-Weekly files are released with a lag of approximately one week. As facilities submit late encounter records, CDC revises historical weeks in subsequent snapshots.
-
----
-
-## Source & Licensing
-
-Data is published by the Centers for Disease Control and Prevention (CDC) National Syndromic Surveillance Program and is available in the public domain.
-
----
-
-## Changelog
-
-<details markdown="1">
-<summary>Click to expand</summary>
-
-- **2024-11-01**. Initial release on Delphi V5 API.
-
-</details>
+The weekly file is released on Friday mornings and adds the prior week. Historical weeks revise as facilities join the reporting network and their back data is added, which moves every geography that facility belongs to. Broader geographies revise more often for this reason, and revisions reaching back about two years have been seen.
