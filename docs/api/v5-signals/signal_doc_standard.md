@@ -31,11 +31,12 @@ Every V5 source page follows the same order so pages stay predictable:
 4. Overview
 5. Indicators (Signals)
 6. Estimation
-   ├── Geographic Aggregation   (when the source is aggregated or crosswalked; discuss fill_method here)
-   ├── Temporal Handling        (only when it does more than name the week-ending day)
-   ├── Smoothing                (when a rolling window is applied)
    ├── Metric Definition        (the formula that turns raw data into the signal)
-   └── Uncertainty              (confidence intervals, or an explicit "none")
+   ├── Smoothing                (when a rolling window is applied)
+   ├── Uncertainty              (optional; when confidence intervals or standard errors are reported)
+   ├── Temporal Handling        (reference time basis, week alignment, or date-filtering rules)
+   ├── Geographic Units         (optional; when the source uses custom units such as facility catchments or sampling sites)
+   └── Geographic Aggregation   (when the source is aggregated or crosswalked; discuss fill_method here)
 7. Relationship to V4 or V3    (use V4 for endpoints from V4, V3 for all other legacy endpoints; omit for new sources)
 8. Schema
    ├── Columns
@@ -47,9 +48,10 @@ Every V5 source page follows the same order so pages stay predictable:
 10. Limitations
 11. Lag & Backfill
 12. Changelog                   (optional; only include if there are necessary changes to flag)
+13. Source and Licensing
 ```
 
-Keep a section only when it has something to say. A one-line "aligns to Saturday" belongs in the summary table, not in its own subheading. Do not add a Changelog with a placeholder "initial release" entry, and do not add a standalone "Source & Licensing" section; the license lives in the summary table, and a citation line goes in the Overview only when the license requires attribution.
+Keep a section only when it has something to say. Do not add a Changelog with a placeholder "initial release" entry.
 
 ---
 
@@ -122,15 +124,17 @@ A markdown table listing each indicator (signal) with its pathogen or disease, m
 
 Describe how raw data becomes each signal.
 
-`### Geographic Aggregation` covers crosswalking, catchment disaggregation, and population weighting, including which levels are native and which are derived. Discuss `fill_method` here when the source computes more than one aggregation or missingness path (`source`, `fill_zero`, `fill_ave`).
-
-`### Temporal Handling` is only needed when the source drops days, shifts reference dates, or uses season-to-date accumulation. Skip it if the only fact is the week-ending day.
+`### Metric Definition` gives the formula. State it in words and in KaTeX, using `$$` on its own lines for display math and `$$...$$` inline. Define every symbol, name the estimator (for example a windowed positivity ratio or a population-weighted mean), and cite the standard form it follows.
 
 `### Smoothing` explains any rolling window and who computes it (Delphi or the upstream provider).
 
-`### Metric Definition` gives the formula. State it in words and in KaTeX, using `$$` on its own lines for display math and `$$...$$` inline. Define every symbol, name the estimator (for example a windowed positivity ratio or a population-weighted mean), and cite the standard form it follows.
+`### Uncertainty` is optional. Document confidence intervals or standard errors when available, or omit this section if the source publishes none.
 
-`### Uncertainty` documents confidence intervals or standard errors. If the source has none, say so in one line.
+`### Temporal Handling` documents the reference time basis (e.g. date of service vs. date of report), week-ending alignment, drop rules (e.g. dropping first-of-month batching artifacts), and holiday adjustments.
+
+`### Geographic Units` is optional. Use it when the source defines custom or source-specific geographic units (such as VA facility catchment areas or NWSS wastewater sampling sites and sewersheds). Describe what the unit represents, how sites or facilities are identified, and how their boundaries are defined. Omit this section when the source uses only standard administrative levels (nation, state, county, HHS regions).
+
+`### Geographic Aggregation` covers crosswalking, catchment disaggregation, and population weighting, including which levels are native and which are derived. Discuss `fill_method` here when the source computes more than one aggregation or missingness path (`source`, `fill_zero`, `fill_ave`).
 
 ### 7. Relationship to V4 or V3
 
@@ -168,7 +172,7 @@ Typical lag from event to first publication, and whether past values revise or s
 
 ### 12. Changelog
 
-Optional. Include only when there is a real methodology change or a meaningful ingestion-start date to record. Place it at the bottom in a collapsible block.
+Optional. Include only when there is a real methodology change or a meaningful ingestion-start date to record. Place it in a collapsible block.
 
 ```markdown
 ## Changelog
@@ -180,6 +184,10 @@ Optional. Include only when there is a real methodology change or a meaningful i
 
 </details>
 ```
+
+### 13. Source and Licensing
+
+Upstream provider details, dataset origin, licensing terms, and any attribution or citation requirements required by the data contributor.
 
 ---
 
@@ -237,10 +245,6 @@ What the source measures, who collects it, and how it is used.
 
 ## Estimation
 
-### Geographic Aggregation
-
-Which levels are native and which are derived, the weighting used, and `fill_method` choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
-
 ### Metric Definition
 
 For location $$i$$ and time $$t$$, with numerator count $$Y_{it}$$ and denominator $$N_{it}$$,
@@ -249,9 +253,25 @@ $$
 \hat{p}_{it} = 100 \cdot \frac{Y_{it}}{N_{it}}.
 $$
 
+### Smoothing
+
+Rolling window explanation and who computes it (Delphi or upstream provider). Omit if unwindowed.
+
 ### Uncertainty
 
-Confidence interval formula, or "This source publishes no standard errors, sample sizes, or confidence intervals."
+Confidence interval formula. Omit this section if the source publishes no standard errors, sample sizes, or confidence intervals.
+
+### Temporal Handling
+
+Reference time basis, week-ending alignment, date shifts, or accumulation rules.
+
+### Geographic Units
+
+Optional. Describe source-specific geographic units (such as facility catchment areas or sampling sites) and how they are defined. Omit if the source uses only standard geographic levels.
+
+### Geographic Aggregation
+
+Which levels are native and which are derived, the weighting used, and `fill_method` choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
 
 ---
 
@@ -304,4 +324,10 @@ Sampling limits, representativeness, and reporting delays.
 ## Lag & Backfill
 
 Reporting latency and whether historical values revise.
+
+---
+
+## Source and Licensing
+
+Data provenance, licensing terms, and any required citations or terms of use.
 ````

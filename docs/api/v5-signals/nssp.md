@@ -55,6 +55,18 @@ The National Syndromic Surveillance Program tracks the share of emergency depart
 
 ## Estimation
 
+### Metric Definition
+
+Each raw signal represents the percentage of total emergency department (ED) visits diagnosed with the specified condition.
+
+### Smoothing
+
+The `smoothed_` signals are a trailing 3-week mean computed by the CDC and passed through unchanged.
+
+### Temporal Handling
+
+Each value covers one epiweek, labelled by its Saturday week-ending date.
+
 ### Geographic Aggregation
 
 The CDC reports values natively for the nation (`nation`), counties (`county`), and NCI-modified Health Service Areas (`hsa_nci`), which Delphi reads directly. State values come from a separate CDC reporting path and are served as published.
@@ -69,14 +81,6 @@ Because values are percentages rather than counts, missing sub-units are handled
 - `fill_zero`: missing sub-units contribute $$p_c = 0$$ while retaining their population weight in the denominator.
 - `fill_ave`: missing sub-units are excluded from both numerator and denominator.
 - `source`: native reported values.
-
-### Temporal Handling
-
-Each value covers one epiweek, labelled by its Saturday week-ending date.
-
-### Smoothing
-
-The `smoothed_` signals are a trailing 3-week mean computed by the CDC and passed through unchanged.
 
 ---
 
@@ -140,3 +144,9 @@ Percentages reflect visits at facilities reporting to NSSP rather than all facil
 ## Lag & Backfill
 
 The weekly file publishes Friday mornings for the preceding epiweek. Historical weeks revise as facilities join the network and submit backlogged data, which can affect series for up to two years.
+
+---
+
+## Source and Licensing
+
+This dataset originates from the CDC [National Syndromic Surveillance Program (NSSP)](https://www.cdc.gov/nssp/php/about/index.html) and is published under [Public Domain U.S. Government](https://www.usa.gov/government-works) terms.

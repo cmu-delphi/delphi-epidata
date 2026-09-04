@@ -49,18 +49,6 @@ This source measures the share of outpatient office visits and clinical encounte
 
 ## Estimation
 
-### Geographic Aggregation
-
-Claims arrive at two native geographic levels: county (`county`) and Hospital Referral Region (`hrr`). HRR values are served as reported. All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are aggregated from county counts using a 2020 US Census population-weighted crosswalk. Aggregation is performed on raw daily counts before computing 7-day sums.
-
-### Temporal Handling
-
-Dates refer to the clinical date of service. Claims dated to the first calendar day of any month are dropped, because submission batching inflates that day. Service dates before 2019-10-01, and service dates in the future, are also dropped.
-
-### Smoothing
-
-For each geography, a 7-day trailing sum is taken of every diagnosis count and the total claim count. The window must contain at least 5 of 7 days to produce a value.
-
 ### Metric Definition
 
 For location $$i$$ and service date $$t$$, let $$W_t = \{t-6, \dots, t\}$$ be the trailing 7-day window, $$N_{is}$$ total visit claims on day $$s$$, and $$Y_{is}^k$$ claims carrying diagnosis group $$k$$. The published percentage is
@@ -76,6 +64,18 @@ The diagnosis groups are ICD-filtered counts from the raw feed:
 - COVID-19 (`pct_claims_covid`): the COVID-like count. Before 2021-06-01 it also includes the unspecified lower-respiratory count, which tracked COVID-19 closely while specific codes were not yet in wide use. From 2021-06-01 on, only the COVID-like count is used.
 - Influenza (`pct_claims_flu`): the confirmed-influenza count.
 - Other ARI (`pct_ari_other`): the mixed and unspecified lower-respiratory counts combined, from 2022-08-01.
+
+### Smoothing
+
+For each geography, a 7-day trailing sum is taken of every diagnosis count and the total claim count. The window must contain at least 5 of 7 days to produce a value.
+
+### Temporal Handling
+
+Dates refer to the clinical date of service. Claims dated to the first calendar day of any month are dropped, because submission batching inflates that day. Service dates before 2019-10-01, and service dates in the future, are also dropped.
+
+### Geographic Aggregation
+
+Claims arrive at two native geographic levels: county (`county`) and Hospital Referral Region (`hrr`). HRR values are served as reported. All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are aggregated from county counts using a 2020 US Census population-weighted crosswalk. Aggregation is performed on raw daily counts before computing 7-day sums.
 
 ---
 
@@ -121,7 +121,7 @@ https://delphi.cmu.edu/epidata/v5/snapshot/?source=claims_outpatient&signal=clai
 
 Locations and dates with fewer than 100 total claims over the 7-day window are suppressed for privacy and omitted from publication.
 
-Unobserved dates or geographies without reporting claims produce no records
+Unobserved dates or geographies without reporting claims produce no records and are omitted.
 
 ---
 
@@ -134,3 +134,9 @@ Claims cover the insured patients of participating providers and do not represen
 ## Lag & Backfill
 
 Claims typically arrive 3 to 7 days after the date of service. Delphi runs daily updates across a rolling lookback window to incorporate late-arriving and revised claims.
+
+---
+
+## Source and Licensing
+
+De-identified medical billing claims contributed by Delphi health system partners. This dataset is made available under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

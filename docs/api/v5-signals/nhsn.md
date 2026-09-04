@@ -57,14 +57,6 @@ The National Healthcare Safety Network collects weekly respiratory admission and
 
 ## Estimation
 
-### Geographic Aggregation
-
-The source file carries values for states (`state`), the nation (`nation`), and HHS regions (`hhs`), which Delphi reads directly. Census divisions (`census_division`) and census regions (`census_region`) are a plain sum of the member state values.
-
-### Temporal Handling
-
-Each value covers one epiweek, labelled by its Saturday week-ending date.
-
 ### Metric Definition
 
 All signals are raw weekly counts from source fields without smoothing or rate conversions:
@@ -72,9 +64,13 @@ All signals are raw weekly counts from source fields without smoothing or rate c
 - `hosprep_confirmed_admissions_*`: hospital-reported admissions prior to jurisdiction review (`totalconf<pathogen>newadmhosprep`).
 - `inpatient_beds_*`: weekly average bed counts.
 
-### Uncertainty
+### Temporal Handling
 
-This source publishes no standard errors, sample sizes, or confidence intervals.
+Each value covers one epiweek, labelled by its Saturday week-ending date.
+
+### Geographic Aggregation
+
+The source file carries values for states (`state`), the nation (`nation`), and HHS regions (`hhs`), which Delphi reads directly. Census divisions (`census_division`) and census regions (`census_region`) are a plain sum of the member state values.
 
 ---
 
@@ -131,3 +127,9 @@ The network excludes psychiatric, rehabilitation, and religious non-medical faci
 ## Lag & Backfill
 
 Finalized weekly files publish 6 to 7 days after the reference week ends, and the preliminary file lands about 4 days after. The CDC continues to revise recent weeks, usually within two months, and revisions tend to be small and upward.
+
+---
+
+## Source and Licensing
+
+This dataset is published by the CDC via HealthData.gov under [Public Domain U.S. Government](https://www.usa.gov/government-works) terms.
