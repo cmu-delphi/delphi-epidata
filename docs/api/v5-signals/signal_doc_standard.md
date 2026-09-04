@@ -29,14 +29,14 @@ Every V5 source page follows the same order so pages stay predictable:
 2. Lineage callout            which V4 or V3 source this reproduces (omit for new sources)
 3. Table of contents
 4. Overview
-5. Indicators
+5. Indicators (Signals)
 6. Estimation
    ├── Geographic Aggregation   (when the source is aggregated or crosswalked; discuss fill_method here)
    ├── Temporal Handling        (only when it does more than name the week-ending day)
    ├── Smoothing                (when a rolling window is applied)
    ├── Metric Definition        (the formula that turns raw data into the signal)
    └── Uncertainty              (confidence intervals, or an explicit "none")
-7. Relationship to V4           (or V3; omit for sources with no predecessor)
+7. Relationship to V4 or V3    (use V4 for endpoints from V4, V3 for all other legacy endpoints; omit for new sources)
 8. Schema
    ├── Columns
    ├── Fill methods             (when the source has multiple paths; refer to Geographic Aggregation)
@@ -85,8 +85,16 @@ nav_order: <integer>
 When a source reproduces a legacy endpoint, add a `{: .note }` blockquote immediately after the summary table. This mirrors the "Heads up" callout on the V4 page. Omit this callout entirely for new sources with no predecessor.
 
 ```markdown
-> This source reproduces the legacy V4 COVIDcast [`<source>`](../covidcast-signals/<source>.md) source.
+> This source reproduces the legacy V4 [`<source>`](../covidcast-signals/<source>.md) source.
 > One sentence on what changed. See [Relationship to V4](#relationship-to-v4).
+{: .note }
+```
+
+Or for a source reproducing a V3 endpoint (all legacy endpoints other than V4):
+
+```markdown
+> This source reproduces the legacy V3 [`<source>`](../<source>.md) source.
+> One sentence on what changed. See [Relationship to V3](#relationship-to-v3).
 {: .note }
 ```
 
@@ -106,9 +114,9 @@ Include the standard Just the Docs Jekyll table of contents block:
 
 One or two paragraphs: what the source measures, who collects it, and the surveillance context. Add a single citation sentence here only if the license requires attribution.
 
-### 5. Indicators
+### 5. Indicators (Signals)
 
-A markdown table listing each indicator with its pathogen or disease, metric type (count, rate, percentage), and a short description. Group with subheadings when a source spans distinct metric families. For combinatoric naming schemes such as wastewater, give the prefix and suffix tables and the combination rule.
+A markdown table listing each indicator (signal) with its pathogen or disease, metric type (count, rate, percentage), and a short description. Group with subheadings when a source spans distinct metric families. For combinatoric naming schemes such as wastewater, give the prefix and suffix tables and the combination rule.
 
 ### 6. Estimation
 
@@ -124,9 +132,9 @@ Describe how raw data becomes each signal.
 
 `### Uncertainty` documents confidence intervals or standard errors. If the source has none, say so in one line.
 
-### 7. Relationship to V4 (or V3)
+### 7. Relationship to V4 or V3
 
-For a migrated source, a short section on how the V5 method differs from the V4 (or V3) one. Cover the estimator, the signal set, the geographies, and revision handling. Keep it to what changed; the query-level mechanics belong in the [V4 to V5 Migration Guide](../v5_migration.md). Omit this section entirely for sources with no predecessor.
+For a migrated source, name the section `## Relationship to V4` if the predecessor was in V4, or `## Relationship to V3` if it was in V3 (all legacy endpoints other than V4 belong to V3). Do not mention that V4 is the former COVIDcast. Cover the estimator, the indicator set, the geographies, and revision handling. Keep it to what changed; the query-level mechanics belong in the [V4 to V5 Migration Guide](../v5_migration.md). Omit this section entirely for sources with no predecessor.
 
 ### 8. Schema
 
@@ -202,7 +210,7 @@ nav_order: 10
 | **Extra Key Columns** | None |
 | **License** | [License](https://example.com/license) |
 
-> This source reproduces the legacy V4 COVIDcast [`source_id`](../covidcast-signals/source_id.md) source. One sentence on what changed. See [Relationship to V4](#relationship-to-v4).
+> This source reproduces the legacy V4 [`source_id`](../covidcast-signals/source_id.md) source. One sentence on what changed. See [Relationship to V4](#relationship-to-v4).
 {: .note }
 
 ## Table of contents
@@ -219,7 +227,7 @@ What the source measures, who collects it, and how it is used.
 
 ---
 
-## Indicators
+## Indicators (Signals)
 
 | Indicator Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- |
@@ -235,7 +243,7 @@ Which levels are native and which are derived, the weighting used, and `fill_met
 
 ### Metric Definition
 
-For a location $$i$$ and time $$t$$, with numerator count $$Y_{it}$$ and denominator $$N_{it}$$,
+For location $$i$$ and time $$t$$, with numerator count $$Y_{it}$$ and denominator $$N_{it}$$,
 
 $$
 \hat{p}_{it} = 100 \cdot \frac{Y_{it}}{N_{it}}.
@@ -247,9 +255,9 @@ Confidence interval formula, or "This source publishes no standard errors, sampl
 
 ---
 
-## Relationship to V4 (or V3)
+## Relationship to V4
 
-How the V5 method differs from the V4 (or V3) estimator, signal set, geographies, and revision handling. Omit this section for a source with no predecessor.
+How the V5 method differs from the V4 (or V3) estimator, indicator set, geographies, and revision handling. Name the section `## Relationship to V3` if reproducing a V3 endpoint. Omit this section entirely for a source with no predecessor.
 
 ---
 
@@ -260,10 +268,11 @@ How the V5 method differs from the V4 (or V3) estimator, signal set, geographies
 | Column | Key Type | Data Type | Description |
 | :--- | :--- | :--- | :--- |
 | `signal` | Primary Key | string | Signal identifier. |
+| `report_time` | Primary Key | date | Publication or release date (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level. |
 | `geo_value` | Primary Key | string | Geographic entity code. |
 | `fill_method` | Primary Key | string | Aggregation path. |
-| `time_value` | Primary Key | date | Reference date (`YYYY-MM-DD`). |
+| `reference_time` | Primary Key | date | Reference date (`YYYY-MM-DD`). |
 | `value` | Value Column | float | Measured count, percentage, or rate. |
 
 ### Fill methods
