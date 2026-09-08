@@ -5,7 +5,7 @@ grand_parent: Delphi V5 API
 nav_order: 1
 ---
 
-# NSSP Emergency Department Visits (V5)
+# NSSP Emergency Department Visits
 {: .no_toc}
 
 | Attribute | Details |

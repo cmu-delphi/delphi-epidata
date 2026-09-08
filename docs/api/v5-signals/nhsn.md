@@ -5,7 +5,7 @@ grand_parent: Delphi V5 API
 nav_order: 2
 ---
 
-# NHSN Respiratory Hospitalizations (V5)
+# NHSN Respiratory Hospitalizations
 {: .no_toc}
 
 | Attribute | Details |
@@ -13,7 +13,7 @@ nav_order: 2
 | **Source Name** | `nhsn` |
 | **Data Source** | [National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) via [HealthData.gov](https://healthdata.gov/) |
 | **Geographic Levels** | `state`, `hhs`, `census_division`, `census_region`, `nation` |
-| **Temporal Granularity** | Weekly, week ending Saturday |
+| **Temporal Granularity** | Week, ending Saturday |
 | **Reporting Cadence** | Weekly |
 | **Temporal Scope Start** | 2020-08-08 |
 | **Temporal Scope End** | Ongoing |
@@ -33,7 +33,7 @@ nav_order: 2
 
 ## Overview
 
-The National Healthcare Safety Network collects weekly respiratory admission and bed capacity metrics from acute care hospitals across the United States. Delphi ingests the weekly Hospital Respiratory Data release published by the CDC on HealthData.gov, covering COVID-19, influenza, and RSV admissions along with inpatient bed counts.
+The National Healthcare Safety Network (NHSN) collects weekly respiratory admission and bed capacity metrics from acute care hospitals across the United States. Delphi ingests the weekly Hospital Respiratory Data release published by the CDC on HealthData.gov, covering COVID-19, influenza, and RSV admissions along with inpatient bed counts.
 
 ---
 
