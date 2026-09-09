@@ -73,11 +73,11 @@ For each geography, a 7-day trailing sum is taken of every diagnosis count and t
 
 Dates refer to the clinical date of service. Claims dated to the first calendar day of any month are dropped, because submission batching inflates that day. Service dates before 2019-10-01, and service dates in the future, are also dropped.
 
-### Geographic Aggregation
+### Geographic Handling
 
 Claims arrive at two native geographic levels: county (`county`) and Hospital Referral Region (`hrr`). HRR values are served as reported.
 
-All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are aggregated from county counts using a 2020 US Census population-weighted crosswalk. Aggregation is performed on raw daily counts before computing 7-day sums.
+All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are aggregated from county counts using a 2020 US Census population-weighted crosswalk. Aggregation is performed on raw daily counts before computing 7-day sums. Counts are aggregated without imputation, so `fill_method` is always `source`.
 
 ---
 
@@ -97,25 +97,15 @@ Geographic coverage is broader. V4 served nation, state, county, HRR, and MSA. V
 
 ### Columns
 
-| Column | Key Type | Data Type | Description |
+| Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
 | :--- | :--- | :--- | :--- |
-| `signal` | Primary Key | string | Signal identifier. |
-| `report_time` | Primary Key | date | Publication or release date (`YYYY-MM-DD`). |
+| `signal` | Primary Key | string | The name of the requested indicator. |
+| `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level (`nation`, `state`, `hhs`, `census_division`, `census_region`, `msa`, `hrr`, `county`). |
-| `geo_value` | Primary Key | string | Geographic code (e.g. `pa` for Pennsylvania, `42003` for Allegheny County). |
-| `fill_method` | Primary Key | string | Aggregation path, always `source` for this source. |
-| `reference_time` | Primary Key | date | Date of service (`YYYY-MM-DD`). |
-| `value` | Value Column | float | Percentage of claims, 0 to 100. |
-
-### Fill methods
-
-This source uses a single aggregation path described under [Geographic Aggregation](#geographic-aggregation). The `fill_method` column is always `source`.
-
-### Example Query
-
-```url
-https://delphi.cmu.edu/epidata/v5/snapshot/?source=claims_inpatient&signal=claims_inpatient_adm_pct_claims_covid&geo_type=state
-```
+| `geo_value` | Primary Key | string | Unique code for the location (e.g., `pa` for Pennsylvania, `42003` for Allegheny County). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation, always `source` for this source. |
+| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`, date of service). |
+| `value` | Value Column | float | The recorded measurement. |
 
 ---
 

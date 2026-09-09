@@ -67,7 +67,7 @@ The `smoothed_` signals are a trailing 3-week mean computed by the CDC and passe
 
 Each value covers one epiweek, labelled by its Saturday week-ending date.
 
-### Geographic Aggregation
+### Geographic Handling
 
 The CDC reports values natively for the nation (`nation`), counties (`county`), and NCI-modified Health Service Areas (`hsa_nci`), which Delphi reads directly. State values come from a separate CDC reporting path and are served as published.
 
@@ -99,15 +99,15 @@ The V4 `nssp` source used the same CDC dataset and the same signal definitions, 
 
 ### Columns
 
-| Column | Key Type | Data Type | Description |
+| Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
 | :--- | :--- | :--- | :--- |
-| `signal` | Primary Key | string | Signal identifier. |
-| `report_time` | Primary Key | date | Publication or release date (`YYYY-MM-DD`). |
+| `signal` | Primary Key | string | The name of the requested indicator. |
+| `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level (`nation`, `state`, `hhs`, `census_division`, `census_region`, `hrr`, `msa`, `county`, `hsa_nci`). |
-| `geo_value` | Primary Key | string | Geographic code (e.g. `tx` for Texas, `06001` for Alameda County). |
-| `fill_method` | Primary Key | string | Aggregation path (`source`, `fill_zero`, `fill_ave`). |
-| `reference_time` | Primary Key | date | Saturday week-ending date (`YYYY-MM-DD`). |
-| `value` | Value Column | float | Percentage of ED visits, 0 to 100. |
+| `geo_value` | Primary Key | string | Unique code for the location (e.g., `tx` for Texas, `06001` for Alameda County). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_zero`, or `fill_ave`). |
+| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation, labeled by Saturday week-ending date (`YYYY-MM-DD`). |
+| `value` | Value Column | float | The recorded measurement. |
 
 ### Fill methods
 
@@ -117,12 +117,6 @@ The V4 `nssp` source used the same CDC dataset and the same signal definitions, 
 | `fill_zero` | Derived geography with missing sub-units counted as zero. |
 | `fill_ave` | Derived geography averaged over reporting sub-units only. |
 
-### Example Query
-
-```url
-https://delphi.cmu.edu/epidata/v5/snapshot/?source=nssp&signal=pct_ed_visits_covid&geo_type=state&fill_method=fill_ave
-```
-
 ---
 
 ## Missingness & Privacy
@@ -131,7 +125,7 @@ The CDC suppresses facility and county values with low visit volumes to protect 
 
 Unobserved values also occur from facility non-reporting, uneven rural participation, states that do not report county-level data, and literal zeros reported by Wyoming (converted to missing during ingestion).
 
-Missing sub-units during spatial roll-ups are handled according to the selected `fill_method`, as described under [Geographic Aggregation](#geographic-aggregation).
+Missing sub-units during spatial roll-ups are handled according to the selected `fill_method`, as described under [Geographic Handling](#geographic-handling).
 
 ---
 
