@@ -36,14 +36,13 @@ Every V5 source page follows the same order so pages stay predictable:
    ├── Uncertainty              (optional; when confidence intervals or standard errors are reported)
    ├── Temporal Handling        (reference time basis, week alignment, or date-filtering rules)
    ├── Geographic Units         (optional; when the source uses custom units such as facility catchments or sampling sites)
-   └── Geographic Aggregation   (when the source is aggregated or crosswalked; discuss fill_method here)
+   └── Geographic Aggregation   (or Geographic Handling; discuss native levels, roll-ups, and fill_method here)
 7. Relationship to V4 or V3    (use V4 for endpoints from V4, V3 for all other legacy endpoints; omit for new sources)
 8. Schema
    ├── Columns
-   ├── Fill methods             (when the source has multiple paths; refer to Geographic Aggregation)
+   ├── Fill methods             (only when multiple paths exist; omit if fill_method is always source)
    ├── Extra keys               (only for real extra dimensions such as age_group)
-   ├── Auxiliary tables         (when the source serves an /aux_data/ table)
-   └── Example query
+   └── Auxiliary tables         (when the source serves an /aux_data/ table)
 9. Missingness & Privacy
 10. Limitations
 11. Lag & Backfill
@@ -134,7 +133,7 @@ Describe how raw data becomes each signal.
 
 `### Geographic Units` is optional. Use it when the source defines custom or source-specific geographic units (such as VA facility catchment areas or NWSS wastewater sampling sites and sewersheds). Describe what the unit represents, how sites or facilities are identified, and how their boundaries are defined. Omit this section when the source uses only standard administrative levels (nation, state, county, HHS regions).
 
-`### Geographic Aggregation` covers crosswalking, catchment disaggregation, and population weighting, including which levels are native and which are derived. Discuss `fill_method` here when the source computes more than one aggregation or missingness path (`source`, `fill_zero`, `fill_ave`).
+`### Geographic Aggregation` (or `### Geographic Handling`) covers crosswalking, catchment disaggregation, and population weighting, including which levels are native and which are derived. Clarify `fill_method` here: state why `fill_method` is always `source` when no imputation is used, or detail the available choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
 
 ### 7. Relationship to V4 or V3
 
@@ -144,13 +143,11 @@ For a migrated source, name the section `## Relationship to V4` if the predecess
 
 `### Columns` lists each column, its key role, its data type (such as `string`, `date`, or `float`), and its meaning (a markdown table is preferred).
 
-`### Fill methods` is included when the source computes more than one aggregation path. Provide a brief reference pointing to [Geographic Aggregation](#geographic-aggregation) where the definitions and behavior are detailed.
+`### Fill methods` is included only when the source computes more than one aggregation path (e.g. `source`, `fill_zero`, `fill_ave`). Provide a brief reference pointing to [Geographic Aggregation](#geographic-aggregation) where definitions and behavior are detailed, or include a summary table. Omit this section entirely when `fill_method` is always `source`.
 
 `### Extra keys` is for genuine extra dimensions such as `age_group`. Give the valid values and how an unfiltered query behaves.
 
 `### Auxiliary tables` documents any companion table served through `/epidata/v5/aux_data/`.
-
-`### Example query` gives one realistic V5 request URL. Use the `/snapshot/` or `/archive/` form with `source`, `signal`, and `geo_type`; V5 does not take `geo_value` or `time_values`.
 
 ### 9. Missingness & Privacy
 
@@ -271,7 +268,7 @@ Optional. Describe source-specific geographic units (such as facility catchment 
 
 ### Geographic Aggregation
 
-Which levels are native and which are derived, the weighting used, and `fill_method` choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
+Which levels are native and which are derived, the weighting used, and how `fill_method` applies. State why `fill_method` is always `source` when no imputation is performed, or explain the choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
 
 ---
 
@@ -285,25 +282,19 @@ How the V5 method differs from the V4 (or V3) estimator, indicator set, geograph
 
 ### Columns
 
-| Column | Key Type | Data Type | Description |
+| Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
 | :--- | :--- | :--- | :--- |
-| `signal` | Primary Key | string | Signal identifier. |
-| `report_time` | Primary Key | date | Publication or release date (`YYYY-MM-DD`). |
-| `geo_type` | Primary Key | string | Geographic level. |
-| `geo_value` | Primary Key | string | Geographic entity code. |
-| `fill_method` | Primary Key | string | Aggregation path. |
-| `reference_time` | Primary Key | date | Reference date (`YYYY-MM-DD`). |
-| `value` | Value Column | float | Measured count, percentage, or rate. |
+| `signal` | Primary Key | string | The name of the requested indicator. |
+| `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
+| `geo_type` | Primary Key | string | Geographic level (e.g., `county`, `state`). |
+| `geo_value` | Primary Key | string | Unique code for the location (e.g., FIPS, state abbreviation). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
+| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`). |
+| `value` | Value Column | float | The recorded measurement (e.g., count, percentage, rate, or statistical estimate). |
 
 ### Fill methods
 
-See [Geographic Aggregation](#geographic-aggregation) for details on `source`, `fill_zero`, and `fill_ave`.
-
-### Example Query
-
-```url
-https://delphi.cmu.edu/epidata/v5/snapshot/?source=source_id&signal=signal_name&geo_type=state
-```
+Optional. Include only when the source supports multiple aggregation paths (`source`, `fill_zero`, `fill_ave`). See [Geographic Aggregation](#geographic-aggregation) for details. Omit this section if `fill_method` is always `source`.
 
 ---
 

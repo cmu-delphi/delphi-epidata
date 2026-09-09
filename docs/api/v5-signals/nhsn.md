@@ -44,14 +44,13 @@ The National Healthcare Safety Network (NHSN) collects weekly respiratory admiss
 | `confirmed_admissions_covid_ew` | COVID-19 | Count | Weekly confirmed COVID-19 hospital admissions, as reviewed by the jurisdiction. |
 | `confirmed_admissions_flu_ew` | Influenza | Count | Weekly confirmed influenza hospital admissions, as reviewed by the jurisdiction. |
 | `confirmed_admissions_rsv_ew` | RSV | Count | Weekly confirmed RSV hospital admissions, as reviewed by the jurisdiction. |
-| `hosprep_confirmed_admissions_covid_ew` | COVID-19 | Count | Weekly confirmed COVID-19 hospital admissions, as reported directly by hospitals ahead of jurisdiction review. |
-| `hosprep_confirmed_admissions_flu_ew` | Influenza | Count | Weekly confirmed influenza hospital admissions, as reported directly by hospitals ahead of jurisdiction review. |
-| `hosprep_confirmed_admissions_rsv_ew` | RSV | Count | Weekly confirmed RSV hospital admissions, as reported directly by hospitals ahead of jurisdiction review. |
+| `hosprep_confirmed_admissions_covid_ew` | COVID-19 | Count | Weekly number of hospitals reporting confirmed COVID-19 hospital admissions. |
+| `hosprep_confirmed_admissions_flu_ew` | Influenza | Count | Weekly number of hospitals reporting confirmed influenza hospital admissions. |
+| `hosprep_confirmed_admissions_rsv_ew` | RSV | Count | Weekly number of hospitals reporting confirmed RSV hospital admissions. |
 | `inpatient_beds_ew` | — | Count | Weekly average number of inpatient beds. |
 | `inpatient_beds_occupied_pct_ew` | — | Count | Weekly average number of occupied inpatient beds. |
 
 <!-- TODO: inpatient_beds_occupied_pct_ew maps the NHSN numInptBedsOcc count field, not a percentage. Confirm the _pct_ element in the signal name is intended. -->
-<!-- TODO: confirm hosprep_ semantics against the NHSN HRD data dictionary (totalconf<pathogen>newadmhosprep). -->
 
 ---
 
@@ -59,28 +58,32 @@ The National Healthcare Safety Network (NHSN) collects weekly respiratory admiss
 
 ### Metric Definition
 
-All signals are raw weekly counts from source fields without smoothing or rate conversions:
-- `confirmed_admissions_*`: jurisdiction-reviewed weekly admissions (`totalconf<pathogen>newadm`).
-- `hosprep_confirmed_admissions_*`: hospital-reported admissions prior to jurisdiction review (`totalconf<pathogen>newadmhosprep`).
-- `inpatient_beds_*`: weekly average bed counts.
+All signals are raw weekly counts from source fields. These correspond to column names in the original upstream CDC NHSN Hospital Respiratory Data release (see the [data dictionary](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data)):
+- `confirmed_admissions_*`: weekly count of new patient hospital admissions with confirmed infection (columns `totalconf_<disease>_newadm`).
+- `hosprep_confirmed_admissions_*`: weekly count of hospitals reporting confirmed admissions (columns `totalconf_<disease>_newadmhosprep`).
+- `inpatient_beds_*`: weekly average bed counts (columns `numinptbeds` and `numinptbedsocc`).
 
 ### Temporal Handling
 
-Each value covers one epiweek, labelled by its Saturday week-ending date.
+Each value covers a 7-day week (Sunday through Saturday), labelled by its Saturday week-ending date.
 
-### Geographic Aggregation
+The CDC publishes a preliminary weekly file about 4 days after the reference week ends, followed by a finalized file 2 to 3 days later. Both releases share the same signal names and are distinguished by publication date (`report_time`). Default snapshot queries return the latest finalized values, while earlier preliminary releases remain accessible by specifying a past `snapshot_date` or through the `/archive/` endpoint.
 
-The source file carries values for states (`state`), the nation (`nation`), and HHS regions (`hhs`), which Delphi reads directly. Census divisions (`census_division`) and census regions (`census_region`) are a plain sum of the member state values.
+### Geographic Handling
+
+The source file carries values for states (`state`), HHS regions (`hhs`), and the nation (`nation`), which Delphi reads directly. Census divisions (`census_division`) and census regions (`census_region`) are a plain sum of the member state values based on the [U.S. Census Bureau regions and divisions](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf).
+
+Values are ingested directly or summed without imputation, so `fill_method` is always `source`.
 
 ---
 
 ## Relationship to V4
 
-The V4 `nhsn` source published the same admission counts for nation, HHS regions, and state. What changed in V5:
+The V4 `nhsn` source published the same admission counts for state, HHS regions, and nation. What changed in V5:
 
-- V5 adds census divisions and census regions, summed from state values.
-- The CDC publishes a preliminary weekly file a few days ahead of the finalized file. V4 exposed the preliminary file as separate `_prelim` signals. V5 writes both files to the same signal names, so the preliminary numbers appear as an earlier release and the finalized numbers supersede them on the next update. Read a past `snapshot_date`, or the `/archive/` endpoint, to recover the preliminary values.
-- V5 adds `inpatient_beds_ew` and `inpatient_beds_occupied_pct_ew`, which V4 `nhsn` did not carry.
+- Expanded Geographies. V5 adds census divisions and census regions, summed from state values.
+- Preliminary Data. The CDC publishes a preliminary weekly file a few days ahead of the finalized file. V4 presented the preliminary file as separate `_prelim` signals. V5 writes both files to the same signal names, so the preliminary numbers appear as an earlier release and the finalized numbers supersede them on the next update. Read a past `snapshot_date`, or the `/archive/` endpoint, to recover the preliminary values.
+- New Signals. V5 adds `inpatient_beds_ew` and `inpatient_beds_occupied_pct_ew`, which V4 `nhsn` did not carry.
 
 ---
 
@@ -88,25 +91,16 @@ The V4 `nhsn` source published the same admission counts for nation, HHS regions
 
 ### Columns
 
-| Column | Key Type | Data Type | Description |
+| Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
 | :--- | :--- | :--- | :--- |
-| `signal` | Primary Key | string | Signal identifier. |
-| `report_time` | Primary Key | date | Publication or release date (`YYYY-MM-DD`). |
+| `signal` | Primary Key | string | The name of the requested indicator. |
+| `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level (`state`, `hhs`, `census_division`, `census_region`, `nation`). |
-| `geo_value` | Primary Key | string | Geographic code (e.g. `ca` for California, `us` for national). |
-| `fill_method` | Primary Key | string | Aggregation path, always `source` for this source. |
-| `reference_time` | Primary Key | date | Saturday week-ending date (`YYYY-MM-DD`). |
-| `value` | Value Column | float | Count or bed capacity estimate. |
+| `geo_value` | Primary Key | string | Unique code for the location (e.g., `ca` for California, `us` for national). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation, always `source` for this source. |
+| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation, labeled by Saturday week-ending date (`YYYY-MM-DD`). |
+| `value` | Value Column | float | The recorded measurement (hospital admissions, reporting hospital counts, or average bed counts). |
 
-### Fill methods
-
-Values are ingested directly from reported state and national records, or summed across states without alternative imputation paths. As described under [Geographic Aggregation](#geographic-aggregation), `fill_method` is always `source`.
-
-### Example Query
-
-```url
-https://delphi.cmu.edu/epidata/v5/snapshot/?source=nhsn&signal=confirmed_admissions_covid_ew&geo_type=state
-```
 
 ---
 
@@ -114,19 +108,19 @@ https://delphi.cmu.edu/epidata/v5/snapshot/?source=nhsn&signal=confirmed_admissi
 
 The source applies no cell suppression or volume masking. All reported counts are published directly.
 
-Unobserved values reflect facility non-reporting rather than privacy suppression. Missing hospital reports are not imputed. In census roll-ups, missing states are omitted from the sum rather than blocking the aggregate.
+Unobserved values reflect facility non-reporting. Missing hospital reports are not imputed. In census roll-ups, missing states are omitted from the sum.
 
 ---
 
 ## Limitations
 
-The network excludes psychiatric, rehabilitation, and religious non-medical facilities. Reporting rules and platforms have changed over time, most notably the 2023 move from HHS Protect to NHSN, so long series cross more than one collection regime. Values before December 2020 predate the current data quality review and may be anomalous.
+The network excludes psychiatric, rehabilitation, and religious non-medical facilities. Reporting rules and platforms have changed over time, most notably the 2023 move from HHS Protect to NHSN, so long series cross more than one collection ownership. Values before December 2020 predate the current data quality review and may be anomalous.
 
 ---
 
 ## Lag & Backfill
 
-Finalized weekly files publish 6 to 7 days after the reference week ends, and the preliminary file lands about 4 days after. The CDC continues to revise recent weeks, usually within two months, and revisions tend to be small and upward.
+The preliminary file is published approximately four days after the reference week ends. The finalized weekly files publish 6 to 7 days after the reference week ends. The CDC continues to revise recent weeks, usually within two months, and revisions tend to be small and upward.
 
 ---
 
