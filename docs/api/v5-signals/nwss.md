@@ -12,12 +12,13 @@ nav_order: 4
 | :--- | :--- |
 | **Source Name** | `nwss` |
 | **Data Source** | [National Wastewater Surveillance System (NWSS)](https://www.cdc.gov/nwss/index.html) |
-| **Geographic Levels** | sewershed (see [Sampling Sites](#sampling-sites)) |
+| **Geographic Levels** | `sewershed` |
 | **Temporal Granularity** | Weekly |
 | **Reporting Cadence** | Weekly (typically updated on Fridays) |
-| **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-01-14 |
-| **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
+| **Temporal Scope End** | Ongoing |
+| **Extra Key Columns** | `nwss_source`, `sample_index` |
+| **License** | [U.S. Government Public Domain](https://www.usa.gov/government-works) |
 
 ## Table of contents
 {: .no_toc .text-delta}
@@ -25,52 +26,38 @@ nav_order: 4
 1. TOC
 {:toc}
 
-## Changelog
-
-<details markdown="1">
-<summary>Click to expand</summary>
-
-- **2026-02-25**. Data ingestion starts (earliest report date in the dataset).
-
-</details>
+---
 
 ## Overview
-{: .no_toc}
 
-The [National Wastewater Surveillance System (NWSS)](https://www.cdc.gov/nwss/index.html) is a CDC-led effort to track the presence of SARS-CoV-2, influenza, RSV, Mpox, and Measles in wastewater throughout the United States.
-The project was launched in September 2020 and is ongoing. Delphi ingests un-versioned wastewater concentration data from several public Socrata API datasets provided by the CDC.
+The [National Wastewater Surveillance System (NWSS)](https://www.cdc.gov/nwss/index.html) is a CDC-led effort to track the presence of SARS-CoV-2, influenza, RSV, Mpox, and Measles in wastewater throughout the United States. The project was launched in September 2020 and is ongoing. Delphi ingests un-versioned wastewater concentration data from several public Socrata API datasets provided by the CDC.
 
 In the Delphi API, wastewater data is served at the `sewershed` level (individual treatment plant or grab sample site level).
 
-## Sampling Sites
+---
 
-NWSS data is collected from wastewater monitoring sites within the sewer network. Each facility in the system is identified by a unique sewershed identifier, which represents the geographic area whose wastewater flows through that facility.
-
-The CDC coordinates data collection across a national network of public health laboratories and contracted testing providers. For more detail on how sampling sites are selected and how surveys are conducted, see the [CDC NWSS data sources documentation](https://www.cdc.gov/wastewater/about/index.html#cdc_survey_profile_how_surveys_are_conducted-data-sources).
-
-## Available Signals
+## Indicators (Signals)
 
 Wastewater signals are constructed by combining a pathogen prefix with a post-processing suffix in the format `<pathogen_prefix>_<suffix>`. For example, combining the prefix `covid` with the suffix `avg_conc_lin` constructs the signal `covid_avg_conc_lin`.
 
 ### Pathogen Prefixes
 
-| Prefix | Pathogen | Target PCR | Socrata endpoint |
-|---|---|---|---|
+| Prefix | Pathogen | Target PCR | Socrata Endpoint |
+| :--- | :--- | :--- | :--- |
 | `covid` | COVID-19 | `sars-cov-2` | [j9g8-acpt](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-SARS-CoV-2/j9g8-acpt/about_data) |
-| `flu` | Influenza | `fluav` | [ymmh-divb](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Influenza-A/ymmh-divb/about_data) |
+| `flu` | Influenza A | `fluav` | [ymmh-divb](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Influenza-A/ymmh-divb/about_data) |
 | `flu_h5` | Avian Influenza A (H5) | `fluav a h5` | [mtpu-urpp](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-H5-Influenza-A/mtpu-urpp/about_data) |
 | `rsv` | RSV | `rsv` | [45cq-cw4i](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i/about_data) |
 | `measles` | Measles | `mev_wt` | [akvg-8vrb](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Measles/akvg-8vrb/about_data) |
 | `mpox_all` | Mpox (All Clades) | `hmpxv` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
 | `mpox_clade_i` | Mpox Clade I | `hmpxv clade i` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
 | `mpox_clade_ii` | Mpox Clade II | `hmpxv clade ii` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
-| `mpox_nvo` | Mpox NVO | `nvo` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
+| `mpox_nvo` | Mpox Non-Variola Orthopoxvirus | `nvo` | [xpxn-rzgz](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz/about_data) |
 
-
-### Suffixes
+### Metric Suffixes
 
 | Suffix | Metric Type | Description |
-|---|---|---|
+| :--- | :--- | :--- |
 | `avg_conc` | Average Concentration | Concentration of the PCR target back-calculated to unconcentrated sample basis |
 | `avg_conc_lin` | Linearized Average Concentration | Concentration of the PCR target on a per sample amount basis where all values are on a linear (not log10) concentration basis |
 | `flowpop_lin` | Flow-Population | Flow-population normalized concentration (copies/person/day) |
@@ -78,96 +65,116 @@ Wastewater signals are constructed by combining a pathogen prefix with a post-pr
 
 For more details on the columns, see one of the socrata endpoints, e.g. [RSV](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i/about_data) which provides descriptions of all columns.
 
-## Schema Details
+---
 
-Wastewater data has unique properties, including multiple facilities, replicate samples, and laboratory PCR targets. To support this granularity, the V5 table schema includes:
+## Estimation
 
-| Column | Key Type | Description |
-|---|---|---|
-| `nwss_source` | Primary Key (Extra Key) | The data provider or laboratory network that analyzed/reported the sample (see [Providers](#providers)). |
-| `sample_index` | Primary Key (Extra Key) | An integer identifier mapped to the original sample's unique ID (`sample_id`). |
-| `pcr_target` | Primary Key (Extra Key) | The target pathogen or organism analyzed in the sample (e.g., `sars-cov-2`, `fluav`, `rsv`). Include to join onto the auxiliary metadata table. |
+### Metric Definition
 
+Wastewater signals report target pathogen concentrations measured across municipal sewersheds. Upstream data sources provide concentrations either as unnormalized post-processed values or normalized indicators.
 
-## Auxiliary Metadata Table
+#### Post-Processing Methods
 
-Since wastewater treatment facilities have sample-specific traits (such as populations served and lab methodologies) that can change with time, this metadata is served in a companion table via the `/aux_data/` endpoint at `https://delphi.cmu.edu/epidata/v5/aux_data/?source=nwss`.
-
-The table is keyed by `report_time`, `geo_value`, `time_value`, `nwss_source`, `sample_index`, and `pcr_target`.
-
-Its value columns report facility demographics (`state_territory`, `county_fips`, `counties_served`, `population_served`), sample specifics (`sample_type`, `sample_location`, `flow_rate`), laboratory methods (`concentration_method`, `extraction_method`, `major_lab_method`, `pcr_type`, `pcr_target_units`, `lod_sewage`), and pipeline metrics (`rec_eff_percent`, `pipeline_run_id`).
-
-
-## Signal features
-The signals vary across the underlying data provider, the normalization method, and the post-processing method.
-
-### Providers
-The NWSS acts as a coordinating body, receiving wastewater data through a number of providers. Data providers can change as the project has evolved.
-Most recently, in autumn 2023, the primary direct commercial provider for the NWSS changed from [Biobot](https://biobot.io/) to [Verily](https://publichealth.verily.com/). Measurement method and thus meaning varies by provider. Data from different providers varies widely in magnitude for the same nominal reporting units.
-The following table shows the history of data providers:
-
-| Provider | Available | Description |
-|-|-|-|
-| `CDC_Verily` | 2023/10/30-Today | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly. |
-| `State_Territory` | 2020/06/21-Today | Data reported by the respective state, territorial, and local public health agencies; the actual processing may be done by a private lab such as Verily or Biobot, or the agency itself, or a partnering university. |
-| `WastewaterSCAN` | 2021/12/26-Today | Data analyzed by [WastewaterSCAN](https://www.wastewaterscan.org/en), a Stanford/Emory nonprofit, and then shared with the NWSS. Use of this data outside of public health decision making requires contacting WastewaterSCAN. Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (https://data.wastewaterscan.org/about/#18).|
-| `CDC_Biobot` | 2020-2023 | Data analyzed by [Biobot](https://biobot.io/) and then shared with the NWSS. |
-
-### Normalization methods
-
-Direct viral concentration is not a robust indicator of the number and severity of cases in the sewershed.
-In wastewater systems that mix drainage and sewage, for example, the effluent will be significantly diluted whenever there is rain.
-In order to produce indicators that are more strongly related to pathogen levels, signals are corrected in a few different ways.
-The two approaches used in the NWSS datasets to normalize viral concentration are as follows:
-
-| Normalization method | Description | Signal Suffix |
-|---|---|---|
-| **Flow-population** | This is calculated as $$\frac{v\cdot r}{p}$$, where $$v$$ is measured viral concentration, $$r$$ is measured flow rate, and $$p$$ is population served. This normalization method is applied to concentrations $$v$$ measured from raw (unconcentrated) wastewater. The resulting value is in units of viral gene copies per person per day. It tracks the total number of individuals whose shedding behavior has changed. | `_flowpop_lin` |
-| **Microbial** | This divides a measurement by the concentration of one of several potential fecal biomarkers. These are molecular indicators of either viruses or bacteria commonly found throughout the population. The most common viral indicator comes from the pepper mild mottle virus (PMMoV), a virus that infects plants and is commonly found in pepper products. The most common bacterial indicators come from Bacteroides HF183 and Lachnospiraceae Lachno3, both common gut bacteria. This normalization method is applied to sludge samples, which have been concentrated in preparation for treatment. The resulting value is unitless, and tracks the proportion of individuals whose shedding behavior has changed. | `_mic_lin` |
-
-### Post-processing methods
-
-Regardless of normalization method, the daily wastewater data is noisy; to make the indicators more useful, the NWSS provides versions of the data that are post-processed in different ways:
+Unnormalized metrics report target pathogen concentrations back-calculated to the unconcentrated sample basis without adjustments for flow or population:
 
 | Method | Suffix | Description |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Average Concentration** | `avg_conc` | Concentration of the PCR target back-calculated to unconcentrated sample basis. Non-detections are typically reported as zero. |
-| **Linearized Average Concentration** | `avg_conc_lin` | Concentration of the PCR target on a per sample amount basis where all values are on a linear (not log10) concentration basis. |
+| **Linearized Average Concentration** | `avg_conc_lin` | Concentration of the PCR target on a per-sample amount basis where all values are on a linear (not log10) concentration basis. |
 
-## Estimation and Indicator Processing
+#### Normalization Methods
 
-### Aggregation
+Direct viral concentration is not a robust indicator of the number and severity of cases in the sewershed. In wastewater systems that mix drainage and sewage, for example, the effluent will be significantly diluted whenever there is rain. In order to produce indicators that are more strongly related to pathogen levels, signals are corrected using two normalization approaches:
 
-The `nwss` source serves sewershed-level directly as reported by the facilities and laboratories. This preserves the local resolution of the data without introducing smoothing or aggregation assumptions.
+| Method | Suffix | Formula | Description |
+| :--- | :--- | :---: | :--- |
+| **Flow-population** | `flowpop_lin` | $$\frac{v \cdot r}{p}$$ | Applied to concentrations $$v$$ from raw wastewater, where $$r$$ is 24-hour flow rate and $$p$$ is population served. Values report viral gene copies per person per day, tracking the total number of individuals shedding the pathogen. |
+| **Microbial** | `mic_lin` | $$\frac{v}{c_{\text{marker}}}$$ | Applied to concentrated sludge samples, dividing target concentration $$v$$ by fecal biomarker concentration $$c_{\text{marker}}$$ (such as PMMoV, *Bacteroides* HF183, or *Lachnospiraceae* Lachno3). Values are unitless ratios that track the proportion of individuals shedding the pathogen. |
 
+### Temporal Handling
 
-## Missingness
+Dates refer to the sample collection date (`reference_time`), rather than the laboratory result or CDC report publication date.
 
-If a sample site has too few individuals, the NWSS does not provide the detailed data, so we cannot include it in our aggregations.
+### Geographic Handling
 
-Also, data from sewersheds serving fewer than 3,000 people, as well as data from facility or institution specific sampling locations and tribal communities, are generally not available unless approved by the local jurisdiction.
+NWSS data is collected from wastewater monitoring sites within municipal sewer networks. Each facility or sampling location in the system is identified by a unique sewershed identifier code (`geo_value`), representing the geographic drainage area whose wastewater flows through that facility. For detail on site selection and surveillance methodology, see the [CDC NWSS data sources documentation](https://www.cdc.gov/wastewater/about/index.html#cdc_survey_profile_how_surveys_are_conducted-data-sources).
+
+Because NWSS data is served exclusively at the native `sewershed` level with no spatial aggregation or imputation performed, the `fill_method` column is always `source`.
+
+To map sewersheds to standard geographic regions, consult the [auxiliary metadata table](#auxiliary-tables) via the `/aux_data/` endpoint. Because sewersheds follow drainage basins rather than administrative borders, the auxiliary table provides intersecting location metadata—including the state (`state_territory`), primary county (`county_fips`), all intersected counties (`counties_served`), and the population served (`population_served`).
+
+---
+
+## Schema
+
+### Columns
+
+| Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
+| :--- | :--- | :--- | :--- |
+| `signal` | Primary Key | string | Signal identifier. |
+| `report_time` | Primary Key | date | Publication or release date (`YYYY-MM-DD`). |
+| `geo_type` | Primary Key | string | Geographic level (`sewershed`). |
+| `geo_value` | Primary Key | string | Sewershed identifier code. |
+| `fill_method` | Primary Key | string | Imputation method (`source`). |
+| `nwss_source` | Primary Key (Extra Key) | string | Laboratory or reporting network provider. |
+| `sample_index` | Primary Key (Extra Key) | string | Integer identifier mapped to the unique sample ID. |
+| `reference_time` | Primary Key | date | Sample collection date (`YYYY-MM-DD`). |
+| `pcr_target` | Value Column | string | Target pathogen or assay identifier. |
+| `value` | Value Column | float | Measured concentration or normalized value. |
+
+### Extra keys
+
+Wastewater records depend on sample collection and laboratory dimensions:
+- `nwss_source`: Identifies the testing network or data provider.
+- `sample_index`: Disambiguates multiple samples or replicates collected on the same date for a sewershed.
+
+Available data providers in `nwss_source` include:
+
+| Provider | Reporting Window | Description |
+| :--- | :--- | :--- |
+| `CDC_Verily` | 2023-10-30 to present | Data analyzed by [Verily](https://verily.com/solutions/public-health/wastewater) on behalf of the CDC directly. |
+| `State_Territory` | 2020-06-21 to present | Data reported by state, territorial, and local public health agencies. |
+| `WastewaterSCAN` | 2021-12-26 to present | Data analyzed by [WastewaterSCAN](https://www.wastewaterscan.org/en) and shared with the NWSS. |
+| `CDC_Biobot` | 2020 to 2023 | Data analyzed by [Biobot](https://biobot.io/) and shared with the NWSS. |
+
+An unfiltered query returns rows across all provider and sample dimensions. Queries can filter to specific values using the `extra_keys` parameter (for example, `extra_keys=nwss_source:CDC_Verily` or `extra_keys=sample_index:1`).
+
+### Auxiliary tables
+
+Since wastewater treatment facilities have sample-specific traits (such as populations served and lab methodologies) that can change with time, this metadata is served in a companion table via the `/aux_data/` endpoint at `https://delphi.cmu.edu/epidata/v5/aux_data/?source=nwss`. For query parameters, filtering, and examples, see the [auxiliary data documentation](../v5_api_queries.md#auxiliary-data-parameters).
+
+Records are identified by `report_time`, `geo_value`, `reference_time`, `nwss_source`, `sample_index`, and `pcr_target`.
+
+Its value columns report facility demographics (`state_territory`, `county_fips`, `counties_served`, `population_served`), sample specifics (`sample_type`, `sample_matrix`, `sample_location`, `flow_rate`), laboratory methods (`concentration_method`, `extraction_method`, `major_lab_method`, `pcr_type`, `pcr_target_units`, `lod_sewage`), and pipeline metrics (`rec_eff_percent`).
+
+---
+
+## Missingness & Privacy
+
+To protect privacy, the CDC does not report data for sewersheds serving fewer than 3,000 people. Data from facility-specific sampling locations, institution-specific sites, and tribal communities are also unavailable unless approved by the local jurisdiction.
+
+Testing laboratories report non-detections as zero or values below the limit of detection. Unobserved collection dates or non-reporting facilities appear as absent rows rather than null values.
+
+---
 
 ## Limitations
 
-The NWSS is still expanding to get coverage nationwide, so it is currently an uneven sample; the largest signals above cover ~42 million people as of March 2024. Around 80% of the US is served by municipal wastewater collection systems, or around 272 million. 
+The NWSS is still expanding to get coverage nationwide, so it is currently an uneven sample; the largest signals above cover ~42 million people as of March 2024. Around 80% of the US is served by municipal wastewater collection systems, or around 272 million.
 
-Standard errors and sample sizes are not applicable to these signals.
+Data providers and laboratory methods changed over time. For example, the CDC transitioned its primary contract from Biobot to Verily in late 2023. Measurements across different providers differ in baseline levels and cannot be directly compared without adjustment.
 
-<!-- TODO: cubic spline method may change over time -->
+---
 
-## Lag and Backfill
+## Lag & Backfill
 
-These signals are released weekly with ~4 days of latency
+These signals are released weekly, typically on Fridays, with approximately 4 to 7 days of latency. Historical data files are updated weekly as laboratories submit delayed samples or revised test results.
+
+---
 
 ## Source and Licensing
 
-This indicator collects data originating from the [NWSS](https://www.cdc.gov/nwss/index.html).
-The site-level data is provided un-versioned via the Socrata API across pathogen-specific datasets: [SARS-CoV-2](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-SARS-CoV-2/j9g8-acpt) (`j9g8-acpt`), [Influenza A](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Influenza-A/ymmh-divb) (`ymmh-divb`), [H5 Influenza A / Avian Flu](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-H5-Influenza-A/mtpu-urpp) (`mtpu-urpp`), [RSV](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i) (`45cq-cw4i`), [Mpox](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz) (`xpxn-rzgz`), and [Measles](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Measles/akvg-8vrb) (`akvg-8vrb`).
+This data source originates from the CDC [National Wastewater Surveillance System (NWSS)](https://www.cdc.gov/nwss/index.html). Site-level data is provided un-versioned via the CDC Socrata open data portal across pathogen-specific endpoints: [SARS-CoV-2](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-SARS-CoV-2/j9g8-acpt) (`j9g8-acpt`), [Influenza A](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Influenza-A/ymmh-divb) (`ymmh-divb`), [H5 Influenza A](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-H5-Influenza-A/mtpu-urpp) (`mtpu-urpp`), [RSV](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-RSV/45cq-cw4i) (`45cq-cw4i`), [Mpox](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Mpox/xpxn-rzgz) (`xpxn-rzgz`), and [Measles](https://data.cdc.gov/Public-Health-Surveillance/CDC-Wastewater-Data-for-Measles/akvg-8vrb) (`akvg-8vrb`).
 
+Wastewater data is collected from state, territorial, and local public health agencies, [Verily](https://verily.com/solutions/public-health/wastewater), and [WastewaterSCAN](https://www.wastewaterscan.org/en). Anyone seeking to use WastewaterSCAN data for research or non-public health purposes must contact the WastewaterSCAN team and follow their [citation policy](https://data.wastewaterscan.org/about/#18).
 
-The NWSS is collecting data from [Verily](https://verily.com/solutions/public-health/wastewater), State Territorial and Local public health agencies, and [Wastewater Scan](https://www.wastewaterscan.org/en).
-
-The WastewaterSCAN data were collected as part of the [WastewaterSCAN](https://www.wastewaterscan.org/en) / SCAN project, a partnership between Stanford University, Emory University, and Verily funded philanthropically through a gift to Stanford University, and then shared with the NWSS. Anyone seeking to use the database for other purposes or for research is required to contact the WastewaterSCAN / SCAN team (email: [wwscan_stanford_emory@lists.stanford.edu](mailto:wwscan_stanford_emory@lists.stanford.edu)) and any use of the data should be cited appropriately (as described [here](https://data.wastewaterscan.org/about/#18)).
-
-This data was originally published by the CDC, and is made available here as a convenience to the forecasting community under the terms of the original license, which is [U.S. Government Public Domain](https://www.usa.gov/government-works).
-
+This public dataset is published under [U.S. Government Public Domain](https://www.usa.gov/government-works) terms.
