@@ -99,7 +99,16 @@ All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_r
 
 ## Relationship to V4
 
-The V4 `doctor-visits` source used the same outpatient claims and published a single COVID-like illness (CLI) percentage, through `smoothed_cli` and its day-of-week-adjusted twin `smoothed_adj_cli`. What changed in V5:
+The V4 `doctor-visits` source used the same outpatient claims and published a single COVID-like illness (CLI) percentage, through `smoothed_cli` and its day-of-week-adjusted twin `smoothed_adj_cli`.
+
+| V4 Signal | V5 Signal | Notes |
+| :--- | :--- | :--- |
+| `smoothed_cli` | `claims_outpatient_ov_pct_claims_covid` | Replaced blended CLI estimator with 7-day trailing ratio for COVID-19 |
+| `smoothed_adj_cli` | *(not available)* | Day-of-week adjustment discontinued |
+| *(not available)* | `claims_outpatient_ov_pct_claims_flu` | New in V5 |
+| *(not available)* | `claims_outpatient_ov_pct_ari_other` | New in V5 |
+
+What changed in V5:
 
 - **Expanded Geographies.** V4 served state, county, HRR, and MSA. V5 adds nation, HHS regions, census divisions, and census regions.
 - **Broader Signal Set.** V5 publishes COVID-19, influenza, and other-ARI percentages separately rather than one blended CLI signal.

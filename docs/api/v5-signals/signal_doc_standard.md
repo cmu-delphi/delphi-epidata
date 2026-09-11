@@ -133,7 +133,11 @@ Describe how raw data becomes each signal.
 
 ### 7. Relationship to V4 or V3
 
-For a migrated source, name the section `## Relationship to V4` if the predecessor was in V4, or `## Relationship to V3` if it was in V3 (all legacy endpoints other than V4 belong to V3). Do not mention that V4 is the former COVIDcast. Cover the estimator, the indicator set, the geographies, and revision handling. Keep it to what changed; the query-level mechanics belong in the [V4 to V5 Migration Guide](../v5_migration.md). Omit this section entirely for sources with no predecessor.
+For a migrated source, name the section `## Relationship to V4` if the predecessor was in V4, or `## Relationship to V3` if it was in V3 (all legacy endpoints other than V4 belong to V3). Do not mention that V4 is the former COVIDcast.
+
+Include a 1-to-1 table mapping predecessor signals to V5 signals with columns `V4 Signal` (or `V3 Signal`), `V5 Signal`, and `Notes`. Document exact matches, discontinued signals, newly introduced signals, and signals consolidated into revision history.
+
+Follow the table with bullet points detailing what changed in V5 across the estimator, indicator set, geographies, and revision handling. Keep it to what changed; the query-level mechanics belong in the [V4 to V5 Migration Guide](../v5_migration.md). Omit this section entirely for sources with no predecessor.
 
 ### 8. Schema
 
@@ -264,7 +268,21 @@ Which levels are native and which are derived, any custom geographic units (such
 
 ## Relationship to V4
 
-How the V5 method differs from the V4 (or V3) estimator, indicator set, geographies, and revision handling. Name the section `## Relationship to V3` if reproducing a V3 endpoint. Omit this section entirely for a source with no predecessor.
+Overview of the migration from V4 (or V3). State whether overlapping signal names remain unchanged in the transition.
+
+| V4 Signal | V5 Signal | Notes |
+| :--- | :--- | :--- |
+| `legacy_signal` | `v5_signal` | Exact match, or description of change. |
+| *(not available)* | `new_v5_signal` | New in V5. |
+
+What changed in V5:
+
+- **Expanded Geographies.** Any new geographic levels added in V5.
+- **Signal Set.** Any new, renamed, or discontinued indicators.
+- **Estimator.** Changes to smoothing, weighting, or formula.
+- **Revision History.** Treatment of preliminary data or versioning.
+
+Name the section `## Relationship to V3` if reproducing a V3 endpoint. Omit this section entirely for a source with no predecessor.
 
 ---
 

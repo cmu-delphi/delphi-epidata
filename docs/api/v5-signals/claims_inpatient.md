@@ -99,7 +99,18 @@ All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_r
 
 ## Relationship to V4
 
-The V4 `hospital-admissions` source used the same health system claims and published a single COVID-19 percentage, through `smoothed_covid19_from_claims` and its day-of-week-adjusted twin `smoothed_adj_covid19_from_claims`. What changed in V5:
+The V4 `hospital-admissions` source used the same health system claims and published a single COVID-19 percentage, through `smoothed_covid19_from_claims` and its day-of-week-adjusted twin `smoothed_adj_covid19_from_claims`.
+
+| V4 Signal | V5 Signal | Notes |
+| :--- | :--- | :--- |
+| `smoothed_covid19_from_claims` | `claims_inpatient_adm_pct_claims_covid` | Replaced smoothed Jeffreys estimator with 7-day trailing ratio |
+| `smoothed_adj_covid19_from_claims` | *(not available)* | Day-of-week adjustment discontinued |
+| `smoothed_covid19` | *(not available)* | Discontinued in V4 |
+| `smoothed_adj_covid19` | *(not available)* | Discontinued in V4 |
+| *(not available)* | `claims_inpatient_adm_pct_claims_flu` | New in V5 |
+| *(not available)* | `claims_inpatient_adm_pct_ari_other` | New in V5 (available from 2022-08-01) |
+
+What changed in V5:
 
 - **Expanded Geographies.** V4 served nation, state, county, HRR, and MSA. V5 adds HHS regions, census divisions, and census regions.
 - **Broader Signal Set.** V5 adds influenza and other-ARI percentages next to COVID-19, and drops the combined electronic-record-and-claims variant that V4 froze in 2020.

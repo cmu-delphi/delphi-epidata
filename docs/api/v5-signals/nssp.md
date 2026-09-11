@@ -82,11 +82,28 @@ Because values are percentages rather than counts, missing sub-units are handled
 - `fill_ave`: missing sub-units are excluded from both numerator and denominator.
 - `source`: native reported values.
 
+> Population-weighted aggregation is a standard spatial upscaling method used to aggregate rates across regional boundaries from survey and surveillance sub-units. For practical background on spatial aggregation choices in health surveillance, see [Lee et al. (2022)](https://journals.plos.org/digitalhealth/article?id=10.1371/journal.pdig.0000039). For foundational spatial epidemiology principles, see [Lawson (2006)](https://onlinelibrary.wiley.com/doi/book/10.1002/9780470035771).
+{: .note }
+
 ---
 
 ## Relationship to V4
 
-The V4 `nssp` source published ED visit percentages for nation, state, county, HSA, HRR, MSA, and HHS regions. What changed in V5:
+The V4 `nssp` source published ED visit percentages for nation, state, county, HSA, HRR, MSA, and HHS regions. The signal names that overlap remain the same in the V4 to V5 transition.
+
+| V4 Signal | V5 Signal | Notes |
+| :--- | :--- | :--- |
+| `pct_ed_visits_covid` | `pct_ed_visits_covid` | Exact match |
+| `pct_ed_visits_influenza` | `pct_ed_visits_influenza` | Exact match |
+| `pct_ed_visits_rsv` | `pct_ed_visits_rsv` | Exact match |
+| `pct_ed_visits_combined` | `pct_ed_visits_combined` | Exact match |
+| `smoothed_pct_ed_visits_covid` | `smoothed_pct_ed_visits_covid` | Exact match |
+| `smoothed_pct_ed_visits_influenza` | `smoothed_pct_ed_visits_influenza` | Exact match |
+| `smoothed_pct_ed_visits_rsv` | `smoothed_pct_ed_visits_rsv` | Exact match |
+| `smoothed_pct_ed_visits_combined` | `smoothed_pct_ed_visits_combined` | Exact match |
+| *(not available)* | `pct_ed_visits_ari` | New in V5 |
+
+What changed in V5:
 
 - **Expanded Geographies.** V5 adds census division and census region levels (aggregated from state records).
 - **Aggregation Choice.** V4 published derived aggregations with a single fixed treatment of missing sub-units. V5 computes both methods and lets the caller choose via `fill_method`. See [Geographic Handling](#geographic-handling).

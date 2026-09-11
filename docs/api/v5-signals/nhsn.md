@@ -79,11 +79,30 @@ Values are ingested directly or summed without imputation, so `fill_method` is a
 
 ## Relationship to V4
 
-The V4 `nhsn` source published the same admission counts for state, HHS regions, and nation. What changed in V5:
+The V4 `nhsn` source published the same admission counts for nation, HHS regions, and state. The signal names that overlap remain the same in the V4 to V5 transition.
 
-- Expanded Geographies. V5 adds census divisions and census regions, summed from state values.
-- Preliminary Data. The CDC publishes a preliminary weekly file a few days ahead of the finalized file. V4 presented the preliminary file as separate `_prelim` signals. V5 writes both files to the same signal names, so the preliminary numbers appear as an earlier release and the finalized numbers supersede them on the next update. Read a past `snapshot_date`, or the `/archive/` endpoint, to recover the preliminary values.
-- New Signals. V5 adds `inpatient_beds_ew` and `inpatient_beds_occupied_pct_ew`, which V4 `nhsn` did not carry.
+| V4 Signal | V5 Signal | Notes |
+| :--- | :--- | :--- |
+| `confirmed_admissions_covid_ew` | `confirmed_admissions_covid_ew` | Exact match |
+| `confirmed_admissions_flu_ew` | `confirmed_admissions_flu_ew` | Exact match |
+| `confirmed_admissions_rsv_ew` | `confirmed_admissions_rsv_ew` | Exact match |
+| `hosprep_confirmed_admissions_covid_ew` | `hosprep_confirmed_admissions_covid_ew` | Exact match |
+| `hosprep_confirmed_admissions_flu_ew` | `hosprep_confirmed_admissions_flu_ew` | Exact match |
+| `hosprep_confirmed_admissions_rsv_ew` | `hosprep_confirmed_admissions_rsv_ew` | Exact match |
+| `confirmed_admissions_covid_ew_prelim` | `confirmed_admissions_covid_ew` | Folded into revision history via `report_time` |
+| `confirmed_admissions_flu_ew_prelim` | `confirmed_admissions_flu_ew` | Folded into revision history via `report_time` |
+| `confirmed_admissions_rsv_ew_prelim` | `confirmed_admissions_rsv_ew` | Folded into revision history via `report_time` |
+| `hosprep_confirmed_admissions_covid_ew_prelim` | `hosprep_confirmed_admissions_covid_ew` | Folded into revision history via `report_time` |
+| `hosprep_confirmed_admissions_flu_ew_prelim` | `hosprep_confirmed_admissions_flu_ew` | Folded into revision history via `report_time` |
+| `hosprep_confirmed_admissions_rsv_ew_prelim` | `hosprep_confirmed_admissions_rsv_ew` | Folded into revision history via `report_time` |
+| *(not available)* | `inpatient_beds_ew` | New in V5 |
+| *(not available)* | `inpatient_beds_occupied_pct_ew` | New in V5 |
+
+What changed in V5:
+
+- **Expanded Geographies.** V5 adds census divisions and census regions, summed from state values.
+- **Preliminary Data.** The CDC publishes a preliminary weekly file a few days ahead of the finalized file. V4 presented the preliminary file as separate `_prelim` signals. V5 writes both files to the same signal names, so the preliminary numbers appear as an earlier release and the finalized numbers supersede them on the next update. Read a past `snapshot_date`, or the `/archive/` endpoint, to recover the preliminary values.
+- **New Signals.** V5 adds `inpatient_beds_ew` and `inpatient_beds_occupied_pct_ew`, which V4 `nhsn` did not carry.
 
 ---
 
