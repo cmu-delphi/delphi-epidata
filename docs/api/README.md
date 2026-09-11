@@ -1,12 +1,12 @@
 ---
-title: Other Endpoints
+title: Other Endpoints (V3)
 has_children: true
 nav_order: 4
 ---
 
-# Other Endpoints
+# Other Endpoints (V3)
 
-> **Active endpoints are part of the legacy V4 API, which is being phased out.** See the [V4 to V5 Migration Guide](v5_migration.md) for details on the Delphi V5 transition.
+> **Active endpoints are part of the legacy V3 API, which is being phased out.** See the [V4 to V5 Migration Guide](v5_migration.md) for details on the Delphi V5 transition.
 {: .warning }
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data

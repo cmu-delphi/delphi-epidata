@@ -1,10 +1,10 @@
 ---
-title: Main Endpoint (COVIDcast)
+title: Main Endpoint (COVIDcast V4)
 has_children: true
 nav_order: 3
 ---
 
-# Main Epidata API
+# Main Epidata API (COVIDcast V4)
 
 > **This endpoint (`/epidata/covidcast/`) is part of the legacy V4 API, which is being phased out.** The legacy V4 API includes this endpoint. See the [V4 to V5 Migration Guide](v5_migration.md) for guidance on migrating your queries to the [Delphi V5 API](v5.md).
 {: .warning }

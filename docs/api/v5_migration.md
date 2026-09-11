@@ -1,18 +1,18 @@
 ---
-title: V4 to V5 Migration Guide
+title: V3/V4 to V5 Migration Guide
 parent: Delphi V5 API
 nav_order: 4
 ---
 
-# V4 to V5 Migration Guide
+# V3/V4 to V5 Migration Guide
 
-The legacy Epidata V4 API, including the [main endpoint](covidcast.md) and [other historical endpoints](README.md), is transitioning to the [V5 API](v5.md). This transition is occurring source by source. All V4 sources will continue to operate until the migration is complete (tentatively scheduled for October 2026), and endpoints that are no longer updated will remain accessible on V4. For new integrations, start directly on V5 and fall back to V4 only for sources that are not yet supported.
+The legacy Epidata APIs, including the [V4 main endpoint (COVIDcast)](covidcast.md) and [V3 other endpoints](README.md), are transitioning to the [V5 API](v5.md). This transition is occurring source by source. All V3 and V4 sources will continue to operate until the migration is complete (tentatively scheduled for October 2026), and endpoints that are no longer updated will remain accessible on V3/V4. For new integrations, start directly on V5 and fall back to legacy endpoints only for sources that are not yet supported.
 
 ## Endpoint mapping
 
 The single `covidcast` endpoint splits into several purpose-built V5 routes determined by query type. The "other endpoints" column highlights examples (`fluview`, `flusurv`, `wiki`) to illustrate differences across endpoints. Refer to each endpoint's documentation for specific behavior:
 
-| Task | V4 (`covidcast`) | V4 (Other Endpoints) | V5 Equivalent |
+| Task | V4 (`covidcast`) | V3 (Other Endpoints) | V5 Equivalent |
 | :--- | :--- | :--- | :--- |
 | Fetch latest data or snapshot as of a past date | `covidcast` (default query or with `as_of`) | Endpoint-specific (`fluview` has no `as_of`) | [`/epidata/v5/snapshot/`](v5_api_queries.md#snapshot-parameters) |
 | Fetch full revision history for a signal | `covidcast` with `issues` | Supported by some (`fluview`, `flusurv` with `issues`) | [`/epidata/v5/archive/`](v5_api_queries.md#archive-parameters) |
@@ -24,7 +24,7 @@ The single `covidcast` endpoint splits into several purpose-built V5 routes dete
 
 Most `covidcast` query parameters carry over to V5 with the same name, but some have been renamed, dropped, or added. Historical endpoints do not share parameter names with `covidcast`. Parameters for `fluview` are shown below as an example, but consult each endpoint's documentation for details:
 
-| V4 Parameter (`covidcast`) | V4 (Other Endpoints, e.g. `fluview`) | V5 Equivalent | Notes |
+| V4 Parameter (`covidcast`) | V3 (Other Endpoints, e.g. `fluview`) | V5 Equivalent | Notes |
 | :--- | :--- | :--- | :--- |
 | `data_source` | not exposed (identified by the endpoint URL, e.g. `/fluview/`) | `source` | Identifies the source dataset in V5 (replaces V4 `data_source` and endpoint names). |
 | `signal` | none | `signal` | Identifies the specific signal name within the source. |
@@ -40,9 +40,9 @@ Most `covidcast` query parameters carry over to V5 with the same name, but some 
 
 ## Response field changes
 
-Response fields follow a similar pattern. In the table below, `fluview` serves as an example of an endpoint with custom fields. Field names vary by V4 endpoint (for example, `wiki` returns `article`, `count`, and `hour`):
+Response fields follow a similar pattern. In the table below, `fluview` serves as an example of an endpoint with custom fields. Field names vary by legacy endpoint (for example, `wiki` returns `article`, `count`, and `hour`):
 
-| V4 Field (`covidcast`) | V4 (Other Endpoints, e.g. `fluview`) | V5 Field | Notes |
+| V4 Field (`covidcast`) | V3 (Other Endpoints, e.g. `fluview`) | V5 Field | Notes |
 | :--- | :--- | :--- | :--- |
 | `source` | not returned (identified by endpoint name) | dropped | Omitted in V5 responses because the source is already specified in the request. |
 | `signal` | none (implicit from endpoint) | `signal` | Identifies the signal name in V5. |
