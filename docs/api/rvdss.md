@@ -1,6 +1,6 @@
 ---
 parent: Data Sources and Signals
-grand_parent: Other Endpoints
+grand_parent: Other Endpoints (V3)
 title: Respiratory Virus Detections in Canada
 nav_order: 4
 ---

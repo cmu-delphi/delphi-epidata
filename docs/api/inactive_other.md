@@ -1,7 +1,7 @@
 ---
 title: Inactive Sources (Other)
 parent: Data Sources and Signals
-grand_parent: Other Endpoints
+grand_parent: Other Endpoints (V3)
 nav_order: 99
 has_children: true
 ---
