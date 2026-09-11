@@ -35,12 +35,10 @@ Every V5 source page follows the same order so pages stay predictable:
    ├── Smoothing                (when a rolling window is applied)
    ├── Uncertainty              (optional; when confidence intervals or standard errors are reported)
    ├── Temporal Handling        (reference time basis, week alignment, or date-filtering rules)
-   ├── Geographic Units         (optional; when the source uses custom units such as facility catchments or sampling sites)
-   └── Geographic Aggregation   (or Geographic Handling; discuss native levels, roll-ups, and fill_method here)
+   └── Geographic Handling      (native levels, custom units, roll-ups, and fill_method)
 7. Relationship to V4 or V3    (use V4 for endpoints from V4, V3 for all other legacy endpoints; omit for new sources)
 8. Schema
    ├── Columns
-   ├── Fill methods             (only when multiple paths exist; omit if fill_method is always source)
    ├── Extra keys               (only for real extra dimensions such as age_group)
    └── Auxiliary tables         (when the source serves an /aux_data/ table)
 9. Missingness & Privacy
@@ -131,9 +129,7 @@ Describe how raw data becomes each signal.
 
 `### Temporal Handling` documents the reference time basis (e.g. date of service vs. date of report), week-ending alignment, drop rules (e.g. dropping first-of-month batching artifacts), and holiday adjustments.
 
-`### Geographic Units` is optional. Use it when the source defines custom or source-specific geographic units (such as VA facility catchment areas or NWSS wastewater sampling sites and sewersheds). Describe what the unit represents, how sites or facilities are identified, and how their boundaries are defined. Omit this section when the source uses only standard administrative levels (nation, state, county, HHS regions).
-
-`### Geographic Aggregation` (or `### Geographic Handling`) covers crosswalking, catchment disaggregation, and population weighting, including which levels are native and which are derived. Clarify `fill_method` here: state why `fill_method` is always `source` when no imputation is used, or detail the available choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
+`### Geographic Handling` covers native and derived levels, custom geographic units (such as facility catchments or sampling sites), crosswalking, catchment disaggregation, population weighting, and spatial roll-ups. Clarify `fill_method` here: state why `fill_method` is always `source` when no imputation is used, or detail the available choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
 
 ### 7. Relationship to V4 or V3
 
@@ -142,8 +138,6 @@ For a migrated source, name the section `## Relationship to V4` if the predecess
 ### 8. Schema
 
 `### Columns` lists each column, its key role, its data type (such as `string`, `date`, or `float`), and its meaning (a markdown table is preferred).
-
-`### Fill methods` is included only when the source computes more than one aggregation path (e.g. `source`, `fill_zero`, `fill_ave`). Provide a brief reference pointing to [Geographic Aggregation](#geographic-aggregation) where definitions and behavior are detailed, or include a summary table. Omit this section entirely when `fill_method` is always `source`.
 
 `### Extra keys` is for genuine extra dimensions such as `age_group`. Give the valid values and how an unfiltered query behaves.
 
@@ -157,7 +151,7 @@ For suppression, explain the privacy rules and thresholds that mask data, such a
 
 For unobserved values, describe why data was not collected or reported, such as non-participating facilities, transmission outages, or voluntary reporting periods. State whether unobserved periods or geographies appear as `null` or are absent from the dataset.
 
-Document the treatment of missing sub-units during geographic roll-ups under [Geographic Aggregation](#geographic-aggregation) rather than in this section.
+Document the treatment of missing sub-units during geographic roll-ups under [Geographic Handling](#geographic-handling) rather than in this section.
 
 ### 10. Limitations
 
@@ -262,13 +256,9 @@ Confidence interval formula. Omit this section if the source publishes no standa
 
 Reference time basis, week-ending alignment, date shifts, or accumulation rules.
 
-### Geographic Units
+### Geographic Handling
 
-Optional. Describe source-specific geographic units (such as facility catchment areas or sampling sites) and how they are defined. Omit if the source uses only standard geographic levels.
-
-### Geographic Aggregation
-
-Which levels are native and which are derived, the weighting used, and how `fill_method` applies. State why `fill_method` is always `source` when no imputation is performed, or explain the choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
+Which levels are native and which are derived, any custom geographic units (such as facility catchments or sampling sites), the weighting used, and how `fill_method` applies. State why `fill_method` is always `source` when no imputation is performed, or explain the choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
 
 ---
 
@@ -291,10 +281,6 @@ How the V5 method differs from the V4 (or V3) estimator, indicator set, geograph
 | `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
 | `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`). |
 | `value` | Value Column | float | The recorded measurement (e.g., count, percentage, rate, or statistical estimate). |
-
-### Fill methods
-
-Optional. Include only when the source supports multiple aggregation paths (`source`, `fill_zero`, `fill_ave`). See [Geographic Aggregation](#geographic-aggregation) for details. Omit this section if `fill_method` is always `source`.
 
 ---
 
