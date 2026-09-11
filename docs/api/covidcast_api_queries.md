@@ -1,6 +1,6 @@
 ---
 title: Manually Constructing API Queries
-parent: Main Endpoint (COVIDcast)
+parent: Main Endpoint (COVIDcast V4)
 nav_order: 4
 ---
 # Manually Constructing API Queries
