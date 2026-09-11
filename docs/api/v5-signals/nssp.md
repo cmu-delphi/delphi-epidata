@@ -113,9 +113,15 @@ The V4 `nssp` source published ED visit percentages for nation, state, county, H
 
 ## Missingness & Privacy
 
-The CDC suppresses facility and county values with low visit volumes to protect patient privacy. Suppressed values are treated as missing.
+The CDC suppresses facility and county values with low visit volumes to protect patient privacy. Suppressed values appear as missing in the raw feed and are treated as null during ingestion.
 
-Unobserved values also occur from facility non-reporting, uneven rural participation, states that do not report county-level data, and literal zeros reported by Wyoming (converted to missing during ingestion).
+Unobserved values arise from uneven facility participation and state reporting restrictions. Nationwide, NSSP captures data from approximately 78 percent of emergency departments. Many rural counties contain no emergency departments or only non-participating facilities. Coverage gaps are most pronounced in California, Colorado, Missouri, Oklahoma, and Virginia.
+
+State reporting operates independently from county reporting. Some facilities are included in state aggregates but withheld from local data. Fifteen states report no data at the county level: AK, AL, AR, AZ, CA, CO, CT, FL, MO, ND, NH, NJ, OH, SD, and WA.
+
+At the state level, South Dakota, Missouri, and US territories have historically reported no data through NSSP. Missouri reports neither state nor county records, making it the only completely non-reporting state.
+
+Wyoming facilities report literal zeros because of an administrative reporting artifact. During ingestion, Delphi converts zero values for Wyoming to null to prevent distortion of rates.
 
 Missing sub-units during geographic aggregation are handled according to the selected `fill_method`, as described under [Geographic Handling](#geographic-handling).
 
@@ -123,13 +129,27 @@ Missing sub-units during geographic aggregation are handled according to the sel
 
 ## Limitations
 
-Percentages reflect visits at facilities reporting to NSSP rather than all facilities in a region. Diagnoses reflect clinical coding at discharge without mandatory laboratory confirmation. In addition, population-weighted spatial aggregation assumes ED visits scale proportionally with resident population.
+Percentages reflect visits at facilities reporting to NSSP rather than all facilities in a region. Counties without reporting emergency departments have no native data.
+
+County-level values published by the CDC are approximations inherited from their parent Health Service Area (HSA). The CDC defines these clusters using [NCI-modified Health Service Areas](https://seer.cancer.gov/seerstat/variables/countyattribs/hsa.html). Because rates are calculated at the HSA level, every county within the same HSA receives an identical percentage.
+
+Diagnoses reflect clinical diagnostic codes assigned at discharge without mandatory laboratory confirmation. Because emergency departments do not test every patient for respiratory viruses, infections can be missed and visit percentages may be biased downward.
+
+Delphi aggregates local records into derived geographic levels using 2020 Census population weights. This weighting assumes that emergency department visit volumes scale proportionally with resident population across counties. In practice, urban areas tend to have higher per capita emergency department utilization, and rural residents frequently travel to urban centers for acute care. If urban residents seek emergency care at higher rates per capita, population weighting can overrepresent rural counties in derived regional values.
+
+Low-population counties occasionally report outlier percentages such as 33 percent, 50 percent, or 100 percent. These spikes arise by chance from very small total visit counts in a given week rather than widespread transmission.
 
 ---
 
 ## Lag & Backfill
 
-The weekly file publishes on Friday mornings, covering the week that ended the previous Saturday. Historical weeks continue to revise as facilities join the network and as facilities submit backlogged or corrected reports, which can affect series for up to two years.
+The CDC publishes the weekly dataset on Friday mornings, covering the 7-day week that ended the previous Saturday. This creates an initial lag of 6 days between the end of the observation period and the initial release.
+
+Historical weeks experience frequent backfill, primarily when newly enrolled emergency departments join the NSSP reporting network. When a new facility begins reporting, the CDC incorporates its historical data into the dataset.
+
+Adding facility history alters past estimates for every geographic level that includes the facility, from county to nation. Because broader geographic levels aggregate data across many facilities, national, regional, and state series revise more frequently than local ones.
+
+Revisions can alter historical series for up to 2 years after initial publication.
 
 ---
 
