@@ -115,9 +115,17 @@ code {
     font-size: 85%;
 }
 
+pre {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
 pre code {
     background-color: transparent;
     padding: 0;
+    white-space: inherit;
+    word-break: inherit;
 }
 
 .note,
