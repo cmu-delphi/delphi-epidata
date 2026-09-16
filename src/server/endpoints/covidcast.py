@@ -233,7 +233,10 @@ def handle_trendseries():
 
 @bp.route("/csv", methods=("GET", "POST"))
 def handle_export():
-    source, signal = request.values.get("signal", "jhu-csse:confirmed_incidence_num").split(":")
+    signal_param = request.values.get("signal", "jhu-csse:confirmed_incidence_num")
+    source, _, signal = signal_param.partition(":")
+    if not source or not signal:
+        raise ValidationFailedException("signal param: expected <source>:<signal>")
     source_signal_sets = [SourceSignalSet(source, [signal])]
     source_signal_sets = restrict_by_roles(source_signal_sets)
     daily_signals, weekly_signals = count_signal_time_types(source_signal_sets)
