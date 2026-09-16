@@ -419,9 +419,9 @@ def handle_meta():
     elif "inactive" in flags:
         filter_active = False
     if "day" in flags:
-        filter_active = TimeType.day
+        filter_time_type = TimeType.day
     elif "week" in flags:
-        filter_active = TimeType.week
+        filter_time_type = TimeType.week
 
     row = db.execute(text("SELECT epidata FROM covidcast_meta_cache LIMIT 1")).fetchone()
 
