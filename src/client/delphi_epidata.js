@@ -172,7 +172,7 @@
             "one of `state`, `ccn`, `city`, `zip`, or `fips_code` is required"
           );
         }
-        return _request("covid_hosp_facility", params);
+        return _request("covid_hosp_facility_lookup", params);
       },
       /**
        * Fetch COVID hospitalization data
@@ -348,15 +348,13 @@
        * Fetch API metadata
        */
       meta: () => {
-        return _request({
-          endpoint: "meta",
-        });
+        return _request("meta", {});
       },
       /**
        * Fetch NIDSS dengue data
        */
       nidss_dengue: (locations, epiweeks) => {
-        requireAll({ locations, regions });
+        requireAll({ locations, epiweeks });
         const params = {
           locations: _list(locations),
           epiweeks: _list(epiweeks),
@@ -381,7 +379,7 @@
        * Fetch NoroSTAT data (point data, no min/max)
        */
       norostat: (auth, location, epiweeks) => {
-        requireAll({ auth, locations, epiweeks });
+        requireAll({ auth, location, epiweeks });
         const params = {
           auth,
           location,
@@ -403,7 +401,7 @@
       /**
        * Fetch Quidel data
        */
-      paho_denque: (regions, epiweeks, issues, lag) => {
+      paho_dengue: (regions, epiweeks, issues, lag) => {
         requireAll({ regions, epiweeks });
         const params = {
           epiweeks: _list(epiweeks),
@@ -411,7 +409,7 @@
           issues: _list(issues),
           lag,
         };
-        return _request("paho_denque", params);
+        return _request("paho_dengue", params);
       },
       /**
        * Fetch Quidel data
@@ -455,7 +453,7 @@
        */
       twitter: (auth, locations, dates, epiweeks) => {
         requireAll({ auth, locations });
-        if ((dates != null) !== (epiweeks != null)) {
+        if ((dates != null) === (epiweeks != null)) {
           throw new Error("one of `dates` and `epiweeks` are required");
         }
         const params = {
@@ -471,7 +469,7 @@
        */
       wiki: (articles, dates, epiweeks, language) => {
         requireAll({ articles });
-        if ((dates != null) !== (epiweeks != null)) {
+        if ((dates != null) === (epiweeks != null)) {
           throw new Error("one of `dates` and `epiweeks` are required");
         }
         const params = {
