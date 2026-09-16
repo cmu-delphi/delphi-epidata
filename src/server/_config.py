@@ -95,12 +95,12 @@ REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 
 # mode to reduce number of required requests to hit rate limit while running tests,
 # by default is set to False
-TESTING_MODE = os.environ.get("TESTING_MODE", False)
+TESTING_MODE = os.environ.get("TESTING_MODE", "")
 
 # https://flask-limiter.readthedocs.io/en/stable/#rate-limit-string-notation
 RATE_LIMIT = os.environ.get("RATE_LIMIT", "60/hour")
 
-if TESTING_MODE is not False:
+if TESTING_MODE.lower() in ("1", "true", "t", "yes"):
     RATE_LIMIT = "5/hour"
 
 # fixed-window, fixed-window-elastic-expiry, or moving-window
