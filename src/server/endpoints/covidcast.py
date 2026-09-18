@@ -171,7 +171,9 @@ def handle_trend():
     try:
         r = run_query(p, (str(q), q.params))
     except Exception as e:
-        raise DatabaseErrorException(str(e))
+        # log the internal details server-side only; the client gets a generic message
+        get_structured_logger("server_error").error("database query failed", exception=e)
+        raise DatabaseErrorException()
 
     # now use a generator for sending the rows and execute all the other queries
     return p(filter_fields(gen(r)))
@@ -225,7 +227,9 @@ def handle_trendseries():
     try:
         r = run_query(p, (str(q), q.params))
     except Exception as e:
-        raise DatabaseErrorException(str(e))
+        # log the internal details server-side only; the client gets a generic message
+        get_structured_logger("server_error").error("database query failed", exception=e)
+        raise DatabaseErrorException()
 
     # now use a generator for sending the rows and execute all the other queries
     return p(filter_fields(gen(r)))
@@ -299,7 +303,9 @@ def handle_export():
     try:
         r = run_query(p, (str(q), q.params))
     except Exception as e:
-        raise DatabaseErrorException(str(e))
+        # log the internal details server-side only; the client gets a generic message
+        get_structured_logger("server_error").error("database query failed", exception=e)
+        raise DatabaseErrorException()
 
     # special case for no data to be compatible with the CSV server
     first_row = next(r, None)
@@ -382,7 +388,9 @@ def handle_backfill():
     try:
         r = run_query(p, (q.query, q.params))
     except Exception as e:
-        raise DatabaseErrorException(str(e))
+        # log the internal details server-side only; the client gets a generic message
+        get_structured_logger("server_error").error("database query failed", exception=e)
+        raise DatabaseErrorException()
 
     # now use a generator for sending the rows and execute all the other queries
     return p(filter_fields(gen(r)))

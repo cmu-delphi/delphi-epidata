@@ -85,8 +85,15 @@ class APrinter:
         return None
 
     def _error(self, error: Exception) -> str:
-        # send an generic error
-        return dumps(dict(result=self.result, message=f"unknown error occurred: {error}", error=str(error), epidata=[]))
+        # send a generic error; the exception itself was already logged server-side
+        return dumps(
+            dict(
+                result=self.result,
+                message="unknown error occurred",
+                error="unknown error occurred",
+                epidata=[],
+            )
+        )
 
     def _print_row(self, row: Dict) -> Optional[Union[str, bytes]]:
         first = self.count == 0
@@ -202,8 +209,8 @@ class CSVPrinter(APrinter):
         return None
 
     def _error(self, error: Exception) -> str:
-        # send an generic error
-        return f"unknown error occurred:\n{error}"
+        # send a generic error; the exception itself was already logged server-side
+        return "unknown error occurred"
 
     def _format_row(self, first: bool, row: Dict):
         if first:

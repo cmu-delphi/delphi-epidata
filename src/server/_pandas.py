@@ -4,6 +4,7 @@ import pandas as pd
 from flask import request
 from sqlalchemy import text
 from sqlalchemy.engine.base import Engine
+from delphi_utils import get_structured_logger
 
 from ._common import engine
 from ._config import MAX_RESULTS
@@ -17,7 +18,9 @@ def as_pandas(query: str, params: Dict[str, Any], db_engine: Engine = engine, pa
         query = limit_query(query, limit_rows)
         return pd.read_sql_query(text(str(query)), db_engine, params=params, parse_dates=parse_dates)
     except Exception as e:
-        raise DatabaseErrorException(str(e))
+        # log the internal details server-side only; the client gets a generic message
+        get_structured_logger("server_error").error("database query failed", exception=e)
+        raise DatabaseErrorException()
 
 
 def print_pandas(df: pd.DataFrame):

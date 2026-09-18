@@ -1,5 +1,7 @@
 from flask import Blueprint, request
 
+from delphi_utils import get_structured_logger
+
 from .signal_dashboard_coverage import fetch_coverage_data
 from .._query import parse_row, run_query
 from .._printer import create_printer
@@ -43,7 +45,9 @@ def handle():
         coverage_data = fetch_coverage_data()
         r = run_query(p, (query, {}))
     except Exception as e:
-        raise DatabaseErrorException(str(e))
+        # log the internal details server-side only; the client gets a generic message
+        get_structured_logger("server_error").error("database query failed", exception=e)
+        raise DatabaseErrorException()
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen(r, coverage_data))
