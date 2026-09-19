@@ -55,25 +55,35 @@ class GeoSet:
     geo_values: Union[bool, Sequence[str]]
 
     def __init__(self, geo_type: str, geo_values: Union[bool, Sequence[str]]):
+        # TODO: keep this translator in sync with CsvImporter.GEOGRAPHIC_RESOLUTIONS in acquisition/covidcast/ and with GeoMapper
+        # NOTE: We are not including `hsa_nci` here as the geomapper code does not support that version of the HSA definition.
+        geo_type_translator = {
+            "county": "fips",
+            "fips": "fips",  # alias for county FIPS codes; accepted by the API
+            "state": "state_id",
+            "zip": "zip",
+            "hrr": "hrr",
+            "hhs": "hhs",
+            "msa": "msa",
+            "nation": "nation",
+            "dma": "dma",  # not known to GeoMapper; validated by range below
+        }
+        if geo_type not in geo_type_translator:
+            # fail closed: a geo_type we cannot validate must not reach the
+            # query layer alongside user-controlled values, not even as a wildcard
+            raise ValidationFailedException(f"unknown geo_type {geo_type}!")
         if not isinstance(geo_values, bool):
             if geo_values == ['']:
                 raise ValidationFailedException(f"geo_value is empty for the requested geo_type {geo_type}!")
-            # TODO: keep this translator in sync with CsvImporter.GEOGRAPHIC_RESOLUTIONS in acquisition/covidcast/ and with GeoMapper
-            # NOTE: We are not including `hsa_nci` here as the geomapper code does not support that version of the HSA definition.
-            geo_type_translator = {
-                "county": "fips",
-                "state": "state_id",
-                "zip": "zip",
-                "hrr": "hrr",
-                "hhs": "hhs",
-                "msa": "msa",
-                "nation": "nation"
-            }
-            if geo_type in geo_type_translator: # else geo_type is unknown to GeoMapper
+            if geo_type == "dma":
+                # GeoMapper has no DMA values; mirror the sanity range used by
+                # the acquisition importer (csv_importer.py: 450-950)
+                invalid_values = [v for v in geo_values if not (isinstance(v, str) and v.isdigit() and 450 <= int(v) <= 950)]
+            else:
                 allowed_values = delphi_utils.geomap.GeoMapper().get_geo_values(geo_type_translator[geo_type])
-                invalid_values = set(geo_values) - set(allowed_values)
-                if invalid_values:
-                    raise ValidationFailedException(f"Invalid geo_value(s) {', '.join(invalid_values)} for the requested geo_type {geo_type}")
+                invalid_values = [v for v in geo_values if v not in allowed_values]
+            if invalid_values:
+                raise ValidationFailedException(f"Invalid geo_value(s) {', '.join(invalid_values)} for the requested geo_type {geo_type}")
         self.geo_type = geo_type
         self.geo_values = geo_values
 
