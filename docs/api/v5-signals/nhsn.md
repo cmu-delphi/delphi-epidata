@@ -172,6 +172,7 @@ Wednesday snapshot counts of hospitalized patients with confirmed COVID-19, infl
 #### 3. New Admissions by Age Group
 
 Weekly counts of new confirmed patient admissions are reported across 10 age brackets (0–4, 5–17, pediatric total, 18–49, 50–64, 65–74, 75+, adult total, unknown age, and total all ages) for COVID-19, influenza, and RSV.
+In the near future these will be migrated to long-format with age group as a key column.
 
 <details markdown="1">
 <summary><strong>New Hospital Admissions by Age Group</strong></summary>
