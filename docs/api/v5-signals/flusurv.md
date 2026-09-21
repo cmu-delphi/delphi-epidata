@@ -206,10 +206,10 @@ What changed in V5:
 
 ## Limitations
 
-- "FluSurv-NET currently comprises more than 90 counties and county equivalents in 14 states." FluSurv-NET catchments cover approximately 10 percent of the U.S. population (34 million people). Rates reflect designated counties in participating states and do not represent entire statewide or nationwide populations, although the covered population is demographically similar.
+- FluSurv-NET comprises more than 90 counties across 14 states, covering approximately 10 percent of the U.S. population (34 million people). Rates reflect designated catchment counties in participating states and do not represent entire statewide or nationwide populations, although the covered population is demographically similar to the national population.
+- Surveillance was established for children younger than 18 during the 2003–04 season and expanded to include adults during the 2005–06 season. Earlier seasons do not include adult data.
 - Network composition changes over time as states and hospitals join or exit surveillance. For instance, North Carolina joined during the 2023–24 season, and Ohio ceased participation after 2024–25.
 - FluSurv-NET tracks patients hospitalized with laboratory-confirmed influenza. Variations in clinical testing practices across facilities and seasons can influence case detection.
-- "FluSurv-NET was established for children younger than 18 years of age during the 2003-2004 season and was expanded to include adults during the 2005-2006 season"
 
 ---
 

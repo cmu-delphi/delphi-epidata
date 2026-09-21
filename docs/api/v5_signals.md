@@ -16,20 +16,20 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 
 | Source | Legacy Equivalent (V4 / V3) | Geographies | Extra Key Columns |
 | :--- | :--- | :--- | :--- |
-| [`nssp`](v5-signals/nssp.md) | [`nssp`](covidcast-signals/nssp.md) | census_division, census_region, county, hhs, hrr, hsa_nci, msa, nation, state | — |
-| [`nhsn`](v5-signals/nhsn.md) | [`nhsn`](covidcast-signals/nhsn.md) | census_division, census_region, hhs, nation, state | — |
-| [`pophive`](v5-signals/epic-cosmos.md) | New in V5 | hhs, nation, state | `age_group` |
-| [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
-| [`claims_outpatient`](v5-signals/claims_outpatient.md) | [`doctor-visits`](covidcast-signals/doctor-visits.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 | [`claims_inpatient`](v5-signals/claims_inpatient.md) | [`hospital-admissions`](covidcast-signals/hospital-admissions.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
-| `nickel_beta` | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
-| `va_respiratory` | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
-| [`nchs_mortality`](v5-signals/nchs_mortality.md) | [`nchs-mortality`](covidcast-signals/nchs-mortality.md) | nation, state | — |
+| [`claims_outpatient`](v5-signals/claims_outpatient.md) | [`doctor-visits`](covidcast-signals/doctor-visits.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 | [`flusurv`](v5-signals/flusurv.md) | [`flusurv`](flusurv.md) | misc, msa, nation, state | — |
 | [`fluview_ilinet`](v5-signals/fluview_ilinet.md) | [`fluview`](fluview.md) | census_division, hhs, nation, state | `age_group` |
 | [`fluview_resp_lab_clinical`](v5-signals/fluview_resp_lab_clinical.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | — |
 | [`fluview_resp_lab_ph`](v5-signals/fluview_resp_lab_ph.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | — |
-| `sleepcycle` | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
+| [`nchs_mortality`](v5-signals/nchs_mortality.md) | [`nchs-mortality`](covidcast-signals/nchs-mortality.md) | nation, state | — |
+| [`nhsn`](v5-signals/nhsn.md) | [`nhsn`](covidcast-signals/nhsn.md) | census_division, census_region, hhs, nation, state | — |
+| `nickel_beta` *(Beta)* | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
+| [`nssp`](v5-signals/nssp.md) | [`nssp`](covidcast-signals/nssp.md) | census_division, census_region, county, hhs, hrr, hsa_nci, msa, nation, state | — |
+| [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
+| [`pophive`](v5-signals/epic-cosmos.md) | New in V5 | hhs, nation, state | `age_group` |
+| `sleepcycle` *(Beta)* | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
+| `va_respiratory` | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
 {: #v5-sources-table}
 
 <span id="v5-sources-table-status">V5 sources available as of September 2026.</span>
@@ -81,6 +81,7 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 
   // Sources confirmed to have no V4 predecessor. Everything unlisted stays "Not yet verified".
   var CONFIRMED_NEW_IN_V5 = ['pophive', 'nwss', 'va_respiratory', 'sleepcycle', 'nickel_beta'];
+  var BETA_SOURCES = ['sleepcycle', 'nickel_beta'];
 
   // V5 source name -> its V5 documentation page.
   var V5_DOCS = {
@@ -118,7 +119,7 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
       var live = Object.keys(meta).filter(function (s) {
         var info = meta[s];
         return info && Array.isArray(info.signals) && info.signals.length > 0;
-      });
+      }).sort();
 
       var formatDate = function (d) { return d ? d.slice(0, 10) : '—'; };
       var formatRange = function (range) {
@@ -135,8 +136,9 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
         var info = meta[s] || {};
         var geos = (info.geo_types || []).join(', ') || '—';
         var extraKeys = (info.extra_key_columns || []).map(code).join(', ') || '—';
+        var sourceLabel = link(V5_DOCS[s], code(s)) + (BETA_SOURCES.indexOf(s) !== -1 ? ' <em>(Beta)</em>' : '');
         return '<tr>'
-          + '<td>' + link(V5_DOCS[s], code(s)) + '</td>'
+          + '<td>' + sourceLabel + '</td>'
           + '<td>' + legacyEquivalent(s) + '</td>'
           + '<td>' + geos + '</td>'
           + '<td>' + extraKeys + '</td>'
