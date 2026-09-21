@@ -5,7 +5,7 @@ grand_parent: Main Endpoint (COVIDcast V4)
 nav_order: 1
 ---
 
-> **Heads up:** The legacy v4 Epidata API is being phased out. Check the [V5 Sources](../v5_signals.md#v5-sources) table or query [`/epidata/v5/metadata/`](../v5_meta.md) directly (more up to date) for whether this source is available in V5 yet. See the [V4 to V5 Migration Guide](../v5_migration.md) for full details.
+> **Heads up:** This COVIDcast source is part of the legacy V4 API, which is being phased out. An actively maintained equivalent is available in V5 under the source [`nchs_mortality`](../v5-signals/nchs_mortality.md). See the [V4 to V5 Migration Guide](../v5_migration.md) for full details.
 {: .warning }
 
 # NCHS Mortality Data

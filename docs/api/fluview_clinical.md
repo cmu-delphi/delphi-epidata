@@ -5,7 +5,7 @@ grand_parent: Other Endpoints (V3)
 nav_order: 2
 ---
 
-> **Heads up:** The legacy v4 Epidata API is being phased out. Check the [V5 Sources](v5_signals.md#v5-sources) table or query [`/epidata/v5/metadata/`](v5_meta.md) directly (more up to date) for whether this source is available in V5 yet. See the [V4 to V5 Migration Guide](v5_migration.md) for full details.
+> **Heads up:** This endpoint is part of the legacy V3 API, which is being phased out. Actively maintained equivalents are available in V5 under the sources [`fluview_resp_lab_clinical`](v5-signals/fluview_resp_lab_clinical.md) (clinical laboratory testing) and [`fluview_resp_lab_ph`](v5-signals/fluview_resp_lab_ph.md) (public health laboratory subtyping). See the [V3/V4 to V5 Migration Guide](v5_migration.md) for full details.
 {: .warning }
 
 # FluView Clinical
