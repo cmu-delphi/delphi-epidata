@@ -22,11 +22,17 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 | [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
 | [`claims_outpatient`](v5-signals/claims_outpatient.md) | [`doctor-visits`](covidcast-signals/doctor-visits.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 | [`claims_inpatient`](v5-signals/claims_inpatient.md) | [`hospital-admissions`](covidcast-signals/hospital-admissions.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
-| [`va_respiratory`](v5-signals/va_respiratory.md) | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
-| `sleepcycle` | Not yet verified | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
+| `nickel_beta` | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
+| `va_respiratory` | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
+| [`nchs_mortality`](v5-signals/nchs_mortality.md) | [`nchs-mortality`](covidcast-signals/nchs-mortality.md) | nation, state | — |
+| [`flusurv`](v5-signals/flusurv.md) | [`flusurv`](flusurv.md) | flusurv_site, state | — |
+| [`fluview_ilinet`](v5-signals/fluview_ilinet.md) | [`fluview`](fluview.md) | census_division, hhs, nation, state | `age_group` |
+| [`fluview_resp_lab_clinical`](v5-signals/fluview_resp_lab_clinical.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | — |
+| [`fluview_resp_lab_ph`](v5-signals/fluview_resp_lab_ph.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | — |
+| `sleepcycle` | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 {: #v5-sources-table}
 
-<span id="v5-sources-table-status">V5 sources available as of August 25, 2026.</span>
+<span id="v5-sources-table-status">V5 sources available as of September 2026.</span>
 
 **Not yet verified** means this page's maintainers have not yet confirmed whether the source is genuinely new in V5 or a renamed legacy source.
 
@@ -43,7 +49,7 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
      so they MUST be written as .html:
      - New V5 doc page (docs/api/v5-signals/<source>.md)? Add '<source>': 'v5-signals/<source>.html' to V5_DOCS.
      - A V5 source with the SAME name as a V4 source is auto-detected as that source. Only
-       add to V5_RENAMED_FROM_V4 when the name CHANGED between V4 and V5.
+        add to V5_RENAMED_FROM_V4 when the name CHANGED between V4 and V5.
      - Confirmed to have no V4 predecessor? Add it to CONFIRMED_NEW_IN_V5.
      - Anything else renders as "Not yet verified" — that is deliberate. Do not guess.
 -->
@@ -56,6 +62,7 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
     'nhsn': 'covidcast-signals/nhsn.html',
     'doctor-visits': 'covidcast-signals/doctor-visits.html',
     'hospital-admissions': 'covidcast-signals/hospital-admissions.html',
+    'nchs-mortality': 'covidcast-signals/nchs-mortality.html',
     'fluview': 'fluview.html',
     'fluview_clinical': 'fluview_clinical.html',
     'flusurv': 'flusurv.html',
@@ -65,7 +72,11 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
   // Only for sources RENAMED between V4 and V5. Identical names resolve via V4_DOCS.
   var V5_RENAMED_FROM_V4 = {
     'claims_outpatient': 'doctor-visits',
-    'claims_inpatient': 'hospital-admissions'
+    'claims_inpatient': 'hospital-admissions',
+    'nchs_mortality': 'nchs-mortality',
+    'fluview_ilinet': 'fluview',
+    'fluview_resp_lab_clinical': 'fluview_clinical',
+    'fluview_resp_lab_ph': 'fluview_clinical'
   };
 
   // Sources confirmed to have no V4 predecessor. Everything unlisted stays "Not yet verified".
@@ -79,7 +90,11 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
     'nwss': 'v5-signals/nwss.html',
     'claims_outpatient': 'v5-signals/claims_outpatient.html',
     'claims_inpatient': 'v5-signals/claims_inpatient.html',
-    'va_respiratory': 'v5-signals/va_respiratory.html'
+    'nchs_mortality': 'v5-signals/nchs_mortality.html',
+    'flusurv': 'v5-signals/flusurv.html',
+    'fluview_ilinet': 'v5-signals/fluview_ilinet.html',
+    'fluview_resp_lab_clinical': 'v5-signals/fluview_resp_lab_clinical.html',
+    'fluview_resp_lab_ph': 'v5-signals/fluview_resp_lab_ph.html'
   };
 
   var code = function (s) { return '<code>' + s + '</code>'; };
