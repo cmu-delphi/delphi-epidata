@@ -66,9 +66,9 @@ The table below highlights the primary headline indicators for respiratory admis
 | `covid_icu_patients_ew` | `totalconfc19icupats` | COVID-19 | Count | Total ICU patients with COVID-19 (Wednesday snapshot). |
 | `flu_icu_patients_ew` | `totalconffluicupats` | Influenza | Count | Total ICU patients with influenza (Wednesday snapshot). |
 | `rsv_icu_patients_ew` | `totalconfrsvicupats` | RSV | Count | Total ICU patients with RSV (Wednesday snapshot). |
-| `hosprep_confirmed_admissions_covid_ew` | `hospreptotalconfc19newadm` | COVID-19 | Facility Count | Number of acute care hospitals reporting COVID-19 admissions. |
-| `hosprep_confirmed_admissions_flu_ew` | `hospreptotalconfflunewadm` | Influenza | Facility Count | Number of acute care hospitals reporting influenza admissions. |
-| `hosprep_confirmed_admissions_rsv_ew` | `hospreptotalconfrsvnewadm` | RSV | Facility Count | Number of acute care hospitals reporting RSV admissions. |
+| `hosprep_confirmed_admissions_covid_ew` | `totalconfc19newadmhosprep` | COVID-19 | Facility Count | Number of acute care hospitals reporting COVID-19 admissions. |
+| `hosprep_confirmed_admissions_flu_ew` | `totalconfflunewadmhosprep` | Influenza | Facility Count | Number of acute care hospitals reporting influenza admissions. |
+| `hosprep_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmhosprep` | RSV | Facility Count | Number of acute care hospitals reporting RSV admissions. |
 
 ### Indicator Families
 
