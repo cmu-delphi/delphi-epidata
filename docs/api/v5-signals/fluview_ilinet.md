@@ -94,7 +94,9 @@ Observations cover 7-day epidemiological weeks defined by the CDC's Morbidity an
 
 All four geographic levels (`nation`, `hhs`, `census_division`, `state`) are computed natively by the CDC and ingested directly without regional aggregation (`fill_method = 'source'`).
 
-Under `state`, the CDC publishes standard states, territories, and two separate New York records: New York City (`nyc`) and New York State excluding NYC (`ny_minus_nyc`). Delphi reconstructs a combined statewide `ny` record per week (`fill_method = 'nyc_plus_ny_minus_nyc'`) when both components are present and non-null. Raw counts are summed directly:
+At the `state` level, the CDC reports New York as two separate jurisdictions: New York City (`nyc`) and New York State excluding NYC (`ny_minus_nyc`). When both are reported for a given week, Delphi reconstructs a combined statewide `ny` record (`fill_method = 'nyc_plus_ny_minus_nyc'`).
+
+Raw counts are summed directly:
 
 $$
 Y_{\text{NY}, t} = Y_{\text{NYC}, t} + Y_{\text{NY-NYC}, t}
@@ -133,7 +135,7 @@ In V3, age-stratified counts were flattened into separate columns (`num_age_0` t
 What changed in V5:
 
 - **Age Stratification via Keys.** Rather than maintaining separate column names, all age groups are unified under the `num_ili` indicator and categorized using `extra_keys`.
-- **Exclusion of State-Level `wili`.** The legacy V3 pipeline coalesced unweighted `ili` into `wili` when weighted ILI was missing at the state level. V5 eliminates this conflation: `wili` is published only where the CDC computes it (national, HHS, and census divisions).
+- **Exclusion of State-Level `wili`.** The legacy V3 endpoint substituted unweighted `ili` into `wili` when weighted ILI was missing at the state level. V5 removes this substitution: `wili` is published only where the CDC computes it (national, HHS, and census divisions).
 - **Discontinuation of Pre-2010 Imputation.** The legacy V3 endpoint provided sensor-fusion regression estimates for state-level data prior to 2010w40. V5 serves direct CDC observations without synthetic historical imputation.
 
 ---

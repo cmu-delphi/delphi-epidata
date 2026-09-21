@@ -129,7 +129,7 @@ Describe how raw data becomes each signal.
 
 `### Temporal Handling` documents the reference time basis (e.g. date of service vs. date of report), week-ending alignment, drop rules (e.g. dropping first-of-month batching artifacts), and holiday adjustments.
 
-`### Geographic Handling` covers native and derived levels, custom geographic units (such as facility catchments or sampling sites), crosswalking, catchment disaggregation, population weighting, and spatial roll-ups. Clarify `fill_method` here: state why `fill_method` is always `source` when no imputation is used, or detail the available choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
+`### Geographic Handling` covers native and derived levels, custom geographic units (such as facility catchments or sampling sites), crosswalking, catchment disaggregation, population weighting, and spatial roll-ups. If all levels are native and unmodified from the source provider, state this directly without redundant tier enumeration. Document any rare units (such as sub-state catchments or island territories) and spatial adjustments (such as New York statewide pooling or geographic exclusions) directly within this section. Clarify `fill_method` here: state why `fill_method` is always `source` when no imputation is used, or detail the available choices (`source`, `fill_zero`, `fill_ave`, or custom values such as `nyc_plus_ny_minus_nyc`) when multiple aggregation paths or reconstructions exist.
 
 ### 7. Relationship to V4 or V3
 
@@ -262,7 +262,9 @@ Reference time basis, week-ending alignment, date shifts, or accumulation rules.
 
 ### Geographic Handling
 
-Which levels are native and which are derived, any custom geographic units (such as facility catchments or sampling sites), the weighting used, and how `fill_method` applies. State why `fill_method` is always `source` when no imputation is performed, or explain the choices (`source`, `fill_zero`, `fill_ave`) when multiple aggregation paths exist.
+State whether levels are native or derived, and clarify why `fill_method` is `source` or what other methods exist. If all levels are native and unmodified, state this directly without redundant tier enumeration (e.g., "All geographic levels (`nation`, `state`) are computed natively by [Provider] and ingested directly without regional aggregation (`fill_method = 'source'`).").
+
+Describe any rare jurisdictions, sub-state catchments, or spatial adjustments (e.g., New York statewide pooling or geographic exclusions) directly in this section.
 
 ---
 
