@@ -66,9 +66,9 @@ The table below highlights the primary headline indicators for respiratory admis
 | `covid_icu_patients_ew` | `totalconfc19icupats` | COVID-19 | Count | Total ICU patients with COVID-19 (Wednesday snapshot). |
 | `flu_icu_patients_ew` | `totalconffluicupats` | Influenza | Count | Total ICU patients with influenza (Wednesday snapshot). |
 | `rsv_icu_patients_ew` | `totalconfrsvicupats` | RSV | Count | Total ICU patients with RSV (Wednesday snapshot). |
-| `hosprep_confirmed_admissions_covid_ew` | `hospreptotalconfc19newadm` | COVID-19 | Facility Count | Number of acute care hospitals reporting COVID-19 admissions. |
-| `hosprep_confirmed_admissions_flu_ew` | `hospreptotalconfflunewadm` | Influenza | Facility Count | Number of acute care hospitals reporting influenza admissions. |
-| `hosprep_confirmed_admissions_rsv_ew` | `hospreptotalconfrsvnewadm` | RSV | Facility Count | Number of acute care hospitals reporting RSV admissions. |
+| `hosprep_confirmed_admissions_covid_ew` | `totalconfc19newadmhosprep` | COVID-19 | Facility Count | Number of acute care hospitals reporting COVID-19 admissions. |
+| `hosprep_confirmed_admissions_flu_ew` | `totalconfflunewadmhosprep` | Influenza | Facility Count | Number of acute care hospitals reporting influenza admissions. |
+| `hosprep_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmhosprep` | RSV | Facility Count | Number of acute care hospitals reporting RSV admissions. |
 
 ### Indicator Families
 
@@ -172,6 +172,7 @@ Wednesday snapshot counts of hospitalized patients with confirmed COVID-19, infl
 #### 3. New Admissions by Age Group
 
 Weekly counts of new confirmed patient admissions are reported across 10 age brackets (0–4, 5–17, pediatric total, 18–49, 50–64, 65–74, 75+, adult total, unknown age, and total all ages) for COVID-19, influenza, and RSV.
+In the near future these will be migrated to long-format with age group as a key column.
 
 <details markdown="1">
 <summary><strong>New Hospital Admissions by Age Group</strong></summary>
