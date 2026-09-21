@@ -12,7 +12,7 @@ nav_order: 9
 | :--- | :--- |
 | **Source Name** | `flusurv` |
 | **Data Source** | [CDC FluSurv-NET](https://www.cdc.gov/fluview/overview/influenza-hospitalization-surveillance.html) via [CDC GRASP API](https://gis.cdc.gov/Flu3/) |
-| **Geographic Levels** | `state`, `flusurv_site` |
+| **Geographic Levels** | `state`, `msa`, `nation`, `misc` |
 | **Temporal Granularity** | Week, ending Saturday |
 | **Reporting Cadence** | Weekly |
 | **Temporal Scope Start** | 2003-10-04 (2003w40) |
@@ -119,21 +119,20 @@ Observations cover 7-day epidemiological weeks defined by the CDC's Morbidity an
 
 ### Geographic Handling
 
-Both geographic levels (`state` and `flusurv_site`) are computed upstream by the CDC. Since Delphi ingests these rates directly from the CDC without spatial interpolation, regional aggregation, or imputation, `fill_method` is always set to `source`.
+All four geographic levels (`nation`, `state`, `msa`, and `misc`) are computed upstream by the CDC. Since Delphi ingests these rates directly from the CDC without spatial interpolation, regional aggregation, or imputation, `fill_method` is always set to `source`.
 
 FluSurv-NET monitors hospitalized cases across designated sentinel hospital catchments rather than whole state or national populations.
 
-The `state` level reports rates for participating sentinel states using standard two-letter postal codes. These rates reflect participating county catchments within each state rather than complete statewide populations.
+Delphi maps CDC catchments to standard geographic levels where applicable:
 
-The `flusurv_site` level covers sub-state catchments and multi-state network rollups computed by the CDC:
+| Geographic Level (`geo_type`) | Location (`geo_value`) | Description |
+| :--- | :--- | :--- |
+| `nation` | `us` | Whole-network aggregate across all participating FluSurv-NET sites |
+| `state` | Two-letter postal codes | Participating sentinel states |
+| `msa` | `10580`, `40380` | Albany (`10580`) and Rochester (`40380`) metropolitan statistical areas in New York |
+| `misc` | `network_eip`, `network_ihsp` | CDC partial-network rollups for Emerging Infections Program and IHSP sites |
 
-| Location | Description |
-| :--- | :--- |
-| `ny_albany` | Albany, NY catchment area |
-| `ny_rochester` | Rochester, NY catchment area |
-| `network_all` | Entire FluSurv-NET surveillance network |
-| `network_eip` | Emerging Infections Program network sites |
-| `network_ihsp` | Influenza Hospitalization Surveillance Project sites |
+Rates reflect designated hospital catchments within each area rather than full statewide or nationwide populations. Delphi serves these upstream figures directly without regional rollups or spatial imputation.
 
 ---
 
@@ -177,7 +176,7 @@ In V3, queries returned wide records containing all demographic rate fields in a
 What changed in V5:
 
 - **Signal Standardization.** Demographic rate categories are queried as individual signals using the standard `signal` parameter rather than separate columns in a single record.
-- **Geographic Distinction.** Sentinel states are classified as `geo_type = 'state'`, while multi-site networks and sub-state catchments are assigned `geo_type = 'flusurv_site'`.
+- **Geographic Distinction.** Sentinel states use `geo_type = 'state'`, the two New York sub-state sites map to standard MSAs (`10580`, `40380`), the full-network rollup maps to `nation:us`, and partial-network aggregates map to `geo_type = 'misc'`.
 - **Revision History.** Past releases and revisions are queried using `snapshot_date` or the `/archive/` endpoint instead of the legacy `issues` and `lag` parameters.
 
 ---
@@ -190,8 +189,8 @@ What changed in V5:
 | :--- | :--- | :--- | :--- |
 | `signal` | Primary Key | string | The name of the indicator (e.g., `rate_overall`, `rate_age_0`). |
 | `report_time` | Primary Key | date | The CDC update date on which Delphi fetched the data (`YYYY-MM-DD`). |
-| `geo_type` | Primary Key | string | Geographic category (`state` or `flusurv_site`). |
-| `geo_value` | Primary Key | string | Catchment identifier. |
+| `geo_type` | Primary Key | string | Geographic category (`nation`, `state`, `msa`, `misc`). |
+| `geo_value` | Primary Key | string | Location identifier (`us`, two-letter state postal code, 5-digit CBSA code, or network identifier). |
 | `fill_method` | Primary Key | string | Treatment of missing data or aggregation. Always `source` because rates are ingested directly without imputation. |
 | `reference_time` | Primary Key | date | Saturday week-ending date of the surveillance week (`YYYY-MM-DD`). |
 | `value` | Value Column | float | Laboratory-confirmed influenza hospitalization rate per 100,000 population. |
