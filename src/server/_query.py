@@ -16,6 +16,7 @@ from flask import Response
 from flask import request
 from sqlalchemy import text
 from sqlalchemy.engine import Row
+from delphi_utils import get_structured_logger
 
 from ._common import db
 from ._printer import create_printer, APrinter
@@ -302,7 +303,9 @@ def execute_queries(
     try:
         r = run_query(p, query_list.pop(0))
     except Exception as e:
-        raise DatabaseErrorException(str(e))
+        # log the internal details server-side only; the client gets a generic message
+        get_structured_logger("server_error").error("database query failed", exception=e)
+        raise DatabaseErrorException()
 
     # now use a generator for sending the rows and execute all the other queries
     return p(gen(r))
