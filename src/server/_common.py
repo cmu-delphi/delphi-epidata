@@ -30,31 +30,54 @@ access to the SQL Alchemy connection for this request
 db: Connection = cast(Connection, LocalProxy(_get_db))
 
 
+def _resolve_client_ip(remote_addr, x_forwarded_for, x_real_ip, depth):
+    """Resolve the real client IP address from proxy headers.
+
+    Only the rightmost ``depth`` entries of the ``X-Forwarded-For`` chain were
+    appended by trusted proxies; everything to their left is client-controlled
+    and must not be trusted as an identity -- doing so would let an anonymous
+    client rotate a fresh rate-limit key per request and poison ``real_remote_addr``
+    logs. When the chain is shorter than the declared depth (over-declared depth,
+    or a client reaching the server directly), none of the chain is trustworthy,
+    so the actual connecting peer address is used instead.
+
+    A negative ``depth`` is the documented special case of trusting the whole
+    chain, and is only safe when the outermost proxy strips client-supplied
+    ``X-Forwarded-For`` headers. ``X-Real-Ip`` is only honored when the server is
+    actually behind proxies (it is set -- and overwritten -- by the proxy itself).
+    """
+    if depth and x_forwarded_for:
+        chain = [part.strip() for part in x_forwarded_for.split(",") if part.strip()]
+        if chain:
+            if depth > 0:
+                if len(chain) >= depth:
+                    # The leftmost entry of the trusted suffix is the client address
+                    # as seen by the outermost trusted proxy.
+                    return chain[-depth]
+                # Over-declared depth (or a direct connection): none of the chain
+                # is trustworthy, so fall back to the actual connecting peer
+                # instead of trusting client-controlled entries.
+                return remote_addr
+            # Negative depth: trust the whole chain (see caveat above).
+            return chain[0]
+        # A blank X-Forwarded-For header carries no information; treat it as absent.
+    if depth and x_real_ip:
+        return x_real_ip
+    return remote_addr
+
+
 def get_real_ip_addr(req):  # `req` should be a Flask.request object
-    if REVERSE_PROXY_DEPTH:
-        # we only expect/trust (up to) "REVERSE_PROXY_DEPTH" number of proxies between this server and the outside world.
-        # a REVERSE_PROXY_DEPTH of 0 means not proxied, i.e. server is globally directly reachable.
-        # a negative proxy depth is a special case to trust the whole chain -- not generally recommended unless the
-        # most-external proxy is configured to disregard "X-Forwarded-For" from outside.
-        # really, ONLY trust the following headers if reverse proxied!!!
-        if "X-Forwarded-For" in req.headers:
-            full_proxy_chain = req.headers["X-Forwarded-For"].split(",")
-            # eliminate any extra addresses at the front of this list, as they could be spoofed.
-            if REVERSE_PROXY_DEPTH > 0:
-                depth = REVERSE_PROXY_DEPTH
-            else:
-                # special case for -1/negative: setting `depth` to 0 will not strip any items from the chain
-                depth = 0
-            trusted_proxy_chain = full_proxy_chain[-depth:]
-            # accept the first (or only) address in the remaining trusted part of the chain as the actual remote address
-            return trusted_proxy_chain[0].strip()
-
-        # fall back to "X-Real-Ip" if "X-Forwarded-For" isnt present
-        if "X-Real-Ip" in req.headers:
-            return req.headers["X-Real-Ip"]
-
-    # if we are not proxied (or we are proxied but the headers werent present and we fell through to here), just use the remote ip addr as the true client address
-    return req.remote_addr
+    # we only expect/trust (up to) "REVERSE_PROXY_DEPTH" number of proxies between this server and the outside world.
+    # a REVERSE_PROXY_DEPTH of 0 means not proxied, i.e. server is globally directly reachable.
+    # a negative proxy depth is a special case to trust the whole chain -- not generally recommended unless the
+    # most-external proxy is configured to disregard "X-Forwarded-For" from outside.
+    # really, ONLY trust the following headers if reverse proxied!!!
+    return _resolve_client_ip(
+        req.remote_addr,
+        req.headers.get("X-Forwarded-For"),
+        req.headers.get("X-Real-Ip"),
+        REVERSE_PROXY_DEPTH,
+    )
 
 
 def log_info_with_request(message, **kwargs):
