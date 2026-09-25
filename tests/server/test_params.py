@@ -19,6 +19,7 @@ from delphi.epidata.server._params import (
     parse_time_arg,
     parse_day_value,
     parse_week_value,
+    parse_date,
     parse_day_range_arg,
     parse_day_arg,
     GeoSet,
@@ -254,6 +255,15 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_week_value, "20200100")
                 self.assertRaises(ValidationFailedException, parse_week_value, "2020-03-11")
                 self.assertRaises(ValidationFailedException, parse_week_value, "2020-02-30---20200403")
+            with self.subTest("invalid week numbers"):
+                # week 00 and weeks above 53 are not real calendar weeks
+                self.assertRaises(ValidationFailedException, parse_week_value, "202100")
+                self.assertRaises(ValidationFailedException, parse_week_value, "202154")
+                self.assertRaises(ValidationFailedException, parse_week_value, "202199")
+                self.assertRaises(ValidationFailedException, parse_week_value, "000000")
+            with self.subTest("invalid week range endpoints"):
+                self.assertRaises(ValidationFailedException, parse_week_value, "202100-202110")
+                self.assertRaises(ValidationFailedException, parse_week_value, "202101-202199")
 
     def test_parse_day_value(self):
         with app.test_request_context(""):
@@ -273,6 +283,19 @@ class UnitTests(unittest.TestCase):
                 self.assertRaises(ValidationFailedException, parse_day_value, "202001")
                 self.assertRaises(ValidationFailedException, parse_day_value, "2020-03-111")
                 self.assertRaises(ValidationFailedException, parse_day_value, "2020-02-30---20200403")
+            with self.subTest("impossible calendar dates"):
+                # month 13, February 30, and all-zero dates must not parse
+                self.assertRaises(ValidationFailedException, parse_day_value, "20201301")
+                self.assertRaises(ValidationFailedException, parse_day_value, "20200230")
+                self.assertRaises(ValidationFailedException, parse_day_value, "2020-13-01")
+                self.assertRaises(ValidationFailedException, parse_day_value, "00000000")
+            with self.subTest("impossible calendar date range endpoints"):
+                self.assertRaises(ValidationFailedException, parse_day_value, "20201301-20201305")
+                self.assertRaises(ValidationFailedException, parse_day_value, "20200201-20200230")
+            with self.subTest("leap day"):
+                # 2020 is a leap year, 2021 is not
+                self.assertEqual(parse_day_value("20200229"), 20200229)
+                self.assertRaises(ValidationFailedException, parse_day_value, "20210229")
 
     def test_parse_time_arg(self):
         with self.subTest("empty"):
@@ -324,7 +347,7 @@ class UnitTests(unittest.TestCase):
                 self.assertRaisesRegex(ValidationFailedException, "mixes \"day\" and \"week\" time types", parse_time_arg)
             with app.test_request_context("/?time=day:20201201;week:202012"):
                 self.assertRaisesRegex(ValidationFailedException, "mixes \"day\" and \"week\" time types", parse_time_arg)
-            with app.test_request_context("/?time=day:*;day:20202012;week:202101-202104"):
+            with app.test_request_context("/?time=day:*;day:20201201;week:202101-202104"):
                 self.assertRaisesRegex(ValidationFailedException, "mixes \"day\" and \"week\" time types", parse_time_arg)
 
     def test_parse_day_range_arg(self):
@@ -448,6 +471,30 @@ class UnitTests(unittest.TestCase):
         with self.subTest("not a date"):
             with app.test_request_context("/?s=abc"):
                 self.assertRaises(ValidationFailedException, lambda: extract_date("s"))
+        with self.subTest("wildcard means no constraint"):
+            # as_of=* behaves like an omitted as_of (latest issue), and must
+            # never leak the "*" string into an integer SQL comparison
+            with app.test_request_context("/?s=*"):
+                self.assertIsNone(extract_date("s"))
+        with self.subTest("impossible calendar date"):
+            with app.test_request_context("/?s=20201301"):
+                self.assertRaises(ValidationFailedException, lambda: extract_date("s"))
+            with app.test_request_context("/?s=2020-02-30"):
+                self.assertRaises(ValidationFailedException, lambda: extract_date("s"))
+        with self.subTest("negative or malformed"):
+            with app.test_request_context("/?s=-1"):
+                self.assertRaises(ValidationFailedException, lambda: extract_date("s"))
+
+    def test_parse_date(self):
+        # parse_date is int-typed: it must never return a string sentinel
+        with app.test_request_context(""):
+            self.assertEqual(parse_date("20200101"), 20200101)
+            self.assertEqual(parse_date("2020-01-01"), 20200101)
+            self.assertRaises(ValidationFailedException, parse_date, "*")
+            self.assertRaises(ValidationFailedException, parse_date, "-1")
+            self.assertRaises(ValidationFailedException, parse_date, "20201301")
+            self.assertRaises(ValidationFailedException, parse_date, "20200230")
+            self.assertRaises(ValidationFailedException, parse_date, "2020-13-01")
 
     def test_extract_dates(self):
         with self.subTest("empty"):
