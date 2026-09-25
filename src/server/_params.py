@@ -1,6 +1,7 @@
 from math import inf
 import re
 from dataclasses import dataclass
+from datetime import date
 from typing import List, Optional, Sequence, Tuple, Union
 import delphi_utils
 
@@ -176,6 +177,25 @@ def _verify_range(start: int, end: int) -> IntRange:
     raise ValidationFailedException(f"the given range {start}-{end} is inverted")
 
 
+def _validate_calendar_date(value: int, original: str) -> int:
+    # value is a date in the form YYYYMMDD; reject impossible calendar dates
+    # (e.g. month 13 or February 30) so they never reach SQL as integers
+    year, month, day = value // 10000, (value // 100) % 100, value % 100
+    try:
+        date(year, month, day)
+    except ValueError:
+        raise ValidationFailedException(f"{original} is not a valid calendar date")
+    return value
+
+
+def _validate_week_value(value: int, original: str) -> int:
+    # value is a week in the form YYYYWW; week numbers run from 01 to 53
+    year, week = divmod(value, 100)
+    if year <= 0 or not 1 <= week <= 53:
+        raise ValidationFailedException(f"{original} is not a valid week (expected YYYYWW with week 01-53)")
+    return value
+
+
 def parse_week_value(time_value: str) -> IntRange:
     count_dashes = time_value.count("-")
     msg = f"{time_value} does not match a known format YYYYWW or YYYYWW-YYYYWW"
@@ -184,14 +204,14 @@ def parse_week_value(time_value: str) -> IntRange:
         # plain delphi date YYYYWW
         if not re.match(r"^(\d{6})$", time_value, re.MULTILINE):
             raise ValidationFailedException(msg)
-        return int(time_value)
+        return _validate_week_value(int(time_value), time_value)
 
     if count_dashes == 1:
         # delphi date range YYYYWW-YYYYWW
         if not re.match(r"^(\d{6})-(\d{6})$", time_value, re.MULTILINE):
             raise ValidationFailedException(msg)
         [first, last] = time_value.split("-", 2)
-        return _verify_range(int(first), int(last))
+        return _verify_range(_validate_week_value(int(first), first), _validate_week_value(int(last), last))
 
     raise ValidationFailedException(msg)
 
@@ -204,27 +224,30 @@ def parse_day_value(time_value: str) -> IntRange:
         # plain delphi date YYYYMMDD
         if not re.match(r"^(\d{8})$", time_value, re.MULTILINE):
             raise ValidationFailedException(msg)
-        return int(time_value)
+        return _validate_calendar_date(int(time_value), time_value)
 
     if count_dashes == 2:
         # iso date YYYY-MM-DD
         if not re.match(r"^(\d{4}-\d{2}-\d{2})$", time_value, re.MULTILINE):
             raise ValidationFailedException(msg)
-        return int(time_value.replace("-", ""))
+        return _validate_calendar_date(int(time_value.replace("-", "")), time_value)
 
     if count_dashes == 1:
         # delphi date range YYYYMMDD-YYYYMMDD
         if not re.match(r"^(\d{8})-(\d{8})$", time_value, re.MULTILINE):
             raise ValidationFailedException(msg)
         [first, last] = time_value.split("-", 2)
-        return _verify_range(int(first), int(last))
+        return _verify_range(_validate_calendar_date(int(first), first), _validate_calendar_date(int(last), last))
 
     if count_dashes == 6:
         # delphi iso date range YYYY-MM-DD--YYYY-MM-DD
         if not re.match(r"^(\d{4}-\d{2}-\d{2})--(\d{4}-\d{2}-\d{2})$", time_value, re.MULTILINE):
             raise ValidationFailedException(msg)
         [first, last] = time_value.split("--", 2)
-        return _verify_range(int(first.replace("-", "")), int(last.replace("-", "")))
+        return _verify_range(
+            _validate_calendar_date(int(first.replace("-", "")), first),
+            _validate_calendar_date(int(last.replace("-", "")), last),
+        )
 
     raise ValidationFailedException(msg)
 
@@ -405,12 +428,11 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
 def parse_date(s: str) -> int:
     # parses a given string in format YYYYMMDD or YYYY-MM-DD to a number in the form YYYYMMDD
     try:
-        if s == "*":
-            return s
-        else:
-            if len(s) > 10:  # max len of date is 10 (YYYY-MM-DD format)
-                raise ValueError
-            return int(s.replace("-", ""))
+        if len(s) > 10:  # max len of date is 10 (YYYY-MM-DD format)
+            raise ValueError
+        if not re.fullmatch(r"\d{8}|\d{4}-\d{2}-\d{2}", s):
+            raise ValueError
+        return _validate_calendar_date(int(s.replace("-", "")), s)
     except ValueError:
         raise ValidationFailedException(f"not a valid date: {s}")
 
@@ -418,6 +440,13 @@ def parse_date(s: str) -> int:
 def extract_date(key: Union[str, Sequence[str]]) -> Optional[int]:
     s = _extract_value(key)
     if not s:
+        return None
+    if s == "*":
+        # wildcard: no constraint. this matches the documented default behavior
+        # (e.g. an omitted as_of returns the most recently issued value) and
+        # keeps the "*" sentinel from leaking as a string into integer SQL
+        # comparisons, where MySQL would coerce it to 0 and silently return
+        # empty results
         return None
     return parse_date(s)
 
