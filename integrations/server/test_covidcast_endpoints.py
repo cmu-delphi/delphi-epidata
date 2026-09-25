@@ -403,3 +403,29 @@ class CovidcastEndpointTests(CovidcastBase):
         self.assertEqual(len(out["epidata"]), 2)
         self.assertEqual(out["epidata"], ['state:ny', 'state:pa'])
 
+    def test_geo_coverage_restricted(self):
+        """Request geo_coverage and verify role-restricted sources are hidden from unauthorized callers."""
+
+        # insert data from two different sources, one restricted/protected (quidel), one not
+        self._insert_rows([
+            CovidcastTestRow.make_default_row(source="quidel", signal="raw_pct_negative", geo_type="state", geo_value="pa"),
+            CovidcastTestRow.make_default_row(source="src", signal="sig", geo_type="state", geo_value="pa"),
+        ])
+
+        update_crossref()
+
+        # unauthenticated (no api key) and unauthorized (user w/o privilege) callers must not see the restricted source
+        for auth in (None, AUTH):
+            with self.subTest(auth=auth):
+                out = self._fetch("/geo_coverage", auth=auth, geo="state:pa")
+                sources = {o["source"] for o in out["epidata"]}
+                self.assertNotIn("quidel", sources)
+                self.assertIn("src", sources)
+
+        # a caller holding the required role sees both sources
+        qauth = ('epidata', 'quidel_key')
+        out = self._fetch("/geo_coverage", auth=qauth, geo="state:pa")
+        sources = {o["source"] for o in out["epidata"]}
+        self.assertIn("quidel", sources)
+        self.assertIn("src", sources)
+

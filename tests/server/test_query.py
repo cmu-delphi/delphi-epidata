@@ -8,6 +8,7 @@ from delphi.epidata.server._query import (
     date_string,
     to_condition,
     filter_strings,
+    filter_strings_not_in,
     filter_integers,
     filter_dates,
     filter_geo_sets,
@@ -62,6 +63,17 @@ class UnitTests(unittest.TestCase):
             "(a = :a_0 OR a = :a_1 OR a BETWEEN :a_2 AND :a_2_2)",
         )
         self.assertEqual(params, {"a_0": "1", "a_1": "2", "a_2": "1", "a_2_2": "4"})
+
+    def test_filter_strings_not_in(self):
+        params = {}
+        self.assertEqual(filter_strings_not_in("a", None, "a", params), "TRUE")
+        self.assertEqual(params, {})
+        params = {}
+        self.assertEqual(filter_strings_not_in("a", ["1"], "a", params), "NOT (a = :a_0)")
+        self.assertEqual(params, {"a_0": "1"})
+        params = {}
+        self.assertEqual(filter_strings_not_in("a", ["1", "2"], "a", params), "NOT (a = :a_0 OR a = :a_1)")
+        self.assertEqual(params, {"a_0": "1", "a_1": "2"})
 
     def test_filter_integers(self):
         params = {}
