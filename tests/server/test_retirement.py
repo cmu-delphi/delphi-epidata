@@ -42,45 +42,53 @@ class UnitTests(unittest.TestCase):
         # counts, not time values
         self.assertFalse(is_time_param("lag"))
         self.assertFalse(is_time_param("hours"))
-        self.assertFalse(is_time_param(("basis", "basis_shift")))
+        self.assertFalse(is_time_param("basis_shift"))
+        # `basis` is a day value, so the tuple form matches on it; only `extract_integer` reads
+        # ("basis", "basis_shift") and that helper is not hooked, so the count is never checked
+        self.assertTrue(is_time_param(("basis", "basis_shift")))
 
     def test_require_servable_times_days(self):
-        # the cutoff day itself is still served
-        require_servable_times("dates", RETIREMENT_CUTOFF_DAY, "day")
-        require_servable_times("dates", 20200101, "day")
-        # a range or list that includes servable days is still served
-        require_servable_times("dates", (20200101, 20300101), "day")
-        require_servable_times("dates", [20270101, 20200101], "day")
-        # unbounded requests are never retired
-        require_servable_times("dates", ["*"], "day")
-        require_servable_times("dates", True, "day")
-        require_servable_times("dates", None, "day")
+        # a request context is needed: raising DataRetiredException inspects request.values to
+        # decide whether to use real HTTP status codes
+        with app.test_request_context("/"):
+            # the cutoff day itself is still served
+            require_servable_times("dates", RETIREMENT_CUTOFF_DAY, "day")
+            require_servable_times("dates", 20200101, "day")
+            # a range or list that includes servable days is still served
+            require_servable_times("dates", (20200101, 20300101), "day")
+            require_servable_times("dates", [20270101, 20200101], "day")
+            # unbounded requests are never retired
+            require_servable_times("dates", ["*"], "day")
+            require_servable_times("dates", True, "day")
+            require_servable_times("dates", None, "day")
 
-        with self.assertRaises(DataRetiredException):
-            require_servable_times("dates", 20270101, "day")
-        with self.assertRaises(DataRetiredException):
-            require_servable_times("dates", (20261001, 20270101), "day")
-        with self.assertRaises(DataRetiredException):
-            require_servable_times("dates", [20270101, 20261001], "day")
+            with self.assertRaises(DataRetiredException):
+                require_servable_times("dates", 20270101, "day")
+            with self.assertRaises(DataRetiredException):
+                require_servable_times("dates", (20261001, 20270101), "day")
+            with self.assertRaises(DataRetiredException):
+                require_servable_times("dates", [20270101, 20261001], "day")
 
     def test_require_servable_times_weeks(self):
-        # the cutoff week is only partially covered but we still serve it
-        require_servable_times("epiweeks", RETIREMENT_CUTOFF_WEEK, "week")
-        require_servable_times("epiweeks", (202001, 202652), "week")
+        with app.test_request_context("/"):
+            # the cutoff week is only partially covered but we still serve it
+            require_servable_times("epiweeks", RETIREMENT_CUTOFF_WEEK, "week")
+            require_servable_times("epiweeks", (202001, 202652), "week")
 
-        with self.assertRaises(DataRetiredException):
-            require_servable_times("epiweeks", RETIREMENT_CUTOFF_WEEK + 1, "week")
-        with self.assertRaises(DataRetiredException):
-            require_servable_times("epiweeks", [202650], "week")
+            with self.assertRaises(DataRetiredException):
+                require_servable_times("epiweeks", RETIREMENT_CUTOFF_WEEK + 1, "week")
+            with self.assertRaises(DataRetiredException):
+                require_servable_times("epiweeks", [202650], "week")
 
     def test_require_servable_times_guesses_time_type(self):
-        # 6 digits -> epiweek, 8 digits -> day
-        with self.assertRaises(DataRetiredException):
-            require_servable_times("epiweeks", [202650])
-        with self.assertRaises(DataRetiredException):
-            require_servable_times("dates", [20270101])
-        require_servable_times("epiweeks", [202601])
-        require_servable_times("dates", [20260101])
+        with app.test_request_context("/"):
+            # 6 digits -> epiweek, 8 digits -> day
+            with self.assertRaises(DataRetiredException):
+                require_servable_times("epiweeks", [202650])
+            with self.assertRaises(DataRetiredException):
+                require_servable_times("dates", [20270101])
+            require_servable_times("epiweeks", [202601])
+            require_servable_times("dates", [20260101])
 
     def test_extract_integers(self):
         with app.test_request_context("/?epiweeks=202001-202050"):
