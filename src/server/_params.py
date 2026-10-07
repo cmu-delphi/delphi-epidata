@@ -8,6 +8,7 @@ from flask import request
 
 
 from ._exceptions import ValidationFailedException
+from ._retirement import is_time_param, require_servable_times
 from .utils import days_in_range, weeks_in_range, guess_time_value_is_day, guess_time_value_is_week, IntRange, TimeValues, days_to_ranges, weeks_to_ranges
 from ._validate import require_any, require_all
 
@@ -234,9 +235,13 @@ def _parse_time_set(time_type: str, time_values: Union[bool, Sequence[str]]) -> 
         return TimeSet(time_type, time_values)
 
     if time_type == "week":
-        return TimeSet("week", [parse_week_value(t) for t in time_values])
+        parsed = [parse_week_value(t) for t in time_values]
+        require_servable_times("time", parsed, "week")
+        return TimeSet("week", parsed)
     elif time_type == "day":
-        return TimeSet("day", [parse_day_value(t) for t in time_values])
+        parsed = [parse_day_value(t) for t in time_values]
+        require_servable_times("time", parsed, "day")
+        return TimeSet("day", parsed)
     raise ValidationFailedException(f'time param: {time_type} is not one of "day" or "week"')
 
 
@@ -279,6 +284,7 @@ def parse_day_range_arg(key: str) -> Tuple[int, int]:
     r = parse_day_value(v)
     if not isinstance(r, tuple):
         raise ValidationFailedException(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
+    require_servable_times(key, r, "day")
     return r
 
 
@@ -289,6 +295,7 @@ def parse_day_arg(key: str) -> int:
     r = parse_day_value(v)
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")
+    require_servable_times(key, r, "day")
     return r
 
 def parse_week_arg(key: str) -> int:
@@ -298,6 +305,7 @@ def parse_week_arg(key: str) -> int:
     r = parse_week_value(v)
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYWW")
+    require_servable_times(key, r, "week")
     return r
 
 
@@ -308,6 +316,7 @@ def parse_week_range_arg(key: str) -> Tuple[int, int]:
     r = parse_week_value(v)
     if not isinstance(r, tuple):
         raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
+    require_servable_times(key, r, "week")
     return r
 
 def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> TimeSet:
@@ -396,10 +405,14 @@ def extract_integers(key: Union[str, Sequence[str]]) -> Optional[List[IntRange]]
 
     try:
         values = [_parse_range(part) for part in parts]
-        # check for invalid values
-        return None if any(v is None for v in values) else values
     except ValueError as e:
         raise ValidationFailedException(f"{key}: not a number: {str(e)}")
+    # check for invalid values
+    if any(v is None for v in values):
+        return None
+    if is_time_param(key):
+        require_servable_times(key, values)
+    return values
 
 
 def parse_date(s: str) -> int:
@@ -419,7 +432,10 @@ def extract_date(key: Union[str, Sequence[str]]) -> Optional[int]:
     s = _extract_value(key)
     if not s:
         return None
-    return parse_date(s)
+    d = parse_date(s)
+    if is_time_param(key):
+        require_servable_times(key, d)
+    return d
 
 
 def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
@@ -453,6 +469,8 @@ def extract_dates(key: Union[str, Sequence[str]]) -> Optional[TimeValues]:
             # other time types tbd lol
             raise ValidationFailedException(f"unrecognized date format: {part}")
         values.append(r)
+    if is_time_param(key):
+        require_servable_times(key, values)
     return values
 
 def parse_source_signal_sets() -> List[SourceSignalSet]:

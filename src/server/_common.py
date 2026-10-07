@@ -1,4 +1,6 @@
 from typing import cast
+from datetime import datetime, timezone
+from email.utils import format_datetime
 import time
 
 from flask import Flask, g, request
@@ -8,7 +10,7 @@ from werkzeug.exceptions import Unauthorized
 from werkzeug.local import LocalProxy
 
 from delphi_utils import get_structured_logger
-from ._config import SECRET, REVERSE_PROXY_DEPTH
+from ._config import SECRET, REVERSE_PROXY_DEPTH, RETIREMENT_CUTOFF_DAY, RETIREMENT_MESSAGE, RETIREMENT_SUCCESSOR_LINK
 from ._db import engine
 from ._exceptions import DatabaseErrorException, EpiDataException
 from ._security import current_user, _is_public_route, resolve_auth_token, update_key_last_time_used, ERROR_MSG_INVALID_KEY
@@ -133,8 +135,31 @@ def before_request_execute():
         raise DatabaseErrorException()
 
 
+# RFC 8594 headers, served on every response so clients notice the retirement even when their
+# particular query still returns data. the date is the last day this API has data for.
+_RETIREMENT_HTTP_DATE = format_datetime(
+    datetime(
+        RETIREMENT_CUTOFF_DAY // 10000,
+        (RETIREMENT_CUTOFF_DAY % 10000) // 100,
+        RETIREMENT_CUTOFF_DAY % 100,
+        tzinfo=timezone.utc,
+    ),
+    usegmt=True,
+)
+
+
+def add_retirement_headers(response):
+    response.headers["Deprecation"] = _RETIREMENT_HTTP_DATE
+    response.headers["Sunset"] = _RETIREMENT_HTTP_DATE
+    response.headers.add("Link", f'<{RETIREMENT_SUCCESSOR_LINK}>; rel="successor-version"')
+    response.headers["X-Delphi-Epidata-Retirement"] = RETIREMENT_MESSAGE
+    return response
+
+
 @app.after_request
 def after_request_execute(response):
+    add_retirement_headers(response)
+
     total_time = time.time() - g._request_start_time
     # Convert to milliseconds
     total_time *= 1000
