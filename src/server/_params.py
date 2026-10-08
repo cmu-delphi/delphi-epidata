@@ -284,7 +284,8 @@ def parse_day_range_arg(key: str) -> Tuple[int, int]:
     r = parse_day_value(v)
     if not isinstance(r, tuple):
         raise ValidationFailedException(f"{key} must match YYYYMMDD-YYYYMMDD or YYYY-MM-DD--YYYY-MM-DD")
-    require_servable_times(key, r, "day")
+    if is_time_param(key):
+        require_servable_times(key, r, "day")
     return r
 
 
@@ -295,7 +296,8 @@ def parse_day_arg(key: str) -> int:
     r = parse_day_value(v)
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYMMDD or YYYY-MM-DD")
-    require_servable_times(key, r, "day")
+    if is_time_param(key):
+        require_servable_times(key, r, "day")
     return r
 
 def parse_week_arg(key: str) -> int:
@@ -305,7 +307,8 @@ def parse_week_arg(key: str) -> int:
     r = parse_week_value(v)
     if not isinstance(r, int):
         raise ValidationFailedException(f"{key} must match YYYYWW")
-    require_servable_times(key, r, "week")
+    if is_time_param(key):
+        require_servable_times(key, r, "week")
     return r
 
 
@@ -316,7 +319,8 @@ def parse_week_range_arg(key: str) -> Tuple[int, int]:
     r = parse_week_value(v)
     if not isinstance(r, tuple):
         raise ValidationFailedException(f"{key} must match YYYYWW-YYYYWW")
-    require_servable_times(key, r, "week")
+    if is_time_param(key):
+        require_servable_times(key, r, "week")
     return r
 
 def parse_day_or_week_arg(key: str, default_value: Optional[int] = None) -> TimeSet:

@@ -4,6 +4,7 @@ from datetime import date
 from enum import Enum
 
 from dotenv import load_dotenv
+from epiweeks import Week
 
 load_dotenv()
 
@@ -128,10 +129,11 @@ Requests that merely overlap the cutoff are still served, with the usual depreca
 RETIREMENT_CUTOFF_DAY = int(os.environ.get("RETIREMENT_CUTOFF_DAY", 20260922))
 # last epiweek for which this API has data; inclusive, YYYYWW.
 # this is the epiweek *containing* RETIREMENT_CUTOFF_DAY -- it is partially covered, so we serve it.
-RETIREMENT_CUTOFF_WEEK = int(os.environ.get("RETIREMENT_CUTOFF_WEEK", 202638))
-RETIREMENT_CUTOFF_DAY_ISO = date(
+_RETIREMENT_CUTOFF_DATE = date(
     RETIREMENT_CUTOFF_DAY // 10000, (RETIREMENT_CUTOFF_DAY % 10000) // 100, RETIREMENT_CUTOFF_DAY % 100
-).isoformat()
+)
+RETIREMENT_CUTOFF_WEEK = int(Week.fromdate(_RETIREMENT_CUTOFF_DATE).cdcformat())
+RETIREMENT_CUTOFF_DAY_ISO = _RETIREMENT_CUTOFF_DATE.isoformat()
 # where users should go instead
 RETIREMENT_SUCCESSOR_LINK = os.environ.get(
     "RETIREMENT_SUCCESSOR_LINK", "https://cmu-delphi.github.io/delphi-epidata/api/v5.html"

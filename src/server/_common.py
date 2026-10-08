@@ -135,21 +135,22 @@ def before_request_execute():
         raise DatabaseErrorException()
 
 
-# RFC 8594 headers, served on every response so clients notice the retirement even when their
-# particular query still returns data. the date is the last day this API has data for.
-_RETIREMENT_HTTP_DATE = format_datetime(
-    datetime(
-        RETIREMENT_CUTOFF_DAY // 10000,
-        (RETIREMENT_CUTOFF_DAY % 10000) // 100,
-        RETIREMENT_CUTOFF_DAY % 100,
-        tzinfo=timezone.utc,
-    ),
-    usegmt=True,
+# RFC 9745 `Deprecation` and RFC 8594 `Sunset` headers, served on every response so clients notice
+# the retirement even when their particular query still returns data. the date is the last day this
+# API has data for.
+_RETIREMENT_DATETIME = datetime(
+    RETIREMENT_CUTOFF_DAY // 10000,
+    (RETIREMENT_CUTOFF_DAY % 10000) // 100,
+    RETIREMENT_CUTOFF_DAY % 100,
+    tzinfo=timezone.utc,
 )
+# RFC 9745 uses a structured field date: "@" followed by unix seconds
+_RETIREMENT_DEPRECATION_DATE = f"@{int(_RETIREMENT_DATETIME.timestamp())}"
+_RETIREMENT_HTTP_DATE = format_datetime(_RETIREMENT_DATETIME, usegmt=True)
 
 
 def add_retirement_headers(response):
-    response.headers["Deprecation"] = _RETIREMENT_HTTP_DATE
+    response.headers["Deprecation"] = _RETIREMENT_DEPRECATION_DATE
     response.headers["Sunset"] = _RETIREMENT_HTTP_DATE
     response.headers.add("Link", f'<{RETIREMENT_SUCCESSOR_LINK}>; rel="successor-version"')
     response.headers["X-Delphi-Epidata-Retirement"] = RETIREMENT_MESSAGE

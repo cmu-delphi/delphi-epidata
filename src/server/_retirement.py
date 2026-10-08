@@ -17,8 +17,9 @@ from ._config import RETIREMENT_CUTOFF_DAY, RETIREMENT_CUTOFF_WEEK
 from ._exceptions import DataRetiredException
 from .utils import IntRange, guess_time_value_is_week
 
-# parameter names handled by the generic `extract_integers` / `extract_date(s)` helpers that hold
-# time values rather than counts (`lag`, `hours`, `weeks`, ... are counts and must not be checked).
+# request parameters that name the time values of the requested data. all parsers check only these.
+# counts (`lag`, `hours`, `weeks`, ...) are not time values. reference points (`as_of`, `latest`)
+# are not time values either: a value after the cutoff still selects the most recent data.
 TIME_PARAM_KEYS = frozenset(
     {
         "epiweeks",
@@ -27,8 +28,6 @@ TIME_PARAM_KEYS = frozenset(
         "issues",
         "publication_dates",
         "collection_weeks",
-        "as_of",
-        "latest",
         "basis",
         "date",
         "start_day",
