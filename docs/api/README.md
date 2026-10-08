@@ -155,7 +155,7 @@ retired in favor of cast-api / epidata-etl. See the [Delphi V5 API](v5.md) and t
 plus an `X-Delphi-Epidata-Retirement` header explaining the change.
 
 A request whose time values (`epiweeks`, `dates`, `time_values`, `date`, `window`, `start_day`,
-`end_day`, `issues`, `publication_dates`, `collection_weeks`, ...) lie *entirely* after the
+`end_day`, `issues`, `publication_dates`, `collection_weeks`, `as_of`, ...) lie *entirely* after the
 cutoff is rejected with HTTP `410 Gone` and a dedicated result code of `-3`, so that it is
 distinguishable from an ordinary parameter error (`-1`) or a genuinely empty result set (`-2`):
 
@@ -171,8 +171,8 @@ As with other errors, requests using the `classic` or `tree` output formats rece
 the same body. Requests that only *overlap* the cutoff — for example
 `epiweeks=202001-202652` or `time_values=*` — are still served normally, returning whatever data
 exists up to the cutoff.
-The `as_of` parameter is not a time value of the data, so it is never rejected: an `as_of` after the
-cutoff returns the most recent data, the same as omitting it.
+An `as_of` after the cutoff is rejected on purpose, although it would select the same data as a
+request without `as_of`: a request for a version after the cutoff gets the retirement message.
 
 # Example URLs
 

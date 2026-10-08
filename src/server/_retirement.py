@@ -17,9 +17,11 @@ from ._config import RETIREMENT_CUTOFF_DAY, RETIREMENT_CUTOFF_WEEK
 from ._exceptions import DataRetiredException
 from .utils import IntRange, guess_time_value_is_week
 
-# request parameters that name the time values of the requested data. all parsers check only these.
-# counts (`lag`, `hours`, `weeks`, ...) are not time values. reference points (`as_of`, `latest`)
-# are not time values either: a value after the cutoff still selects the most recent data.
+# request parameters that hold time values. all parsers check only these.
+# counts (`lag`, `hours`, `weeks`, ...) are not time values.
+# `latest` is the end of a window that can include servable days, so it is not checked.
+# `as_of` after the cutoff selects the same data as no `as_of`, but it is rejected on purpose: a
+# request for a version after the cutoff gets the retirement message.
 TIME_PARAM_KEYS = frozenset(
     {
         "epiweeks",
@@ -28,6 +30,7 @@ TIME_PARAM_KEYS = frozenset(
         "issues",
         "publication_dates",
         "collection_weeks",
+        "as_of",
         "basis",
         "date",
         "start_day",

@@ -40,8 +40,8 @@ class UnitTests(unittest.TestCase):
         self.assertTrue(is_time_param("epiweeks"))
         self.assertTrue(is_time_param("issues"))
         self.assertTrue(is_time_param(("as_of", "issues")))
-        # reference points, not time values of the data
-        self.assertFalse(is_time_param("as_of"))
+        self.assertTrue(is_time_param("as_of"))
+        # end of a window that can include servable days
         self.assertFalse(is_time_param("latest"))
         # counts, not time values
         self.assertFalse(is_time_param("lag"))
@@ -115,21 +115,19 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(extract_dates("issues"), [(20200101, 20270101)])
 
     def test_extract_date(self):
-        with app.test_request_context("/?basis=20270101"):
-            self.assertRaises(DataRetiredException, lambda: extract_date("basis"))
+        with app.test_request_context("/?as_of=20270101"):
+            self.assertRaises(DataRetiredException, lambda: extract_date("as_of"))
         with app.test_request_context("/?as_of=20200101"):
             self.assertEqual(extract_date("as_of"), 20200101)
 
-    def test_as_of_after_cutoff_is_served(self):
-        # as_of filters issue <= as_of, so a value after the cutoff selects the most recent data
+    def test_parse_day_or_week_as_of(self):
+        # backfill parses as_of as a day or a week
         with app.test_request_context("/?as_of=20270101"):
-            self.assertEqual(extract_date("as_of"), 20270101)
-        with app.test_request_context("/?as_of=2027-01-01"):
-            self.assertEqual(extract_date("as_of"), 20270101)
-        with app.test_request_context("/?as_of=20270101"):
-            self.assertEqual(parse_day_or_week_arg("as_of").time_values, [20270101])
+            self.assertRaises(DataRetiredException, lambda: parse_day_or_week_arg("as_of"))
         with app.test_request_context("/?as_of=202701"):
-            self.assertEqual(parse_day_or_week_arg("as_of").time_values, [202701])
+            self.assertRaises(DataRetiredException, lambda: parse_day_or_week_arg("as_of"))
+        with app.test_request_context(f"/?as_of={RETIREMENT_CUTOFF_DAY}"):
+            self.assertEqual(parse_day_or_week_arg("as_of").time_values, [RETIREMENT_CUTOFF_DAY])
 
     def test_latest_after_cutoff_is_served(self):
         # latest is the end of the coverage window, which can include servable days
