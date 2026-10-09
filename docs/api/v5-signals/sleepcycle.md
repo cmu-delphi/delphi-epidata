@@ -95,8 +95,15 @@ Smoothing is computed by Delphi.
 
 ### Uncertainty
 
-TODO Confidence interval formula and meaning.
-TODO discuss how DP is handled
+This source provides 90% confidence intervals for all indicators via the `ci_lower` and `ci_upper` columns ($$z = 1.645$$). Because cough indicators are binomial percentages, [Wilson score intervals](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval) are used inflated by the DP noise variance. It is estimated as
+
+$$
+100 \cdot \frac{\hat{p} + \frac{z^2}{2N} \pm z \sqrt{\frac{\hat{p}(1 - \hat{p})}{N} + \frac{z^2}{4N^2} + c \left(1 + \frac{z^2}{N}\right)}}{1 + \frac{z^2}{N}}
+$$
+
+where subtracting gives `ci_lower`, adding gives `ci_upper`, and $$c = \frac{\sigma^2_{\text{noise}}}{N^2}$$ scales the numerator noise variance $$\sigma^2_{\text{noise}}$$ to proportion units.
+
+This approach preserves nominal 90% coverage in the presence of differential privacy noise while keeping the intervals well-behaved near 0% and 100%.
 
 ### Temporal Handling
 
