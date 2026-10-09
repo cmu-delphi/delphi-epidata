@@ -107,9 +107,10 @@ This approach preserves nominal 90% coverage in the presence of differential pri
 
 ### Temporal Handling
 
-TODO right type of content for this section??
-Each reported value covers a single day.
-Data is updated 6 times a day
+Observations cover single calendar days. Each value reflects nocturnal cough events recorded during sleep sessions attributed to that date.
+
+- `reference_time` is the observation date (`YYYY-MM-DD`). For 7-day smoothed indicators (`_7dav`), `reference_time` marks the final date of the trailing 7-day window.
+- `report_time` is the ingestion timestamp in UTC. Sleep Cycle refreshes data upstream approximately every four hours (six times per day). 
 
 ### Geographic Handling
 
@@ -134,12 +135,14 @@ See the Missingness & Privacy section for more information.
 | Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
 | :--- | :--- | :--- | :--- |
 | `signal` | Primary Key | string | The name of the requested indicator. |
-| `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
+| `report_time` | Primary Key | datetime | Ingestion timestamp in UTC (`YYYY-MM-DD HH:MM:SS`). |
 | `geo_type` | Primary Key | string | Geographic level (e.g., `county`, `state`). |
 | `geo_value` | Primary Key | string | Unique code for the location (e.g., FIPS, state abbreviation). |
 | `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
 | `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`). |
 | `value` | Value Column | float | The recorded measurement (e.g., count, percentage, rate, or statistical estimate). |
+| `ci_lower` | Value Column | float | Lower bound of the 90% confidence interval. |
+| `ci_upper` | Value Column | float | Upper bound of the 90% confidence interval. |
 
 ---
 
