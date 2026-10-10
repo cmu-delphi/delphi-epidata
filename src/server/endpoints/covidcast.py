@@ -556,6 +556,9 @@ def handle_geo_coverage():
     q.set_fields(fields_string)
 
     q.apply_geo_filters("geo_type", "geo_value", geo_sets)
+    restricted_sources = [src for src, role in sources_protected_by_roles.items() if not (current_user and current_user.has_role(role))]
+    if restricted_sources:
+        q.where_strings_not_in("source", restricted_sources)
     q.set_sort_order("source", "signal")
     q.group_by = ["c." + field for field in fields_string] # this condenses duplicate results, similar to `SELECT DISTINCT`
 
