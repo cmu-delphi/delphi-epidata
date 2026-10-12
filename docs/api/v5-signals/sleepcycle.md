@@ -18,7 +18,7 @@ nav_order: 10
 | **Temporal Scope Start** | 2023-01-07 |
 | **Temporal Scope End** | Ongoing |
 | **Extra Key Columns** | None |
-| **License** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| **License** | [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) |
 
 
 ## Table of contents
@@ -211,6 +211,6 @@ That is, we start getting reports of what happened on reference date `t` _on_ da
 ## Source and Licensing
 
 De-identified digital surveillance contributed by Sleep Cycle.
-This dataset is made available under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+This dataset is made available under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
 It may not be used for commercial purposes.
 TODO
