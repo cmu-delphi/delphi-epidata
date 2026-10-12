@@ -88,7 +88,6 @@ Estimated numerator counts for non-county locations incorporate DP noise via the
 
 ### Smoothing
 
-TODO check
 Smoothing is computed by Delphi.
 For each geography, a 7-day trailing sum is taken of every noised numerator count and the total user count (denominator), from which the percentage is then calculated.
 The resulting smoothed metric is equivalent to the denominator-weighted pooled percentage.
