@@ -18,7 +18,7 @@ nav_order: 10
 | **Temporal Scope Start** | 2023-01-07 |
 | **Temporal Scope End** | Ongoing |
 | **Extra Key Columns** | None |
-| **License** | TODO |
+| **License** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 
 
 ## Table of contents
@@ -89,28 +89,35 @@ Estimated numerator counts for non-county locations incorporate DP noise via the
 ### Smoothing
 
 TODO check
-For each geography, a 7-day trailing sum is taken of every noised numerator count and the total user count, from which the percentageis then calculated.
-The window must contain at least 5 of 7 days to produce a value.
 Smoothing is computed by Delphi.
+For each geography, a 7-day trailing sum is taken of every noised numerator count and the total user count (denominator), from which the percentage is then calculated.
+The resulting smoothed metric is equivalent to the denominator-weighted pooled percentage.
+The 7-day window must contain at least 5 of 7 days to produce a value.
 
 ### Uncertainty
 
-This source provides 90% confidence intervals for all indicators via the `ci_lower` and `ci_upper` columns ($$z = 1.645$$). Because cough indicators are binomial percentages, [Wilson score intervals](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval) are used inflated by the DP noise variance. It is estimated as
+This source provides 90% confidence intervals for all indicators via the `ci_lower` and `ci_upper` columns ($$z = 1.645$$).
+Because cough indicators are binomial percentages, we report [Wilson score intervals](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval) inflated by the DP noise variance.
+The confidence intervals are estimated as
 
 $$
 100 \cdot \frac{\hat{p} + \frac{z^2}{2N} \pm z \sqrt{\frac{\hat{p}(1 - \hat{p})}{N} + \frac{z^2}{4N^2} + c \left(1 + \frac{z^2}{N}\right)}}{1 + \frac{z^2}{N}}
 $$
 
-Subtracting gives `ci_lower` and adding gives `ci_upper`. Compared to a standard Wilson interval, the term $$c \left(1 + \frac{z^2}{N}\right)$$ inflates the interval to account for noise, where $$c = \frac{\sigma^2_{\text{noise}}}{N^2}$$ scales the numerator noise variance $$\sigma^2_{\text{noise}}$$ to proportion units.
+Subtracting gives `ci_lower` and adding gives `ci_upper`.
+Compared to a _standard_ Wilson interval, the term $$c \left(1 + \frac{z^2}{N}\right)$$ inflates the interval to account for DP noise, where $$c = \frac{\sigma^2_{\text{noise}}}{N^2}$$ scales the numerator noise variance $$\sigma^2_{\text{noise}}$$ to proportion units.
 
 This approach preserves nominal 90% coverage in the presence of differential privacy noise while keeping the intervals well-behaved near 0% and 100%.
 
 ### Temporal Handling
 
-Observations cover single calendar days. Each value reflects nocturnal cough events recorded during sleep sessions attributed to that date.
+Observations cover single calendar days.
+Each value reflects nocturnal cough events recorded during sleep sessions attributed to that date.
 
-- `reference_time` is the observation date (`YYYY-MM-DD`). For 7-day smoothed indicators (`_7dav`), `reference_time` marks the final date of the trailing 7-day window.
-- `report_time` is the ingestion timestamp in UTC. Sleep Cycle refreshes data upstream approximately every four hours (six times per day). 
+- `reference_time` is the observation date (`YYYY-MM-DD`).
+For 7-day smoothed indicators (`_7dav`), `reference_time` marks the final date of the trailing 7-day window.
+- `report_time` is the ingestion timestamp in UTC.
+Sleep Cycle refreshes data upstream approximately every four hours (six times per day). 
 
 ### Geographic Handling
 
@@ -154,8 +161,6 @@ For example, a signal for a given location with a confidence interval of 0-100% 
 
 Because of this, as of Oct 7 2026, we only report 258 counties, 151 HRRs, 136 MSAs, and 43 states.
 All locations are reported for higher geographic types (census division, census region, nation).
-
-TODO suppressed values appear as `null` or are omitted?
 
 ---
 
