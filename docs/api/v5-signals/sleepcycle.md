@@ -31,7 +31,7 @@ nav_order: 10
 
 ## Overview
 
-The source measures the frequency of moderately high and very high nocturnal cough rates.
+This source measures the frequency of moderate and very high nocturnal cough rates.
 It is built from de-identified data from the Sleep Cycle sleep tracking app, contributed by parent company Sleep Cycle.
 Since the data captures symptoms, it can be used for many respiratory pathogens, including influenza and COVID-19, as well as other medical and environmental conditions that may contribute to coughing, for example, wildfire smoke.
 This source is noised at the `epsilon = 1` level per user-day under [differential privacy (DP)](https://desfontain.es/blog/friendly-intro-to-differential-privacy.html).
@@ -58,10 +58,11 @@ This results in us applying Laplacian noise with `location = 0` and `scale = 2`.
 The noise has units of counts.
 
 New noise values are drawn for every county $$i$$ and time $$t$$.
-Once a county $$i$$ and time $$t$$ key as a noise value assigned, that noise value is reused for every issue made to that county and time key's value.
+Once a county $$i$$ and time $$t$$ key has a noise value assigned, that noise value is reused for every issue made to that county and time key's value.
 
-Raw county numerators only are noised with randomly drawn DP-conforming noise before any geoaggregation or smoothing is performed.
-Denominators are unnoised.
+Only raw county numerators are noised with randomly drawn DP-conforming noise.
+This is done before any geoaggregation or smoothing is performed.
+Denominators are left unnoised.
 
 When a raw value is close to a natural threshold (for numerator, 0 or $$n_i$$) or the noise is relatively large, the noised value can become impossible (< 0, > $$n_i$$).
 These values are left as-is until after geoaggregation, smoothing, and percentage calculation are done, after which impossible percentages are truncated to the closest boundary (0, 100).
@@ -84,18 +85,18 @@ $$
 \hat{p}_{it} = 100 \cdot \frac{Y'_{it}}{N_{it}}.
 $$
 
-Estimated numerator counts for non-county locations incorporate DP noise via the geoaggregation process.
+Estimated numerator count $$Y'_{it}$$ for a non-county location incorporates DP noise via the geoaggregation process.
 
 ### Smoothing
 
 Smoothing is computed by Delphi.
-For each geography, a 7-day trailing sum is taken of every noised numerator count and the total user count (denominator), from which the percentage is then calculated.
+For each geography, a 7-day trailing sum is computed over the noised numerator count and the total user count (denominator), from which the percentage is then calculated.
 The resulting smoothed metric is equivalent to the denominator-weighted pooled percentage.
 The 7-day window must contain at least 5 of 7 days to produce a value.
 
 ### Uncertainty
 
-This source provides 90% confidence intervals for all indicators via the `ci_lower` and `ci_upper` columns ($$z = 1.645$$).
+This source provides 90% ($$z = 1.645$$) confidence intervals for all indicators via the `ci_upper` and `ci_lower` columns.
 Because cough indicators are binomial percentages, we report [Wilson score intervals](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval) inflated by the DP noise variance.
 The confidence intervals are estimated as
 
@@ -121,16 +122,18 @@ Sleep Cycle refreshes data upstream approximately every four hours (six times pe
 ### Geographic Handling
 
 Cough data arrives at one native geographic level: county (`county`).
-Raw county numerators only are noised with DP-conforming noise before any geoaggregation or smoothing is performed.
-Denominators are unnoised.
+Only raw county numerators are noised with randomly drawn DP-conforming noise.
+This is done before any geoaggregation or smoothing is performed.
+Denominators are left unnoised.
 
-All other geographic levels (`msa`, `hrr`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are built by directly summing daily county counts -- denominators and DP-noised numerators are aggregated separately.
-Aggregation is performed on daily counts before computing 7-day sums, without imputation, so `fill_method` is always `source`.
+All other geographic levels (`msa`, `hrr`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are constructed by directly summing daily county counts -- denominators and DP-noised numerators are aggregated separately.
+Aggregation is performed on noised daily counts without imputation, so `fill_method` is always `source`.
+Seven-day sums are computed from aggregated daily counts.
 
 This source has good coverage at the county level.
-In the month of Sept 2026, values were reported for 3030 counties on at least one day.
+In the month of Sept 2026, values were reported for 3030 counties (of 3143 total) on at least one day.
 However, we restrict locations from being reported when we consider them to be too noisy, sparse, or generally not useful.
-See the Missingness & Privacy section for more information.
+See the [Missingness & Privacy section](#missingness--privacy) for more information.
 
 ---
 
@@ -154,7 +157,7 @@ See the Missingness & Privacy section for more information.
 
 ## Missingness & Privacy
 
-Under the guarantees of differential privacy, we are _able_ to release values for all locations, even with very small sample sizes.
+Under the guarantees of differential privacy, we are _able_ to release values for all locations, even those with very small sample sizes.
 However, we restrict locations from being reported when we consider them to be too noisy, sparse, or generally not useful.
 For example, a signal for a given location with a confidence interval of 0-100% isn't useful and will not be reported.
 
@@ -165,7 +168,7 @@ All locations are reported for higher geographic types (census division, census 
 
 ## Limitations
 
-These indicators are calculated using only app users who used the app on a given day and agreed to share their data.
+These indicators are calculated using only app users who used the Sleep Cycle app on a given day and agreed to share their data.
 
 It's not clear how representative this data is of the general US population, for example, in terms of age and race/ethnicity.
 Since it is phone app-based data collection, we might expect it to skew young and/or urban.
@@ -174,7 +177,7 @@ Sleep Cycle reports some demographics in [Appendix:Table 1 of this paper](https:
 Note however that reporting demographics is optional and most users do not do it.
 Demographics are likely subject to reporting bias.
 
-We expect there to be day-of-week affects in the dataset.
+We expect there to be day-of-week effects in the dataset.
 For example, people tend to sleep in on the weekends.
 Sick people are also more likely to sleep for a longer period of time.
 It's not clear how that affects cough _rate_, however.
@@ -195,15 +198,15 @@ Counties are smaller in US territories and in the state of Virginia, so values f
 Since this is digital surveillance, we expect revisions to be minimal within a matter of days.
 We see revisions to indicator values within 24 hours of the first time an observation (location-date key) is reported.
 
-The only source of revisions we expect outside of that is users re-connecting to the internet after a period of using the app offline, which would then send the last `n` days of their data to Sleep Cycle.
-Thus, values for those days would be revised.
-Although this is possible, it's unlikely that a user would be totally offline for more than a couple days.
-In reality, we haven't yet seen any revisions that modify reference dates from a long time ago (more than 1 day).
+The only additional source of revisions we expect to see is users re-connecting to the internet after a period of using the app offline.
+That would send the last `n` days of their data to Sleep Cycle, causing aggregate estimates for those same days to be revised.
+Although this is possible, it's unlikely that a user would be totally offline for more than a couple days, and even more unlikely that enough users would be offline at the same time to cause a noticeable shift in estimates.
+In reality, we haven't yet seen any revisions that modify reference dates from more than 1 day ago.
 
 Data is updated 6 times a day, and revisions within the first few updates are large.
 
 Data is reported with less than 1 day of lag.
-That is, we start getting reports of what happened on reference date `t` _on_ date `t`.
+That is, we start getting reports about what happened on reference date `t` _on_ date `t`.
 *Note*: This means that early versions of a value are based on _partial_ information.
 
 ---
