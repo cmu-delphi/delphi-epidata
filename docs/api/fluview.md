@@ -1,9 +1,12 @@
 ---
 title: FluView
 parent: Data Sources and Signals
-grand_parent: Other Endpoints
+grand_parent: Other Endpoints (V3)
 nav_order: 1
 ---
+
+> **Heads up:** This endpoint is part of the legacy V3 API, which is being phased out. An actively maintained equivalent is available in V5 under the source [`fluview_ilinet`](v5-signals/fluview_ilinet.md). See the [V3/V4 to V5 Migration Guide](v5_migration.md) for full details.
+{: .warning }
 
 # FluView (ILINet)
 {: .no_toc}

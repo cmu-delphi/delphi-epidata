@@ -1,6 +1,6 @@
 ---
 title: API Clients
-parent: Main Endpoint (COVIDcast)
+parent: Main Endpoint (COVIDcast V4)
 nav_order: 1
 nav_exclude: true
 redirect_to: client_libraries.html

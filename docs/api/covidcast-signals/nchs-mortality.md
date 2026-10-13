@@ -1,9 +1,12 @@
 ---
 title: NCHS Mortality Data
 parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast)
+grand_parent: Main Endpoint (COVIDcast V4)
 nav_order: 1
 ---
+
+> **Heads up:** This COVIDcast source is part of the legacy V4 API, which is being phased out. An actively maintained equivalent is available in V5 under the source [`nchs_mortality`](../v5-signals/nchs_mortality.md). See the [V4 to V5 Migration Guide](../v5_migration.md) for full details.
+{: .warning }
 
 # NCHS Mortality Data
 {: .no_toc}

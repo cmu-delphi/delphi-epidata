@@ -1,6 +1,6 @@
 ---
 title: Signal Changes
-parent: Main Endpoint (COVIDcast)
+parent: Main Endpoint (COVIDcast V4)
 nav_order: 92
 ---
 

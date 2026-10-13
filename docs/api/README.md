@@ -1,10 +1,13 @@
 ---
-title: Other Endpoints
+title: Other Endpoints (V3)
 has_children: true
 nav_order: 4
 ---
 
-# Other Endpoints
+# Other Endpoints (V3)
+
+> **Active endpoints are part of the legacy V3 API, which is being phased out.** See the [V4 to V5 Migration Guide](v5_migration.md) for details on the Delphi V5 transition.
+{: .warning }
 
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking infectious diseases such as influenza, dengue,
@@ -142,6 +145,32 @@ The parameters available for each source are documented in each linked source-sp
 * `ilinet` - replaced by [`fluview`](fluview.md)
 * `signals` - replaced by [`sensors`](sensors.md)
 * `stateili` - replaced by [`fluview`](fluview.md)
+
+# Data retirement
+
+This API no longer produces or serves data with a time value after **2026-09-22**; it is being
+retired in favor of cast-api / epidata-etl. See the [Delphi V5 API](v5.md) and the
+[V4 to V5 Migration Guide](v5_migration.md) for where to get data past that date. Every response carries `Deprecation`, `Sunset`, and
+`Link: <https://cmu-delphi.github.io/delphi-epidata/api/v5.html>; rel="successor-version"` headers,
+plus an `X-Delphi-Epidata-Retirement` header explaining the change.
+
+A request whose time values (`epiweeks`, `dates`, `time_values`, `date`, `window`, `start_day`,
+`end_day`, `issues`, `publication_dates`, `collection_weeks`, `as_of`, ...) lie *entirely* after the
+cutoff is rejected with HTTP `410 Gone` and a dedicated result code of `-3`, so that it is
+distinguishable from an ordinary parameter error (`-1`) or a genuinely empty result set (`-2`):
+
+```json
+{
+  "result": -3,
+  "message": "this API no longer provides data with time values after 2026-09-22; it has been retired in favor of cast-api / epidata-etl. see https://cmu-delphi.github.io/delphi-epidata/api/v5.html",
+  "epidata": []
+}
+```
+
+As with other errors, requests using the `classic` or `tree` output formats receive HTTP `200` with
+the same body. Requests that only *overlap* the cutoff — for example
+`epiweeks=202001-202652` or `time_values=*` — are still served normally, returning whatever data
+exists up to the cutoff.
 
 # Example URLs
 

@@ -1,10 +1,18 @@
 ---
-title: Main Endpoint (COVIDcast)
+title: Main Endpoint (COVIDcast V4)
 has_children: true
 nav_order: 3
 ---
 
-# Main Epidata API
+# Main Epidata API (COVIDcast V4)
+
+> **This endpoint (`/epidata/covidcast/`) is part of the legacy V4 API, which is being phased out.** The legacy V4 API includes this endpoint. See the [V4 to V5 Migration Guide](v5_migration.md) for guidance on migrating your queries to the [Delphi V5 API](v5.md).
+{: .warning }
+
+> **No data with a time value after 2026-09-22 is served here.** Queries whose `time_values`,
+> `issues`, or `as_of` fall entirely after that date fail with result code `-3` (HTTP `410 Gone`).
+> See [Data retirement](README.md#data-retirement).
+{: .warning }
 
 This legacy Epidata API endpoint was formerly called COVIDcast.
 

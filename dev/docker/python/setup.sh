@@ -1,4 +1,4 @@
-# This script sets up the correct directory structure within the `delphi_img`
+# This script sets up the correct directory structure within the `delphi_web_python`
 # docker image.
 
 # Some notes on package structure:
@@ -6,7 +6,7 @@
 #     replaced with underscores in the package hierarchy. (An exception is the
 #     repo `delphi-epidata`, which is renamed to simply `epidata`.)
 #   - Repos are organized such that the main code for the package is inside of
-#     a `src/` directory. When deployed, `src/` is elided. (An exception is the
+#     a `src/` directory. When deployed, the contents of `src/` are moved. (An exception is the
 #     legacy `undef-analysis` repo, which has sources at the top-level.)
 
 # bail if anything fails

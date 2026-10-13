@@ -1,10 +1,10 @@
 ---
-title: Manually Constructing V5 Queries
+title: Understanding and Querying the V5 API
 parent: Delphi V5 API
 nav_order: 1
 ---
 
-# Manually Constructing V5 Queries
+# Understanding and Querying the V5 API
 
 The Delphi V5 API is hosted at `https://delphi.cmu.edu`. All endpoints are prefixed with `/epidata/v5/`. Interactive, endpoint-level documentation is available on the [Delphi V5 API Landing Page](https://delphi.cmu.edu/epidata/v5/docs).
 
@@ -37,7 +37,7 @@ The `/epidata/v5/snapshot/` endpoint requires specific geographic boundaries to 
 | `signal` | Required | The signal name. |
 | `geo_type` | Required | The geographic resolution level (e.g., `state`, `county`). |
 | `snapshot_date` | Optional | The release date (`YYYY-MM-DD`) of the snapshot. If omitted, the latest available release is returned. |
-| `fill_method` | Optional | The imputation method (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
+| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
 | `extra_keys` | Optional | Column filters for sources with extra dimensions (e.g., `age_group:18-49`). |
 | `limit` | Optional | Maximum number of rows to return. Defaults to no limit. Pass `-1` to disable the limit (return all matching rows). |
 | `columns` | Optional | A comma-separated list of columns to retrieve. See [Column Selection](#column-selection) for details. |
@@ -61,7 +61,7 @@ The `/epidata/v5/archive/` endpoint streams version history. Unlike the snapshot
 | `source` | Required | The ID of the data source. |
 | `signal` | Required | The signal name. |
 | `geo_type` | Optional | The geographic resolution level. |
-| `fill_method` | Optional | The imputation method (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
+| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
 | `extra_keys` | Optional | Column filters for sources with extra dimensions (e.g., `age_group:18-49`). |
 | `report_time_query` | Optional | A release date filter using comparison operators, such as `=2024-12-07` (exact date), `<2025-10-16` (before date), or `>2025-10-16` (after date). Omitting this parameter scans the entire history. |
 | `limit` | Optional | Maximum number of rows to return. Defaults to no limit. Pass `-1` to disable the limit (return all matching rows). |
@@ -123,7 +123,7 @@ Retrieves the total number of observations matching the query parameters.
 | `source` | Required | The ID of the data source. |
 | `signal` | Required | The signal name. |
 | `geo_type` | Optional | Geographic resolution level. |
-| `fill_method` | Optional | Imputation method (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
+| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
 | `extra_keys` | Optional | Column filters for extra dimensions (e.g., `age_group:18-49`). |
 | `report_time_query` | Optional | A release date filter using operators (e.g., `=2024-12-07`). |
 
@@ -133,7 +133,7 @@ Retrieves the total number of observations matching the query parameters.
 | :--- | :--- | :--- | :--- |
 | `/epidata/v5/metadata/geo_signals/` | `geo_type`, `geo_value` | None | Lists active signals for a location. |
 | `/epidata/v5/metadata/report_times/` | `source` | None | Lists all publication/update dates. |
-| `/epidata/v5/metadata/reference_times/` | `source` | None | Lists all valid event dates. |
+| `/epidata/v5/metadata/reference_times/` | `source` | None | Lists all reference/observation dates for a source. |
 | `/epidata/v5/metadata/extra_key_values/` | `source` | None | Lists valid values for extra dimensions. |
 | `/epidata/v5/metadata/aux_schema/` | None | `source` | Retrieves database schema for auxiliary tables. |
 | `/epidata/v5/metadata/api_version_hash/` | None | None | Returns the Git commit hash of the API server. |
@@ -169,16 +169,27 @@ To reduce bandwidth, you can retrieve a subset of columns using the `columns` pa
 
 The standard columns returned by the API for `/archive/` and `/snapshot/` endpoints are:
 
-| Column Name | Type | Description |
-| :--- | :--- | :--- |
-| `signal` | string | The name of the requested signal. |
-| `report_time` | date | The release or issue date when this data point was published (`YYYY-MM-DD`). |
-| `geo_type` | string | Geographic level (e.g., `county`, `state`). |
-| `geo_value` | string | Unique code for the location (e.g., FIPS, state abbreviation). |
-| `fill_method` | string | Imputation method used to handle missing data (e.g., `source`, `fill_ave`, `fill_zero`). |
-| `reference_time` | date | Reference date when the event occurred (`YYYY-MM-DD` or `YYYY-Www`). |
-| `value` | float | The statistical estimate value. |
-| *Source Extras* | variable | Any source-specific extra columns (e.g., `age_group` or `nwss_source`). |
+| Column Name | Key Type | Data Type | Description |
+| :--- | :--- | :--- | :--- |
+| `signal` | Primary Key | string | The name of the requested indicator. |
+| `report_time` | Primary Key | date / datetime | The publication, release, or ingestion timestamp or date (`YYYY-MM-DD` or timestamp). |
+| `geo_type` | Primary Key | string | Geographic level (e.g., `county`, `state`). |
+| `geo_value` | Primary Key | string | Unique code for the location (e.g., FIPS, state abbreviation). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
+| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`). |
+| `value` | Value Column | float | The recorded measurement (e.g., count, percentage, rate, or statistical estimate). |
+| `[extra_key]` | Extra Key | string / integer | Source-specific stratification dimensions (e.g., `age_group` in Epic Cosmos, or `nwss_source` and `pcr_target` in NWSS). |
+| `ci_lower`, `ci_upper` | Value Column | float | Confidence interval bounds (only present in sources that publish uncertainty estimates). |
+| `[auxiliary]` | Other Column | variable | Contextual metadata attributes. |
+
+### Key Types and Column Roles
+
+Columns fall into four categories:
+
+- Primary keys identify each observation and match the main API query filters.
+- Extra keys add source-specific categories filtered in queries using the `extra_keys` parameter.
+- Value columns contain the actual measurements (`value`) and any confidence intervals (`ci_lower`, `ci_upper`).
+- Other columns provide contextual data.
 
 ### Imputation (Fill Methods)
 

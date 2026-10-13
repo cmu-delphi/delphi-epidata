@@ -1,6 +1,6 @@
 ---
 title: Data Licensing
-parent: Main Endpoint (COVIDcast)
+parent: Main Endpoint (COVIDcast V4)
 nav_order: 2
 ---
 

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-VERSION = "4.1.45"
+VERSION = "4.1.46"
 
 MAX_RESULTS = int(10e6)
 MAX_COMPATIBILITY_RESULTS = int(3650)
@@ -114,6 +114,34 @@ API_KEY_REGISTRATION_FORM_LINK = "https://forms.gle/hkBr5SfQgxguAfEt7"
 # ^ shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSe5i-lgb9hcMVepntMIeEo8LUZUMTUnQD3hbrQI3vSteGsl4w/viewform?usp=sf_link"
 API_KEY_REGISTRATION_FORM_LINK_LOCAL = "https://api.delphi.cmu.edu/epidata/admin/registration_form"
 # ^ redirects to API_KEY_REGISTRATION_FORM_LINK
+
+"""
+Retirement of this API.
+
+This repo (and covidcast-indicators) is being retired in favor of cast-api / epidata-etl.
+No data with a time value after RETIREMENT_CUTOFF_DAY is produced or served here anymore, so
+requests that ask *exclusively* for times beyond the cutoff are rejected with a dedicated
+result code (RETIREMENT_RESULT_CODE) instead of silently returning an empty result set.
+Requests that merely overlap the cutoff are still served, with the usual deprecation headers.
+"""
+# last day for which this API has data; inclusive, YYYYMMDD
+RETIREMENT_CUTOFF_DAY = int(os.environ.get("RETIREMENT_CUTOFF_DAY", 20260922))
+# last epiweek for which this API has data; inclusive, YYYYWW.
+# this is the epiweek *containing* RETIREMENT_CUTOFF_DAY -- it is partially covered, so we serve it.
+RETIREMENT_CUTOFF_WEEK = int(os.environ.get("RETIREMENT_CUTOFF_WEEK", 202638))
+RETIREMENT_CUTOFF_DAY_ISO = date(
+    RETIREMENT_CUTOFF_DAY // 10000, (RETIREMENT_CUTOFF_DAY % 10000) // 100, RETIREMENT_CUTOFF_DAY % 100
+).isoformat()
+# where users should go instead
+RETIREMENT_SUCCESSOR_LINK = os.environ.get(
+    "RETIREMENT_SUCCESSOR_LINK", "https://cmu-delphi.github.io/delphi-epidata/api/v5.html"
+)
+# `result` value sent with the JSON body when a request asks only for retired data
+RETIREMENT_RESULT_CODE = -3
+RETIREMENT_MESSAGE = (
+    f"this API no longer provides data with time values after {RETIREMENT_CUTOFF_DAY_ISO}; "
+    f"it has been retired in favor of cast-api / epidata-etl. see {RETIREMENT_SUCCESSOR_LINK}"
+)
 
 API_KEY_REMOVAL_REQUEST_LINK = "https://forms.gle/GucFmZHTMgEFjH197"
 # ^ shortcut to "https://docs.google.com/forms/d/e/1FAIpQLSff30tsq4xwPCoUbvaIygLSMs_Mt8eDhHA0rifBoIrjo8J5lw/viewform"

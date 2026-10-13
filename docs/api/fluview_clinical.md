@@ -1,9 +1,12 @@
 ---
 title: FluView Clinical
 parent: Data Sources and Signals
-grand_parent: Other Endpoints
+grand_parent: Other Endpoints (V3)
 nav_order: 2
 ---
+
+> **Heads up:** This endpoint is part of the legacy V3 API, which is being phased out. Actively maintained equivalents are available in V5 under the sources [`fluview_resp_lab_clinical`](v5-signals/fluview_resp_lab_clinical.md) (clinical laboratory testing) and [`fluview_resp_lab_ph`](v5-signals/fluview_resp_lab_ph.md) (public health laboratory subtyping). See the [V3/V4 to V5 Migration Guide](v5_migration.md) for full details.
+{: .warning }
 
 # FluView Clinical
 {: .no_toc}

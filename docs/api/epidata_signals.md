@@ -1,6 +1,6 @@
 ---
 title: Data Sources and Signals
-parent: Other Endpoints
+parent: Other Endpoints (V3)
 nav_order: 2
 has_children: true
 

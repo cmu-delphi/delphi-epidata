@@ -43,6 +43,7 @@ function onSubmit(e) {
             body: `Thank you for registering with the Delphi Epidata API.
 
             Your API key is: ${user_api_key}
+            It may take up to 5 minutes for the key to be active.
 
             For usage information, see the API Keys section of the documentation: https://cmu-delphi.github.io/delphi-epidata/api/api_keys.html
 
@@ -75,7 +76,7 @@ function onSubmit(e) {
                 body: `Thank you for registering with the Delphi Epidata API.
 
 Your API key is: ${new_api_key}
-
+It may take up to 5 minutes for the key to be active.
 Note: this email address was already registered, so a new key has been issued and your previous key has been deactivated.
 
 For usage information, see the API Keys section of the documentation: https://cmu-delphi.github.io/delphi-epidata/api/api_keys.html
