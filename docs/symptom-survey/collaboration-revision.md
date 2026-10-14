@@ -32,6 +32,3 @@ collaboration meeting the first Friday of each month at 2–3pm ET. The meeting 
 a chance to announce upcoming changes to the survey, have a discussion and get
 input about the instrument, share preliminary findings and network with other
 researchers.
-
-If you're interested in joining, contact us at
-<delphi-survey-info@lists.andrew.cmu.edu>.

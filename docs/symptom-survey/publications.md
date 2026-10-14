@@ -346,4 +346,4 @@ Research publications using the survey data include:
 
 If you have used the survey data, or the aggregate data available in the
 COVIDcast API, to publish research results, please contact us at
-<delphi-survey-info@lists.andrew.cmu.edu> so we can include your work here.
+<areinhar@stat.cmu.edu> so we can include your work here.

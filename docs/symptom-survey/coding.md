@@ -86,8 +86,8 @@ reidentification concerns. Public contingency tables that aggregate by race and
 other demographic variables [are available](contingency-tables.md).
 
 Users with a specific need for these variables in microdata should contact us at
-<delphi-survey-info@lists.andrew.cmu.edu> to discuss options for obtaining them,
-as access can be provided under some restrictions.
+<areinhar@stat.cmu.edu> to discuss options for obtaining them, as access can be
+provided under some restrictions.
 
 In the contingency tables, and in the microdata files for users who have gained
 permission to access this data, the `raceethnicity` column is coded based on the
