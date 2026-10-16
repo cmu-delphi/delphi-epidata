@@ -11,7 +11,7 @@ nav_order: 13
 | Attribute | Details |
 | :--- | :--- |
 | **Source Name** | `nrevss` |
-| **Data Source** | [CDC NREVSS](https://data.cdc.gov/Laboratory-Surveillance/Percent-positivity-of-respiratory-viruses-by-nucle/rgnm-fkqb/about_data) |
+| **Data Source** | [CDC National Respiratory and Enteric Virus Surveillance System (NREVSS)](https://data.cdc.gov/Laboratory-Surveillance/Percent-positivity-of-respiratory-viruses-by-nucle/rgnm-fkqb/about_data) |
 | **Geographic Levels** | `state`, `hhs`, `census_division`, `census_region`, `nation` |
 | **Temporal Granularity** | Weekly, week ending Saturday |
 | **Reporting Cadence** | Weekly |
@@ -32,7 +32,8 @@ nav_order: 13
 
 This source measures laboratory testing volumes and percent positivity for non-influenza respiratory diseases reported weekly by clinical and public health laboratories across the United States.
 
-Data is collected by the [National Respiratory and Enteric Virus Surveillance System (NREVSS)](https://www.cdc.gov/nrevss/php/dashboard/index.html), a laboratory-based surveillance network coordinated by the CDC National Center for Immunization and Respiratory Diseases (NCIRD). The network includes more than 450 voluntary participating laboratories across all 50 states, the District of Columbia, Puerto Rico, and the U.S. Virgin Islands.
+Data is collected by the [National Respiratory and Enteric Virus Surveillance System (NREVSS)](https://www.cdc.gov/nrevss/php/dashboard/index.html), a laboratory-based surveillance network coordinated by the CDC National Center for Immunization and Respiratory Diseases (NCIRD). The network includes more than 450 laboratories across all 50 states, the District of Columbia, Puerto Rico, and the U.S. Virgin Islands.
+Participation is voluntary.
 
 Data in this source is reported for seven respiratory virus groups:
 
@@ -40,19 +41,21 @@ Data in this source is reported for seven respiratory virus groups:
 - Human Coronavirus (`hcov`)
 - Human Metapneumovirus (`hmpv`)
 - Human Parainfluenza Virus (`hpiv`)
-- Respiratory Syncytial Virus (`rsv`)
 - Enterovirus / Rhinovirus (`evrv`)
+- Respiratory Syncytial Virus (`rsv`)
 - SARS-CoV-2 (`covid`)
 
 While NREVSS also collects influenza laboratory tests, influenza data is not published in this Socrata dataset. Influenza laboratory surveillance from NREVSS is reported through CDC FluView and documented separately in Delphi's [`fluview_resp_lab_clinical`](fluview_resp_lab_clinical.md) and [`fluview_resp_lab_ph`](fluview_resp_lab_ph.md) endpoints.
 
-Signals report combined pathogen totals. For human parainfluenza and seasonal coronavirus, Delphi publishes CDC's combined totals (`hpiv` and `hcov`) rather than individual subtypes.
+Signals report combined pathogen totals. For human parainfluenza and seasonal coronavirus, Delphi publishes the CDC's combined totals (`hpiv` and `hcov`) rather than individual subtypes.
 
 ---
 
 ## Indicators (Signals)
 
 Indicators in this source combine a pathogen prefix with a metric suffix in the format `<pathogen>_<metric>`.
+Only RSV and SARS-CoV-2 are available for state-level (and derived) metrics, `tests_3wav`, `positive_tests_5wav`, `pct_positive_3wav`, `pct_positive_est`.
+All other pathogen-metric combinations exist.
 
 ### Pathogen Prefixes
 
@@ -62,8 +65,8 @@ Indicators in this source combine a pathogen prefix with a metric suffix in the 
 | `hcov` | Human coronavirus | `hhs`, `nation` | Combined seasonal coronavirus types (229E, HKU1, NL63, OC43) |
 | `hmpv` | Human metapneumovirus | `hhs`, `nation` | - |
 | `hpiv` | Human parainfluenza virus | `hhs`, `nation` | Combined human parainfluenza types (PIV 1–4) |
-| `rsv` | Respiratory syncytial virus | `state`, `hhs`, `census_division`, `census_region`, `nation` | - |
 | `evrv` | Enterovirus / Rhinovirus | `hhs`, `nation` | Combined single diagnostic target for enteroviruses and rhinoviruses |
+| `rsv` | Respiratory syncytial virus | `state`, `hhs`, `census_division`, `census_region`, `nation` | - |
 | `covid` | SARS-CoV-2 | `state`, `hhs`, `census_division`, `census_region`, `nation` | - |
 
 ### Metric Suffixes
@@ -96,24 +99,32 @@ At the state level, CDC publishes data only for RSV and SARS-CoV-2. CDC does not
 
 #### Weekly State Estimates
 
-Because CDC reports state-level data only as moving averages, Delphi derives single-week estimates (`pct_positive_est`). For each contiguous run of reported weeks, Delphi sets up and solves a linear system under smoothing boundary assumptions to estimate the underlying weekly values.
+Because CDC reports state-level data only as moving averages, Delphi derives single-week estimates (`pct_positive_est`). For each contiguous run of reported weeks, Delphi solves a linear system under smoothing boundary assumptions to estimate the underlying weekly values.
+
+To fully constrain the system and make it solvable, we make several assumptions.
+For a contiguous run of reported weeks that includes the most-recently reported value, we assume that the first two values in the run are equal.
+For a run of reported weeks that doesn't include the most recent value, we assume that the last three values are equal.
+
+State series cover a rolling 105-week window, so the date where the leading assumption is used moves forward one week per release rather than staying fixed.
+
+We also estimate unsmoothed weekly tests at the state level for internal use (geoaggregation via summing numerator and denominator counts).
+To expand the period of time we can solve the system over, we impute missing values using a log-linear imputation strategy between available values.
 
 Estimated values are bounded to valid ranges ($$\ge 0$$ for counts, $$[0, 100]$$ for percentages) and rounded to two decimal places to match source precision.
 
 ### Smoothing
 
-- Upstream state moving averages (`tests_3wav`, `pct_positive_3wav`, `positive_tests_5wav`) are computed by CDC.
+- Moving averages at the state level (`tests_3wav`, `pct_positive_3wav`, `positive_tests_5wav`) are computed by CDC.
 - Delphi computes a 3-week trailing moving average of positive test detections (`positive_tests_3wav`) for `hhs` and `nation` levels, averaging over the current and prior two weeks ($$t-2, t-1, t$$) with at least one reported week required in the window.
-- Weekly total tests (`tests`), positive detections (`positive_tests`), and percent positivity (`pct_positive`) at `hhs` and `nation` levels are unwindowed 7-day values.
 
 ### Temporal Handling
 
-Observations cover 7-day epidemiological weeks defined by the CDC Morbidity and Mortality Weekly Report (MMWR), running Sunday through Saturday.
+Non-smoothed observations cover 7-day epidemiological weeks defined by the CDC Morbidity and Mortality Weekly Report (MMWR), running Sunday through Saturday.
 
-- `reference_time` is the Saturday week-ending date of the surveillance week (`YYYY-MM-DD`).
-- `report_time` is the snapshot date when Delphi processed the data in UTC.
+- `reference_time` (`YYYY-MM-DD`) is the Saturday week-ending date of the surveillance week.
+- `report_time` is the snapshot date when Delphi processed the data, in UTC.
 - Data availability begins 2019-07-06 (MMWR week 2019w27).
-- Upstream CDC updates provisional records for up to 2 years after initial publication. Delphi re-ingests and updates the entire 2-year revision window on every weekly pipeline run. Revisions are largest during the first 1 to 2 weeks following initial release as laboratory backlogs clear (>90% complete after 2 weeks), with smaller revisions occurring over subsequent months.
+- The CDC source updates provisional records for up to 2 years after initial publication. Delphi re-ingests and updates the entire 2-year revision window on every weekly pipeline run. Revisions are largest during the first 1 to 2 weeks following initial release as laboratory backlogs clear (>90% complete after 2 weeks), with smaller revisions occurring over subsequent months.
 
 ### Geographic Handling
 
@@ -126,10 +137,10 @@ Delphi constructs two derived geographic levels from state-level values using ge
 For Census regions and divisions:
 
 - Count-like averages and estimates (`tests_3wav`, `positive_tests_5wav`, `tests_est`) are aggregated by summing state values. Delphi produces these aggregates under two fill methods:
-  - `zero` treats unobserved states as 0.
-  - `ave` imputes unobserved states based on reporting states weighted by population.
+  - `fill_zero` treats unobserved states as 0.
+  - `fill_ave` imputes unobserved states based on reporting states weighted by population.
 - `pct_positive_est` is recomputed from the summed state estimate counts.
-- `pct_positive_3wav` is recomputed as a population-weighted average of state 3-week centered moving average percentages. It is published only with average filling.
+- `pct_positive_3wav` is recomputed as a population-weighted average of state 3-week centered moving average percentages. It is published only with `fill_ave` processing.
 
 ---
 
@@ -176,6 +187,9 @@ State-level surveillance is restricted to RSV and SARS-CoV-2. Adenovirus, HCoV, 
 Data is updated weekly by CDC, typically with a reporting lag of 1 to 2 weeks following the close of the surveillance week.
 
 Data is provisional and subject to ongoing updates for up to 2 years. Testing data for the most recent 1 to 2 weeks is incomplete (>90% complete by week 2), while smaller revisions continue as delayed laboratory reports are processed. Delphi re-ingests and updates the full 2-year window.
+
+Comparing values reported in consecutive reports in June 2026, we see O(1) revisions to counts going back at least 6 months.
+We see O(10) revisions to counts going back 3 months, although percent positivity is fairly stable after a week.
 
 ---
 
