@@ -26,9 +26,14 @@ Pandemic"](https://www.pnas.org/topic/548) in *PNAS*:
 
 Research publications using the survey data include:
 
+- M. Ellingwood, A. Reinhart, D. P. Do, and R. Mejia (2026). [Health concerns
+  and government distrust: Variation in types of COVID-19 vaccine hesitancy by
+  racial and ethnic group before and at universal vaccine eligibility in the
+  US](https://doi.org/10.1371/journal.pgph.0004942). *PLOS Global Public
+  Health* 6 (6), e0004942.
 - D. Butts, N. Parikh, and S.Y. Del Valle (2026). [Heterogeneous estimations
   of non-pharmaceutical mitigation behavior during the COVID-19 pandemic](https://doi.org/10.1038/s41597-026-07348-3).
-  *Scientific Data*.
+  *Scientific Data* 13, 1000.
 - S. Pampati, E.A. Stuart, J. Lessler et al (2025). [Impact of School-Based
   Infection Prevention Strategies on Household COVID-19 and Respiratory
   Disease Outcomes: a Cross-Sectional Study](https://doi.org/10.1016/j.annepidem.2025.10.019).
