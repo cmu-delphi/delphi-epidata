@@ -52,8 +52,7 @@ Some important notes about obtaining access to the individual survey responses:
   access, since Delphi's agreement with Facebook to protect the privacy of
   respondents prohibits Facebook employees from receiving any microdata.
 
-If you have questions about the process, or your IRB needs information
-about the survey for their review, contact us at
-<delphi-survey-info@lists.andrew.cmu.edu>. For all questions about ICPSR's
-restricted data access process, contact ICPSR through the forms or email
-addresses on their website.
+If you have questions about the process, or your IRB needs information about the
+survey for their review, contact us at <areinhar@stat.cmu.edu>. For all
+questions about ICPSR's restricted data access process, contact ICPSR through
+the forms or email addresses on their website.

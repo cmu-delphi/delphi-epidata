@@ -32,8 +32,8 @@ and example code. Aggregate contingency tables are available for public download
 and restricted microdata can be obtained upon request. If you are a researcher
 and would like to get access to the data, see our page on getting [data access](data-access.md).
 
-If you have questions about the survey or getting access to data, contact us at
-<delphi-survey-info@lists.andrew.cmu.edu>.
+If you have questions about the survey or getting access to data, contact Alex
+Reinhart at <areinhar@stat.cmu.edu>.
 
 ## Results
 
@@ -95,12 +95,12 @@ the survey in publications based on the data. Specifically, we ask that you:
    estimates do not disclose any individual identifiable information, including
    individual survey results. If you are unsure whether a particular aggregation
    will prevent disclosure of individual survey results, please email us at
-   <delphi-survey-info@lists.andrew.cmu.edu>.
+   <areinhar@stat.cmu.edu>.
 4. Finally, please notify us when your research is published. If you obtained
    the data via ICPSR, please [visit their
    site](https://www.icpsr.umich.edu/web/ICPSR/studies/39207) to find the form
    to submit data-related publications; otherwise, send a copy of your
-   publication to <delphi-survey-info@lists.andrew.cmu.edu>.
+   publication to <areinhar@stat.cmu.edu>.
 
 When referring to the survey in text, we prefer the following formats:
 
