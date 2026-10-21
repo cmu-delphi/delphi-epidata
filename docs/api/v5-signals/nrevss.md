@@ -53,9 +53,7 @@ Signals report combined pathogen totals. For human parainfluenza and seasonal co
 
 ## Indicators (Signals)
 
-Indicators in this source combine a pathogen prefix with a metric suffix in the format `<pathogen>_<metric>`.
-Only RSV and SARS-CoV-2 are available for state-level (and derived) metrics, `tests_3wav`, `positive_tests_5wav`, `pct_positive_3wav`, `pct_positive_est`.
-All other pathogen-metric combinations exist.
+Indicators combine a pathogen prefix with a metric suffix (`<pathogen>_<metric>`). All pathogens are available at `hhs` and `nation` levels. Only RSV and COVID-19 (`rsv`, `covid`) include state- and census-level metrics.
 
 ### Pathogen Prefixes
 
@@ -75,6 +73,7 @@ All other pathogen-metric combinations exist.
 | :--- | :--- | :--- | :--- |
 | `tests` | Count | `hhs`, `nation` | Weekly count of total NAAT tests performed. Reported directly by CDC. |
 | `positive_tests` | Count | `hhs`, `nation` | Weekly count of positive NAAT test detections. Reported directly by CDC. |
+| `positive_tests_3wav` | Count (smoothed) | `hhs`, `nation` | 3-week trailing moving average of positive NAAT detections, computed by Delphi. |
 | `pct_positive` | Percentage | `hhs`, `nation` | Weekly percent test positivity ($$100 \cdot \frac{\text{positive\_tests}}{\text{tests}}$$). Reported directly by CDC. |
 | `tests_3wav` | Count (smoothed) | `state`, `census_division`, `census_region` | 3-week centered moving average of total NAAT tests. Reported by CDC for `state`. Aggregated by Delphi to census regions and divisions. |
 | `positive_tests_5wav` | Count (smoothed) | `state`, `census_division`, `census_region` | 5-week trailing moving average of positive NAAT detections. Reported by CDC for `state`. Aggregated by Delphi to census regions and divisions. |
@@ -136,11 +135,11 @@ Delphi constructs two derived geographic levels from state-level values using ge
 
 For Census regions and divisions:
 
-- Count-like averages and estimates (`tests_3wav`, `positive_tests_5wav`, `tests_est`) are aggregated by summing state values. Delphi produces these aggregates under two fill methods:
-  - `fill_zero` treats unobserved states as 0.
-  - `fill_ave` imputes unobserved states based on reporting states weighted by population.
+- Count-like averages and estimates (`tests_3wav`, `positive_tests_5wav`) are aggregated by summing state values. Delphi produces these aggregates under two fill methods:
+  - `zero` treats unobserved states as 0.
+  - `ave` imputes unobserved states based on reporting states weighted by population.
 - `pct_positive_est` is recomputed from the summed state estimate counts.
-- `pct_positive_3wav` is recomputed as a population-weighted average of state 3-week centered moving average percentages. It is published only with `fill_ave` processing.
+- `pct_positive_3wav` is recomputed as a population-weighted average of state 3-week centered moving average percentages. It is published only with `ave` processing.
 
 ---
 
@@ -154,7 +153,7 @@ For Census regions and divisions:
 | `report_time` | Primary Key | date | The date Delphi ingested the CDC weekly snapshot (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level (`state`, `hhs`, `census_division`, `census_region`, `nation`). |
 | `geo_value` | Primary Key | string | Location code (e.g. `us`, `1`-`10`, 2-letter state postal code, census code). |
-| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_zero`, or `fill_ave`). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `zero`, or `ave`). |
 | `reference_time` | Primary Key | date | Saturday week-ending date of the surveillance week (`YYYY-MM-DD`). |
 | `value` | Value Column | float | The recorded measurement (count, percentage, moving average, or statistical estimate). |
 
