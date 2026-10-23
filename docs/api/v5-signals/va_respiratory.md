@@ -15,7 +15,7 @@ nav_order: 5
 | **Geographic Levels** | `va_catchment` (cases only), `state`, `msa` (cases only), `hhs`, `census_division`, `census_region`, `nation` |
 | **Temporal Granularity** | Daily, by reference date (season-to-date cumulative counts from Oct 1 to Sep 30) |
 | **Reporting Cadence** | Daily |
-| **Temporal Scope Start** | Seasonal reporting (starts October 1st of each surveillance season) |
+| **Temporal Scope Start** | 2026-05-27 |
 | **Temporal Scope End** | Ongoing |
 | **Extra Key Columns** | None |
 | **License** | [Public Domain U.S. Government](https://www.usa.gov/government-works) |
