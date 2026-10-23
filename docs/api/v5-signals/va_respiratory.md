@@ -34,7 +34,7 @@ The Department of Veterans Affairs (VA) automated biosurveillance system tracks 
 
 In the Delphi V5 API, this surveillance is published as two independent data sources:
 
-- **`va_respiratory_cases`**: Daily facility-level cumulative case counts and derived 7-day average daily incidence rates.
+- **`va_respiratory_cases`**: Daily facility-level cumulative case counts and derived 7-day average daily reported case rates.
 - **`va_respiratory_vaccinations`**: Daily state-level cumulative doses administered and cumulative vaccination rates.
 
 ---
@@ -43,16 +43,16 @@ In the Delphi V5 API, this surveillance is published as two independent data sou
 
 ### Cases (`va_respiratory_cases`)
 
-Case indicators reflect cumulative counts and population-adjusted incidence rates among Veterans Health Administration (VHA) enrollees:
+Case indicators reflect cumulative counts and population-adjusted daily reported case rates among Veterans Health Administration (VHA) enrollees:
 
 | Indicator Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- |
 | `covid_cases_cumulative` | COVID-19 | Cumulative count | Season-to-date confirmed cases at VA facilities. |
-| `covid_cases_per_100k_7dav` | COVID-19 | Rate (7-day average) | 7-day trailing average of daily incident cases per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
+| `covid_cases_per_100k_7dav` | COVID-19 | Rate (7-day average) | 7-day trailing average of daily newly reported cases (derived from cumulative snapshot differences) per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
 | `flu_cases_cumulative` | Influenza | Cumulative count | Season-to-date confirmed cases at VA facilities. |
-| `flu_cases_per_100k_7dav` | Influenza | Rate (7-day average) | 7-day trailing average of daily incident cases per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
+| `flu_cases_per_100k_7dav` | Influenza | Rate (7-day average) | 7-day trailing average of daily newly reported cases (derived from cumulative snapshot differences) per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
 | `rsv_cases_cumulative` | RSV | Cumulative count | Season-to-date confirmed cases at VA facilities. |
-| `rsv_cases_per_100k_7dav` | RSV | Rate (7-day average) | 7-day trailing average of daily incident cases per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
+| `rsv_cases_per_100k_7dav` | RSV | Rate (7-day average) | 7-day trailing average of daily newly reported cases (derived from cumulative snapshot differences) per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
 
 ### Vaccinations (`va_respiratory_vaccinations`)
 
@@ -81,23 +81,27 @@ $$
 \text{rate\_per\_100k} = \frac{\text{count}}{\text{enrollees}} \times 100{,}000
 $$
 
-For cases, daily incidence is derived as the difference between successive cumulative snapshots:
+For cases, daily newly reported cases ($\Delta C_t$) are derived as the difference between successive cumulative snapshots:
 
 $$
 \Delta C_t = C_t - C_{t-1}
 $$
 
+> [!NOTE]
+> **Differences vs. True Epidemiological Incidence:**
+> Daily differences ($\Delta C_t$) represent newly reported cases between consecutive portal snapshots rather than true disease incidence (date of illness onset or infection). Differences reflect administrative reporting flow, batching, and system updates rather than the exact timing of clinical onset.
+
 Vaccinations are reported strictly as cumulative metrics (season cumulative or lifetime cumulative) and are not differenced into daily counts.
 
 ### Smoothing
 
-To smooth noise from weekend reporting and administrative batching, Delphi applies a 7-day trailing moving average (`_7dav`) to daily case incidence before calculating the per-100,000 rate.
+To smooth noise from weekend reporting and administrative batching, Delphi applies a 7-day trailing moving average (`_7dav`) to daily newly reported cases ($\Delta C_t$) before calculating the per-100,000 rate.
 
 #### Deflation Guard
 
-Raw cumulative snapshots occasionally experience temporary single-day drops due to upstream reporting or synchronization anomalies before rebounding the following day. Cumulative indicators publish the raw VA snapshots without modification. For derived daily incidence and smoothed rates, a deflation guard zeroes single-day dips and folds the difference into the subsequent recovery day ($$C_{t+1} - C_{t-1}$$).
+Raw cumulative snapshots occasionally experience temporary single-day drops due to upstream reporting or synchronization anomalies before rebounding the following day. Cumulative indicators publish the raw VA snapshots without modification. For derived daily changes and smoothed rates, a deflation guard zeroes single-day dips and folds the difference into the subsequent recovery day ($$C_{t+1} - C_{t-1}$$).
 
-At the season boundary (September 30 to October 1), cumulative totals reset. The pipeline treats the October 1 count directly as that day's incidence rather than differencing against the prior season.
+At the season boundary (September 30 to October 1), cumulative totals reset. The pipeline treats the October 1 count directly as that day's initial reported case count rather than differencing against the prior season.
 
 ### Uncertainty
 
@@ -180,7 +184,7 @@ The VA patient population consists of enrolled military veterans, who are predom
 
 Because the VA portal only maintains active files for approximately 30 days and lacks an official historical archive, long-term retrospective backfilling is constrained by portal retention.
 
-Cases are reported on the date when positive laboratory confirmation or diagnostic review occurred rather than when medical care was first sought. Successive daily snapshot deltas therefore represent reporting cadence rather than true date-of-onset clinical incidence.
+Cases are reported on the date when positive laboratory confirmation or diagnostic review occurred rather than when medical care was first sought. Successive daily snapshot deltas ($\Delta C_t$) therefore represent administrative reporting flow and system processing cadence rather than true date-of-onset clinical incidence. Differences should not be interpreted as pure disease incidence.
 
 ---
 
