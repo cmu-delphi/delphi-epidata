@@ -25,12 +25,14 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 | [`nchs_mortality`](v5-signals/nchs_mortality.md) | [`nchs-mortality`](covidcast-signals/nchs-mortality.md) | nation, state | — |
 | [`nhsn`](v5-signals/nhsn.md) | [`nhsn`](covidcast-signals/nhsn.md) | census_division, census_region, hhs, nation, state | — |
 | `nickel_beta` *(Beta)* | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
+| [`nrevss`](v5-signals/nrevss.md) | New in V5 | state, hhs, census_division, census_region, nation | — |
 | [`nssp`](v5-signals/nssp.md) | [`nssp`](covidcast-signals/nssp.md) | census_division, census_region, county, hhs, hrr, hsa_nci, msa, nation, state | — |
 | [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
 | [`pophive`](v5-signals/epic-cosmos.md) | New in V5 | hhs, nation, state | `age_group` |
 | `sleepcycle` *(Beta)* | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 | [`va_respiratory_cases`](v5-signals/va_respiratory.md) | New in V5 | census_division, census_region, hhs, msa, nation, state, va_catchment | — |
 | [`va_respiratory_vaccinations`](v5-signals/va_respiratory.md) | New in V5 | census_division, census_region, hhs, nation, state | — |
+| [`sleepcycle`](v5-signals/sleepcycle.md) | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 {: #v5-sources-table}
 
 <span id="v5-sources-table-status">V5 sources available as of September 2026.</span>
@@ -81,7 +83,7 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
   };
 
   // Sources confirmed to have no V4 predecessor. Everything unlisted stays "Not yet verified".
-  var CONFIRMED_NEW_IN_V5 = ['pophive', 'nwss', 'va_respiratory', 'va_respiratory_cases', 'va_respiratory_vaccinations', 'sleepcycle', 'nickel_beta'];
+  var CONFIRMED_NEW_IN_V5 = ['pophive', 'nwss', 'va_respiratory', 'va_respiratory_cases', 'va_respiratory_vaccinations', 'sleepcycle', 'nickel_beta', 'nickel_beta', 'nrevss'];
   var BETA_SOURCES = ['sleepcycle', 'nickel_beta'];
 
   // V5 source name -> its V5 documentation page.
@@ -100,6 +102,8 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
     'va_respiratory': 'v5-signals/va_respiratory.html',
     'va_respiratory_cases': 'v5-signals/va_respiratory.html',
     'va_respiratory_vaccinations': 'v5-signals/va_respiratory.html'
+    'sleepcycle': 'v5-signals/sleepcycle.html',
+    'nrevss': 'v5-signals/nrevss.html'
   };
 
   var code = function (s) { return '<code>' + s + '</code>'; };
