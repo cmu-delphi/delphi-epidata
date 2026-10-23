@@ -30,7 +30,8 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 | [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
 | [`pophive`](v5-signals/epic-cosmos.md) | New in V5 | hhs, nation, state | `age_group` |
 | [`sleepcycle`](v5-signals/sleepcycle.md) | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
-| `va_respiratory` | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
+| [`va_respiratory_cases`](v5-signals/va_respiratory.md) | New in V5 | census_division, census_region, hhs, msa, nation, state, va_catchment | — |
+| [`va_respiratory_vaccinations`](v5-signals/va_respiratory.md) | New in V5 | census_division, census_region, hhs, nation, state | — |
 {: #v5-sources-table}
 
 <span id="v5-sources-table-status">V5 sources available as of September 2026.</span>
@@ -81,7 +82,7 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
   };
 
   // Sources confirmed to have no V4 predecessor. Everything unlisted stays "Not yet verified".
-  var CONFIRMED_NEW_IN_V5 = ['pophive', 'nwss', 'va_respiratory', 'sleepcycle', 'nickel_beta', 'nrevss'];
+  var CONFIRMED_NEW_IN_V5 = ['pophive', 'nwss', 'va_respiratory', 'va_respiratory_cases', 'va_respiratory_vaccinations', 'sleepcycle', 'nickel_beta', 'nrevss'];
   var BETA_SOURCES = ['nickel_beta'];
 
   // V5 source name -> its V5 documentation page.
@@ -97,6 +98,9 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
     'fluview_ilinet': 'v5-signals/fluview_ilinet.html',
     'fluview_resp_lab_clinical': 'v5-signals/fluview_resp_lab_clinical.html',
     'fluview_resp_lab_ph': 'v5-signals/fluview_resp_lab_ph.html',
+    'va_respiratory': 'v5-signals/va_respiratory.html',
+    'va_respiratory_cases': 'v5-signals/va_respiratory.html',
+    'va_respiratory_vaccinations': 'v5-signals/va_respiratory.html',
     'sleepcycle': 'v5-signals/sleepcycle.html',
     'nrevss': 'v5-signals/nrevss.html'
   };
