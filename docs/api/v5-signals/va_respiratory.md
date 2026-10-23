@@ -172,9 +172,12 @@ Because facility catchments cross state boundaries, grouping catchments directly
 
 ## Missingness & Privacy
 
-Counts fewer than 11 are suppressed by the VA for privacy and reported as `< 11`. In Delphi's pipeline, censored values are imputed as 5 (the midpoint of 0 to 10). Other non-numeric values are parsed as null.
+Counts fewer than 11 are suppressed upstream by the VA for patient privacy and reported as `< 11`. In Delphi's pipeline, censored values are imputed as 5 (the midpoint of 0 to 10) to facilitate cumulative tracking and difference calculations. Any other non-numeric text is parsed as `null`.
 
-Higher-level cumulative totals are published only when all underlying locations report for a given date; if any location is entirely absent from that day's source file, the aggregate cumulative count is withheld.
+In the Delphi API, calculated zero daily rate deltas and zero rates are published explicitly as `0`, whereas missing observations or withheld aggregates are emitted as `null` (or omitted rows).
+
+
+Higher-level cumulative totals (state, MSA, HHS region, Census division, Census region, and nation) are published only when all underlying child locations report for a given reference date. If any expected facility or location is entirely absent from that day's source file, the aggregate cumulative count is withheld.
 
 ---
 
@@ -190,9 +193,7 @@ Cases are reported on the date when positive laboratory confirmation or diagnost
 
 ## Lag & Backfill
 
-VA files are published daily with minimal reporting latency (1–2 days).
-
-To account for delayed reports and retrospective corrections within the active season, the pipeline maintains a rolling lookback and lookahead window (`[X-9, X+6]`) around each reference date `X`, restaging snapshots to repair trailing averages and ensure stability.
+VA files are published daily by the VA Access to Care portal and ingested same-day by Delphi (0 days nominal reporting lag).
 
 ---
 
