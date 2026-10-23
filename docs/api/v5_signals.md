@@ -25,10 +25,11 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 | [`nchs_mortality`](v5-signals/nchs_mortality.md) | [`nchs-mortality`](covidcast-signals/nchs-mortality.md) | nation, state | — |
 | [`nhsn`](v5-signals/nhsn.md) | [`nhsn`](covidcast-signals/nhsn.md) | census_division, census_region, hhs, nation, state | — |
 | `nickel_beta` *(Beta)* | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
+| [`nrevss`](v5-signals/nrevss.md) | New in V5 | state, hhs, census_division, census_region, nation | — |
 | [`nssp`](v5-signals/nssp.md) | [`nssp`](covidcast-signals/nssp.md) | census_division, census_region, county, hhs, hrr, hsa_nci, msa, nation, state | — |
 | [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
 | [`pophive`](v5-signals/epic-cosmos.md) | New in V5 | hhs, nation, state | `age_group` |
-| `sleepcycle` *(Beta)* | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
+| [`sleepcycle`](v5-signals/sleepcycle.md) | New in V5 | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 | `va_respiratory` | New in V5 | census_division, census_region, hhs, msa, nation, state, va_facility | — |
 {: #v5-sources-table}
 
@@ -80,8 +81,8 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
   };
 
   // Sources confirmed to have no V4 predecessor. Everything unlisted stays "Not yet verified".
-  var CONFIRMED_NEW_IN_V5 = ['pophive', 'nwss', 'va_respiratory', 'sleepcycle', 'nickel_beta'];
-  var BETA_SOURCES = ['sleepcycle', 'nickel_beta'];
+  var CONFIRMED_NEW_IN_V5 = ['pophive', 'nwss', 'va_respiratory', 'sleepcycle', 'nickel_beta', 'nrevss'];
+  var BETA_SOURCES = ['nickel_beta'];
 
   // V5 source name -> its V5 documentation page.
   var V5_DOCS = {
@@ -95,7 +96,9 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
     'flusurv': 'v5-signals/flusurv.html',
     'fluview_ilinet': 'v5-signals/fluview_ilinet.html',
     'fluview_resp_lab_clinical': 'v5-signals/fluview_resp_lab_clinical.html',
-    'fluview_resp_lab_ph': 'v5-signals/fluview_resp_lab_ph.html'
+    'fluview_resp_lab_ph': 'v5-signals/fluview_resp_lab_ph.html',
+    'sleepcycle': 'v5-signals/sleepcycle.html',
+    'nrevss': 'v5-signals/nrevss.html'
   };
 
   var code = function (s) { return '<code>' + s + '</code>'; };
