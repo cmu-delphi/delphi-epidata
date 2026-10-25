@@ -56,8 +56,8 @@ class UnitTests(unittest.TestCase):
             self.assertFalse(p.matches("fips", "c"))
             self.assertFalse(p.matches("msa", "any"))
         with self.subTest("count"):
-            self.assertEqual(GeoSet("a", True).count(), inf)
-            self.assertEqual(GeoSet("a", False).count(), 0)
+            self.assertEqual(GeoSet("nation", True).count(), inf)
+            self.assertEqual(GeoSet("nation", False).count(), 0)
             self.assertEqual(GeoSet("fips", [FIPS[0], FIPS[1]]).count(), 2)
 
     def test_source_signal_set(self):
