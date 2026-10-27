@@ -34,7 +34,7 @@ The Department of Veterans Affairs (VA) biosurveillance system tracks seasonal r
 
 In the Delphi V5 API, this surveillance is published as two independent data sources:
 
-- **`va_respiratory_cases`** contains daily facility-level cumulative case counts and derived 7-day average daily reported case rates.
+- **`va_respiratory_cases`** contains daily catchment-level cumulative case counts and derived 7-day average daily reported case rates.
 - **`va_respiratory_vaccinations`** contains daily state-level cumulative doses administered and cumulative vaccination rates.
 
 ---
@@ -47,11 +47,11 @@ Case indicators reflect cumulative counts and population-adjusted daily reported
 
 | Indicator Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- |
-| `covid_cases_cumulative` | COVID-19 | Cumulative count | Season-to-date confirmed cases at VA facilities. |
+| `covid_cases_cumulative` | COVID-19 | Cumulative count | Season-to-date confirmed cases across VA facility catchments. |
 | `covid_cases_per_100k_7dav` | COVID-19 | Rate (7-day average) | 7-day trailing average of daily newly reported cases (derived from cumulative snapshot differences) per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
-| `flu_cases_cumulative` | Influenza | Cumulative count | Season-to-date confirmed cases at VA facilities. |
+| `flu_cases_cumulative` | Influenza | Cumulative count | Season-to-date confirmed cases across VA facility catchments. |
 | `flu_cases_per_100k_7dav` | Influenza | Rate (7-day average) | 7-day trailing average of daily newly reported cases (derived from cumulative snapshot differences) per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
-| `rsv_cases_cumulative` | RSV | Cumulative count | Season-to-date confirmed cases at VA facilities. |
+| `rsv_cases_cumulative` | RSV | Cumulative count | Season-to-date confirmed cases across VA facility catchments. |
 | `rsv_cases_per_100k_7dav` | RSV | Rate (7-day average) | 7-day trailing average of daily newly reported cases (derived from cumulative snapshot differences) per 100,000 VHA-enrolled veterans. Includes 90% Wilson confidence intervals (`ci_lower`, `ci_upper`). |
 
 ### Vaccinations (`va_respiratory_vaccinations`)
@@ -81,27 +81,26 @@ $$
 \text{rate\_per\_100k} = \frac{\text{count}}{\text{enrollees}} \times 100{,}000
 $$
 
-For cases, daily newly reported cases ($\Delta C_t$) are derived as the difference between successive cumulative snapshots:
+For cases, daily newly reported cases ($$\Delta C_t$$) are derived as the difference between successive cumulative snapshots:
 
 $$
 \Delta C_t = C_t - C_{t-1}
 $$
 
-> [!NOTE]
-> **Differences vs. True Epidemiological Incidence:**
-> Daily differences ($\Delta C_t$) represent newly reported cases between consecutive portal snapshots rather than true disease incidence (date of illness onset or infection). Differences reflect administrative reporting flow, batching, and system updates rather than the exact timing of clinical onset.
+> **Differences vs. True Epidemiological Incidence:** Daily differences ($$\Delta C_t$$) represent newly reported cases between consecutive portal snapshots rather than true disease incidence (date of illness onset or infection). Differences reflect administrative reporting flow, batching, and system updates rather than the exact timing of clinical onset.
+{: .note }
 
 Vaccinations are reported strictly as cumulative metrics (season cumulative or lifetime cumulative) and are not differenced into daily counts.
 
 ### Smoothing
 
-To smooth noise from weekend reporting and administrative batching, Delphi applies a 7-day trailing moving average (`_7dav`) to daily newly reported cases ($\Delta C_t$) before calculating the per-100,000 rate.
+To smooth noise from weekend reporting and administrative batching, Delphi applies a 7-day trailing moving average (`_7dav`) to daily newly reported cases ($$\Delta C_t$$) before calculating the per-100,000 rate.
 
 #### Deflation Guard (Cases Only)
 
 Raw cumulative counts from the VA portal occasionally decrease due to reporting delays, downward revisions, or transitions into censored status (`< 11`).
 
-For derived daily case differences and smoothed rates, Delphi applies a deflation guard for single-day anomalies: when a negative daily delta ($\Delta C_t < 0$) is offset by an immediate next-day recovery ($\Delta C_t + \Delta C_{t+1} \ge 0$), the guard zeroes day $t$ and folds the difference into day $t+1$. Multi-day dips or drops without an immediate recovery pass into the 7-day moving average, which can produce negative rates (`*_cases_per_100k_7dav`) where confidence intervals are omitted (`null`).
+For derived daily case differences and smoothed rates, Delphi applies a deflation guard for single-day anomalies: when a negative daily delta ($$\Delta C_t < 0$$) is offset by an immediate next-day recovery ($$\Delta C_t + \Delta C_{t+1} \ge 0$$), the guard zeroes day $t$ and folds the difference into day $t+1$. Multi-day dips or drops without an immediate recovery pass into the 7-day moving average, which can produce negative rates (`*_cases_per_100k_7dav`) where confidence intervals are omitted (`null`).
 
 Cumulative indicators publish raw snapshots without modification. Vaccinations are published only as cumulative metrics and do not use a deflation guard.
 
@@ -136,7 +135,7 @@ For cases, daily rates are derived from changes in cumulative counts. The pipeli
 
 The Veterans Health Administration (VHA) provides care through regional Healthcare Systems (HCS) and Medical Centers (VAMC). Because patient draw areas follow healthcare delivery patterns rather than political boundaries, facility service areas often span across state lines:
 
-- **Cases (`va_respiratory_cases`):** Reported natively at the VA catchment (`va_catchment`) level across 139 facilities nationwide. Catchment case counts are disaggregated to constituent counties using veteran enrollee population weights from the VHA Enrollees by County dataset, then re-aggregated up through Delphi's standard geographic crosswalk to `state`, `msa`, `hhs`, `census_division`, `census_region`, and `nation`. Raw county counts are not published.
+- **Cases (`va_respiratory_cases`):** Reported natively at the VA catchment (`va_catchment`) level across 139 facility catchments nationwide. Catchment case counts are disaggregated to constituent counties using veteran enrollee population weights from the [VHA Enrollees by County dataset](https://www.data.va.gov/dataset/FY2015-VHA-Enrollees-by-County/yrqn-8ty6/about_data), then re-aggregated up through Delphi's standard geographic crosswalk to `state`, `msa`, `hhs`, `census_division`, `census_region`, and `nation`. Raw county counts are not published.
 - **Vaccinations (`va_respiratory_vaccinations`):** Reported natively at the state level (`state`). These aggregate upward directly to `hhs`, `census_division`, `census_region`, and `nation` using enrollee population weights. Non-US entries (`ph` for the Philippines and `other`) are excluded during aggregation.
 
 #### Understanding `va_catchment` Geographic Levels
