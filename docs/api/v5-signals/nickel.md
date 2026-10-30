@@ -108,18 +108,6 @@ $$
 
 computed only when at least 5 days in the window are available.
 
-
-### Qualifying conditions
-
-The raw claims feed categorizes unique daily outpatient visits into five mutually exclusive count categories based on primary ICD-10 diagnosis codes. When a patient encounter carries multiple qualifying diagnosis codes on the same date, priority is assigned in descending order of diagnostic specificity: Flu, COVID-like, Flu-like, then Mixed.
-
-<details>
-<summary><b>My section header in bold</b></summary>
-
-Any folded content here. It requires an empty line just above it.
-
-</details>
-
 ### Differential Privacy
 
 To prevent reidentification of patients, this dataset is noised in a way that makes it differentially private at the $$\text{epsilon} = \frac{5}{3}$$ level [per patient per day](https://registry.opendp.org/trust-models/#:~:text=Unit%20of%20Privacy).
@@ -130,19 +118,32 @@ We noise numerators for each indicator with `epsilon = 1/3` and sensitivity `del
 This results in us applying Laplacian noise with `location = 0` and `scale = 3`.
 The noise has units of counts.
 
-New noise values are drawn for every county $$i$$, service date $$t$$, and age group $$a$$ ("key").
-Once a given key has a noise value assigned, that noise value is reused for every issue made to that county-service date-age group key's value.
+New noise values are drawn for every county $$i$$, service date $$t$$, and extra key $$k$$ (age group + care setting).
+Once a given key has a noise value assigned, that noise value is reused for every issue made to that county-service date-key's value.
 
 Only raw county numerators are noised with randomly drawn DP-conforming noise.
 This is done before any geoaggregation or smoothing is performed.
 Denominators are left unnoised.
 
-When a raw value is close to a natural threshold (for numerator, 0 or $$n_i$$) or the noise is relatively large, the noised value can become impossible (< 0, > $$n_i$$).
+When a raw value is close to a natural threshold (for numerator, 0 or $$N_{jtk}$$) or the noise is relatively large, the noised value can become impossible (< 0, > $$N_{jtk}$$).
 These values are left as-is until after geoaggregation, smoothing, and percentage calculation are done, after which impossible percentages are truncated to the closest boundary (0, 100).
 Early truncation biases aggregated values.
 
+### Qualifying conditions
 
-### Qualifying Conditions
+Each
+
+The raw claims feed categorizes unique daily outpatient visits into five mutually exclusive count categories based on primary ICD-10 diagnosis codes. When a patient encounter carries multiple qualifying diagnosis codes on the same date, priority is assigned in descending order of diagnostic specificity: Flu, COVID-like, Flu-like, then Mixed.
+
+<details>
+<summary><b>My section header in bold</b></summary>
+
+Any folded content here. It requires an empty line just above it.
+
+</details>
+
+###
+
 
 The raw claims feed categorizes unique daily hospital admissions into five mutually exclusive count categories based on primary ICD-10 diagnosis codes. When a patient admission carries multiple qualifying diagnosis codes on the same date, priority is assigned in descending order of diagnostic specificity: **Flu**, **COVID-like**, **Flu-like**, then **Mixed**.
 
