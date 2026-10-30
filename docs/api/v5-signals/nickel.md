@@ -50,12 +50,12 @@ The data covers COVID-19, influenza, respiratory syncytial virus (RSV), diarrhea
 | `influenza_pct_ed_7dav` | Influenza | Percentage, 7-day window | Share of emergency department (ED) medical encounters associated with influenza. |
 | `influenza_pct_ip_7dav` | Influenza | Percentage, 7-day window | Share of inpatient medical encounters associated with influenza. |
 | `influenza_pct_op_7dav` | Influenza | Percentage, 7-day window | Share of outpatient medical encounters associated with influenza. |
-| `ari_pct_ed_7dav` | ILI | Percentage, 7-day window | Share of emergency department (ED) medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
-| `ari_pct_ip_7dav` | ILI | Percentage, 7-day window | Share of inpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
-| `ari_pct_op_7dav` | ILI | Percentage, 7-day window | Share of outpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
 | `rsv_pct_ed_7dav` | RSV | Percentage, 7-day window | Share of emergency department (ED) medical encounters associated with RSV. |
 | `rsv_pct_ip_7dav` | RSV | Percentage, 7-day window | Share of inpatient medical encounters associated with RSV. |
 | `rsv_pct_op_7dav` | RSV | Percentage, 7-day window | Share of outpatient medical encounters associated with RSV. |
+| `ari_pct_ed_7dav` | ILI | Percentage, 7-day window | Share of emergency department (ED) medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
+| `ari_pct_ip_7dav` | ILI | Percentage, 7-day window | Share of inpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
+| `ari_pct_op_7dav` | ILI | Percentage, 7-day window | Share of outpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
 
 
 'covid_pct_ed_7dav' ~ 'covid_ed'
@@ -67,12 +67,12 @@ The data covers COVID-19, influenza, respiratory syncytial virus (RSV), diarrhea
 'influenza_pct_ed_7dav' ~ 'influenza_ed'
 'influenza_pct_ip_7dav' ~ 'influenza_ip'
 'influenza_pct_op_7dav' ~ 'influenza_op'
-'ari_pct_ed_7dav' ~ 'resp_synd_ed'
-'ari_pct_ip_7dav' ~ 'resp_synd_ip'
-'ari_pct_op_7dav' ~ 'resp_synd_op'
 'rsv_pct_ed_7dav' ~ 'rsv_ed'
 'rsv_pct_ip_7dav' ~ 'rsv_ip'
 'rsv_pct_op_7dav' ~ 'rsv_op'
+'ari_pct_ed_7dav' ~ 'resp_synd_ed'
+'ari_pct_ip_7dav' ~ 'resp_synd_ip'
+'ari_pct_op_7dav' ~ 'resp_synd_op'
 
 
 ---
@@ -129,20 +129,229 @@ When a raw value is close to a natural threshold (for numerator, 0 or $$N_{jtk}$
 These values are left as-is until after geoaggregation, smoothing, and percentage calculation are done, after which impossible percentages are truncated to the closest boundary (0, 100).
 Early truncation biases aggregated values.
 
-### Qualifying conditions
+### Observation Assignment
 
-Each
+We get line-level EMR data from the data provider.
+To turn it into aggregate estimates, we mark each medical visit as being associated with one or more pathogens, happening in a particular location, and happening in a particular care setting.
+We mark each patient as belonging to a particular age bin.
 
-The raw claims feed categorizes unique daily outpatient visits into five mutually exclusive count categories based on primary ICD-10 diagnosis codes. When a patient encounter carries multiple qualifying diagnosis codes on the same date, priority is assigned in descending order of diagnostic specificity: Flu, COVID-like, Flu-like, then Mixed.
+#### Date of care
+
+Each medical visit is included in aggregate estimates only for the date that the visit occurred or the patient was admitted.
+
+#### Care setting
+
+The line-level data is already tagged with the type of medical encounter.
+We group these as follows to create inpatient, outpatient, and emergency categories.
+
+- Inpatient `ip`: inpatient
+- Outpatient `op`: telehealth, ambulatory visit, other ambulatory visit
+- Emergency department `ed`: emergency department, observational stay
+
+#### Location of care
+
+Because facility identity is obscured in the raw data, it is not totally clear where a medical visit happened.
+We have patient home region, but this has a few problems.
+It isn't fine-resolution and the format is incompatible with our geoaggregation procedure.
+It is also possible that a patient is getting care outside of their home region, e.g. while travelling.
+
+For those reasons, it is more accurate and feasible to use the location of care.
+For each medical visit, we identify the medical provider who provided the care, and link them to the National Provider Identifier (NPI) registry.
+We use the provider's registered work location as the location of care.
+
+#### Age buckets
+
+We use patient birth _year_ to group patients into the following age bins:
+
+- 0-4
+- 5-17
+- 18-49
+- 50-64
+- 65+
+
+#### Qualifying conditions
+
+We mark each medical visit as being associated with one or more pathogen categories primary ICD-10 diagnosis codes and LOINC test codes.
+When a patient encounter carries multiple qualifying diagnosis codes on the same date, the encounter can be considered associated with all of them.
+
+
+
+Respiratory diseases can be contagious for 2 weeks.
+Since we don't know if patients are seeking care near the beginning or the end of that period, we want o
+
+
+is marked as being associated with diarrhea, influenza, COVID-19, RSV, or ARI (acute respiratory illness).
+
+
+
+when have a flu1 diagnosis or positive flu lab test, then flu1
+when have a covid diagnosis or positive covid lab test, then covid
+when have a rsv diagnosis or positive rsv lab test, then rsv
+when have a diarrhea diagnosis, then diarrhea
+when have a uri diagnosis or when have both (cough_or_sore_throat and fever) diagnoses, then resp_synd
 
 <details>
-<summary><b>My section header in bold</b></summary>
+<summary><b>ICD10 diagnosis codes and LOINC lab test codes</b></summary>
 
-Any folded content here. It requires an empty line just above it.
+# ICD10 diagnosis codes
+flu1 (
+'J09'
+'J10'
+'J11'
+),
+uri (
+'J06.9'
+),
+fever (
+'R50.9'
+),
+cough_or_sore_throat (
+'J00'
+'J01.9'
+'J02.8'
+'J02.9'
+'J05.1'
+'J20.9'
+'R05'
+'R05.1'
+),
+rsv (
+'B97.4'
+'J12.1'
+'J20.5'
+'J21.0'
+),
+covid (
+'U07.1'
+'J12.82'
+),
+diarrhea (
+'A00'
+'A01'
+'A02'
+'A03'
+'A04'
+'A05'
+'A06'
+'A07'
+'A08'
+'A09'
+'R19.7'
+)
+# LOINC lab test codes
+covid (
+'94500-6'
+'94759-8'
+'94559-2'
+'95209-3'
+'94531-1'
+'94306-8'
+'94558-4'
+'96119-3'
+'94760-6'
+'94534-5'
+'94565-9'
+'94309-2'
+'60275-5'
+'95409-9'
+'94533-7'
+'94316-7'
+'94308-4'
+'96603-6'
+'95608-6'
+'94845-5'
+'97097-0'
+'94756-4'
+),
+rsv (
+'40987-0'
+'82176-9'
+'76089-2'
+'40988-8'
+'31950-9'
+'92131-2'
+'72885-7'
+'80597-8'
+'80598-6'
+'5876-8'
+'77022-2'
+'30075-6'
+'85479-4'
+'30076-4'
+'68966-1'
+'91795-5'
+'92957-0'
+'77023-0'
+'5877-6'
+'14129-1'
+'33045-6'
+'77390-3'
+'5874-3'
+'55100-2'
+),
+flu (
+'34487-9'
+'40982-1'
+'43874-7'
+'43895-2'
+'82170-2'
+'82166-0'
+'92141-1'
+'92142-9'
+'76080-1'
+'76078-5'
+'31859-2'
+'31864-2'
+'82169-4'
+'82167-8'
+'80382-5'
+'80383-3'
+'82168-6'
+'44577-5'
+'46082-4'
+'46083-2'
+'55465-9'
+'85478-6'
+'77026-3'
+'77027-1'
+'77028-9'
+'92977-8'
+'55466-7'
+'5867-7'
+'49524-2'
+'22827-0'
+'49521-8'
+'85477-8'
+'5866-9'
+'5862-8'
+'92976-0'
+'40981-3'
+'48310-7'
+'44558-5'
+'44575-9'
+'44564-3'
+'5863-6'
+'6604-3'
+'38382-8'
+'44571-8'
+'76079-3'
+'38381-0'
+'53251-5'
+'49534-1'
+'62462-7'
+'72366-8'
+'48509-4'
+'24015-0'
+'72365-0'
+'44567-6'
+'33535-6'
+'61102-0'
+'72367-6'
+'72356-9'
+'6437-8'
+)
 
 </details>
-
-###
 
 
 The raw claims feed categorizes unique daily hospital admissions into five mutually exclusive count categories based on primary ICD-10 diagnosis codes. When a patient admission carries multiple qualifying diagnosis codes on the same date, priority is assigned in descending order of diagnostic specificity: **Flu**, **COVID-like**, **Flu-like**, then **Mixed**.
@@ -184,27 +393,6 @@ Only keep up to lag 96
 Claims arrive at two native geographic levels: county (`county`) and Hospital Referral Region (`hrr`). HRR values are served as reported.
 
 All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are built by directly summing raw daily county counts (numerators and denominators are aggregated separately). Aggregation is performed on raw daily counts before computing 7-day sums, without imputation, so `fill_method` is always `source`.
-
----
-
-## Relationship to V4
-
-The V4 `hospital-admissions` source used the same health system claims and published a single COVID-19 percentage, through `smoothed_covid19_from_claims` and its day-of-week-adjusted twin `smoothed_adj_covid19_from_claims`.
-
-| V4 Signal | V5 Signal | Notes |
-| :--- | :--- | :--- |
-| `smoothed_covid19_from_claims` | `claims_inpatient_adm_pct_claims_covid` | Replaced smoothed Jeffreys estimator with 7-day trailing ratio |
-| `smoothed_adj_covid19_from_claims` | *(not available)* | Day-of-week adjustment discontinued |
-| `smoothed_covid19` | *(not available)* | Discontinued in V4 |
-| `smoothed_adj_covid19` | *(not available)* | Discontinued in V4 |
-| *(not available)* | `claims_inpatient_adm_pct_claims_flu` | New in V5 |
-| *(not available)* | `claims_inpatient_adm_pct_ari_other` | New in V5 (available from 2022-08-01) |
-
-What changed in V5:
-
-- **Expanded Geographies.** V4 served nation, state, county, HRR, and MSA. V5 adds HHS regions, census divisions, and census regions.
-- **Broader Signal Set.** V5 adds influenza and other-ARI percentages next to COVID-19, and drops the combined electronic-record-and-claims variant that V4 froze in 2020.
-- **Revised Estimator.** V4 applied a Jeffreys-style $$\frac{Y + 0.5}{N + 1}$$ correction, a backwards-padding step that widened the averaging window until a 500-visit threshold was met, a Poisson day-of-week adjustment, and a Gaussian linear smoother. V5 replaces all of it with the 7-day trailing sum from [Metric Definition](#metric-definition).
 
 ---
 
