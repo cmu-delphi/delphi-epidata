@@ -169,210 +169,187 @@ We use patient birth _year_ to group patients into the following age bins:
 - 50-64
 - 65+
 
+Patient birth dates are not available, so patient ages are defined as advancing on January 1 of every year.
+That means that age bucket composition changes for all age buckets on January 1.
+
 #### Qualifying conditions
 
-We mark each medical visit as being associated with one or more pathogen categories primary ICD-10 diagnosis codes and LOINC test codes.
-When a patient encounter carries multiple qualifying diagnosis codes on the same date, the encounter can be considered associated with all of them.
+We mark each medical visit as being associated with one or more pathogen categories through that patient's primary ICD-10 diagnosis codes and LOINC test codes.
+As of November 1 2026, we look for diarrhea, influenza, COVID-19, RSV, and ARI (acute respiratory illness).
 
+Respiratory diseases can be contagious and symptoms can be present for 2 weeks.
+Since affected patients could seek care near the beginning _or_ the end of that period, we consider a given medical encounter as associated with a pathogen if that patient had any relevant diagnosis or positive lab test in the window two weeks before to two weeks after the encounter date.
+The diagnosis or positive lab test can occur in a different care setting than the encounter itself.
 
+Therefore, an encounter is associated with a respiratory pathogen if that patient received any relevant diagnoses or positive lab tests within ±2 weeks of the encounter date.
+An encounter is associated with ARI (acute respiratory illness) if that patient received a URI (upper respiratory illness) diagnosis or received diagnoses of fever with either of cough or sore throat within ±2 weeks of the encounter date.
+An encounter is associated with diarrhea if the patient received a relevant diagnoses at that particular encounter.
 
-Respiratory diseases can be contagious for 2 weeks.
-Since we don't know if patients are seeking care near the beginning or the end of that period, we want o
+When a patient encounter is associated with multiple qualifying diagnosis codes, the encounter is considered associated with all of them.
 
+An encounter that _is_ associated with a relevant diagnosis or positive lab test is then counted in the numerator (number of patients affected by a pathogen/symptom) on the date the encounter happened, as well as in the denominator.
+If not associated with such a diagnosis or lab test, the encounter is only counted in the denominator (number of total patients) on the date the encounter happened.
 
-is marked as being associated with diarrhea, influenza, COVID-19, RSV, or ARI (acute respiratory illness).
-
-
-
-when have a flu1 diagnosis or positive flu lab test, then flu1
-when have a covid diagnosis or positive covid lab test, then covid
-when have a rsv diagnosis or positive rsv lab test, then rsv
-when have a diarrhea diagnosis, then diarrhea
-when have a uri diagnosis or when have both (cough_or_sore_throat and fever) diagnoses, then resp_synd
+We count each patient only once per day, although it's possible for a patient to have multiple medical encounters on the same day.
 
 <details>
-<summary><b>ICD10 diagnosis codes and LOINC lab test codes</b></summary>
+<summary><b>ICD10 diagnosis codes and LOINC lab test codes used</b></summary>
 
 # ICD10 diagnosis codes
-flu1 (
-'J09'
-'J10'
-'J11'
-),
-uri (
-'J06.9'
-),
-fever (
-'R50.9'
-),
-cough_or_sore_throat (
-'J00'
-'J01.9'
-'J02.8'
-'J02.9'
-'J05.1'
-'J20.9'
-'R05'
-'R05.1'
-),
-rsv (
-'B97.4'
-'J12.1'
-'J20.5'
-'J21.0'
-),
-covid (
-'U07.1'
-'J12.82'
-),
-diarrhea (
-'A00'
-'A01'
-'A02'
-'A03'
-'A04'
-'A05'
-'A06'
-'A07'
-'A08'
-'A09'
-'R19.7'
-)
+
+"Prefixes" are 3-character ICD-10 categories that match every included subcode, e.g. "J10" also matches J10.1, J10.81, etc.
+All other codes match exactly.
+
+- Influenza prefixes
+  - J09
+  - J10
+  - J11
+- URI
+  - J06.9
+- Fever
+  - R50.9
+- Cough or sore throat
+  - J00
+  - J01.9
+  - J02.8
+  - J02.9
+  - J05.1
+  - J20.9
+  - R05
+  - R05.1
+- RSV
+  - B97.4
+  - J12.1
+  - J20.5
+  - J21.0
+- COVID-19
+  - U07.1
+  - J12.82
+- Diarrhea prefixes
+  - A00
+  - A01
+  - A02
+  - A03
+  - A04
+  - A05
+  - A06
+  - A07
+  - A08
+  - A09
+  - R19.7
+
 # LOINC lab test codes
-covid (
-'94500-6'
-'94759-8'
-'94559-2'
-'95209-3'
-'94531-1'
-'94306-8'
-'94558-4'
-'96119-3'
-'94760-6'
-'94534-5'
-'94565-9'
-'94309-2'
-'60275-5'
-'95409-9'
-'94533-7'
-'94316-7'
-'94308-4'
-'96603-6'
-'95608-6'
-'94845-5'
-'97097-0'
-'94756-4'
-),
-rsv (
-'40987-0'
-'82176-9'
-'76089-2'
-'40988-8'
-'31950-9'
-'92131-2'
-'72885-7'
-'80597-8'
-'80598-6'
-'5876-8'
-'77022-2'
-'30075-6'
-'85479-4'
-'30076-4'
-'68966-1'
-'91795-5'
-'92957-0'
-'77023-0'
-'5877-6'
-'14129-1'
-'33045-6'
-'77390-3'
-'5874-3'
-'55100-2'
-),
-flu (
-'34487-9'
-'40982-1'
-'43874-7'
-'43895-2'
-'82170-2'
-'82166-0'
-'92141-1'
-'92142-9'
-'76080-1'
-'76078-5'
-'31859-2'
-'31864-2'
-'82169-4'
-'82167-8'
-'80382-5'
-'80383-3'
-'82168-6'
-'44577-5'
-'46082-4'
-'46083-2'
-'55465-9'
-'85478-6'
-'77026-3'
-'77027-1'
-'77028-9'
-'92977-8'
-'55466-7'
-'5867-7'
-'49524-2'
-'22827-0'
-'49521-8'
-'85477-8'
-'5866-9'
-'5862-8'
-'92976-0'
-'40981-3'
-'48310-7'
-'44558-5'
-'44575-9'
-'44564-3'
-'5863-6'
-'6604-3'
-'38382-8'
-'44571-8'
-'76079-3'
-'38381-0'
-'53251-5'
-'49534-1'
-'62462-7'
-'72366-8'
-'48509-4'
-'24015-0'
-'72365-0'
-'44567-6'
-'33535-6'
-'61102-0'
-'72367-6'
-'72356-9'
-'6437-8'
-)
+
+- COVID-19
+  - 94500-6
+  - 94759-8
+  - 94559-2
+  - 95209-3
+  - 94531-1
+  - 94306-8
+  - 94558-4
+  - 96119-3
+  - 94760-6
+  - 94534-5
+  - 94565-9
+  - 94309-2
+  - 60275-5
+  - 95409-9
+  - 94533-7
+  - 94316-7
+  - 94308-4
+  - 96603-6
+  - 95608-6
+  - 94845-5
+  - 97097-0
+  - 94756-4
+- RSV
+  - 40987-0
+  - 82176-9
+  - 76089-2
+  - 40988-8
+  - 31950-9
+  - 92131-2
+  - 72885-7
+  - 80597-8
+  - 80598-6
+  - 5876-8
+  - 77022-2
+  - 30075-6
+  - 85479-4
+  - 30076-4
+  - 68966-1
+  - 91795-5
+  - 92957-0
+  - 77023-0
+  - 5877-6
+  - 14129-1
+  - 33045-6
+  - 77390-3
+  - 5874-3
+  - 55100-2
+- Influenza (includes influenza A/B panel tests)
+  - 34487-9
+  - 40982-1
+  - 43874-7
+  - 43895-2
+  - 82170-2
+  - 82166-0
+  - 92141-1
+  - 92142-9
+  - 76080-1
+  - 76078-5
+  - 31859-2
+  - 31864-2
+  - 82169-4
+  - 82167-8
+  - 80382-5
+  - 80383-3
+  - 82168-6
+  - 44577-5
+  - 46082-4
+  - 46083-2
+  - 55465-9
+  - 85478-6
+  - 77026-3
+  - 77027-1
+  - 77028-9
+  - 92977-8
+  - 55466-7
+  - 5867-7
+  - 49524-2
+  - 22827-0
+  - 49521-8
+  - 85477-8
+  - 5866-9
+  - 5862-8
+  - 92976-0
+  - 40981-3
+  - 48310-7
+  - 44558-5
+  - 44575-9
+  - 44564-3
+  - 5863-6
+  - 6604-3
+  - 38382-8
+  - 44571-8
+  - 76079-3
+  - 38381-0
+  - 53251-5
+  - 49534-1
+  - 62462-7
+  - 72366-8
+  - 48509-4
+  - 24015-0
+  - 72365-0
+  - 44567-6
+  - 33535-6
+  - 61102-0
+  - 72367-6
+  - 72356-9
+  - 6437-8
 
 </details>
-
-
-The raw claims feed categorizes unique daily hospital admissions into five mutually exclusive count categories based on primary ICD-10 diagnosis codes. When a patient admission carries multiple qualifying diagnosis codes on the same date, priority is assigned in descending order of diagnostic specificity: **Flu**, **COVID-like**, **Flu-like**, then **Mixed**.
-
-| Category | Primary ICD-10 Codes | Description |
-| :--- | :--- | :--- |
-| **Denominator** | All | Total count of all unique inpatient admission claims. |
-| **Flu** | `J09*`, `J10*`, `J11*` | Confirmed influenza diagnoses (`*` includes all subcodes). |
-| **COVID-like** | `U07.1`, `U07.2`, `B97.29`, `J12.81`, `Z03.818`, `B34.2`, `J12.89` | Confirmed or suspected COVID-19 diagnoses. |
-| **Flu-like** | `J22`, `B34.9` | Unspecified acute lower-respiratory infections and unspecified viral infections. Correlated with respiratory illness but not specific to influenza; tracked COVID-19 early in the pandemic before specific codes were widely adopted. |
-| **Mixed** | `Z20.828`, `J12.9` | Suspected exposure to other viral communicable diseases and viral pneumonia, unspecified. |
-
-#### Signal Composition
-
-These raw categories map to the three published V5 indicators as follows:
-
-- **COVID-19 (`pct_claims_covid`):**
-  - *Before 2021-06-01:* Sums `COVID-like` and `Flu-like` counts over the denominator. The `Flu-like` (unspecified lower-respiratory) category tracked COVID-19 closely during the early pandemic while specific codes were not yet in widespread use.
-  - *From 2021-06-01 onward:* Uses `COVID-like` counts only over the denominator.
-- **Influenza (`pct_claims_flu`):** Uses the confirmed `Flu` count over the denominator across the entire series.
-- **Other ARI (`pct_ari_other`):** Published from 2022-08-01 onward. Combines the `Mixed` and `Flu-like` counts over the denominator, capturing acute respiratory illness encounters not attributed to COVID-19 or confirmed influenza.
 
 ### Smoothing
 
