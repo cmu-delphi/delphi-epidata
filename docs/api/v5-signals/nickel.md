@@ -195,7 +195,7 @@ We count each patient only once per day, although it's possible for a patient to
 <details>
 <summary><b>ICD10 diagnosis codes and LOINC lab test codes used</b></summary>
 
-# ICD10 diagnosis codes
+# ICD-10 diagnosis codes
 
 "Prefixes" are 3-character ICD-10 categories that match every included subcode, e.g. "J10" also matches J10.1, J10.81, etc.
 All other codes match exactly.
@@ -353,23 +353,29 @@ All other codes match exactly.
 
 ### Smoothing
 
-For each geography, a 7-day trailing sum is taken of every diagnosis count and the total claim count. The window must contain at least 5 of 7 days to produce a value.
+For each geography, care setting, and age group, a 7-day trailing sum is taken of the patient count who had care associated with a pathogen or symptom, and of the total patient count.
+The window must contain at least 5 of 7 days to produce a value.
 
 ### Temporal Handling
 
-Dates refer to the clinical date of service. Claims dated to the first calendar day of any month are dropped, because submission batching inflates that day. Service dates before 2019-10-01, and service dates in the future, are also dropped.
+Dates refer to the clinical date of service.
+<!-- TODO? Service dates before 2015-01-01 and service dates in the future are dropped. -->
 
-Data starts in Jan 2010, but with very small sample size. Much more useful after 2015. See "Rplot22" for example of variance over time.
+Data starts in Jan 2010, but with very small sample size.
+It is much more useful and better behaved after January 1 2015.
 
-Data for COVID signals is dropped if the reference date is before March 1 2020.
+Data for COVID signals is dropped for reference dates before March 1 2020.
 
-Only keep up to lag 96
+We currently only keep the first 90 days of revisions for each observation, i.e. where the reporting lag is 90 days or less.
+This may result in us missing some revisions, but should capture the vast majority.
 
 ### Geographic Handling
 
-Claims arrive at two native geographic levels: county (`county`) and Hospital Referral Region (`hrr`). HRR values are served as reported.
+The source data is reported in its raw form at by ZIP code.
 
-All other geographic levels (`msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are built by directly summing raw daily county counts (numerators and denominators are aggregated separately). Aggregation is performed on raw daily counts before computing 7-day sums, without imputation, so `fill_method` is always `source`.
+All geographic levels (`county`, `msa`, `hrr`, `state`, `hhs`, `census_division`, `census_region`, `nation`) are built by assigning portions of each ZIP code value to component counties, and then summing raw daily counts across counties.
+Numerators and denominators are aggregated separately.
+Aggregation is performed on raw daily counts before computing 7-day sums, without imputation, so `fill_method` is always `source`.
 
 ---
 
