@@ -31,7 +31,7 @@ nav_order: 7
 
 ## Overview
 
-This source measures the share of medical encounters associated with a variety of respiratory illnesses, or diarrhea.
+This source measures the share of medical encounters associated with a variety of respiratory illnesses and diarrhea.
 It is built from de-identified electronic health record (EHR) visit records contributed by Delphi health system partners.
 The data covers COVID-19, influenza, respiratory syncytial virus (RSV), diarrhea, and a non-specific combination of respiratory symptoms (previously referred to as influenza-like illness (ILI)).
 
@@ -131,7 +131,7 @@ Early truncation biases aggregated values.
 
 ### Observation Assignment
 
-We get line-level EMR data from the data provider.
+We get line-level EHR data from the data provider.
 To turn it into aggregate estimates, we mark each medical visit as being associated with one or more pathogens, happening in a particular location, and happening in a particular care setting.
 We mark each patient as belonging to a particular age bin.
 
@@ -405,26 +405,60 @@ Unobserved dates or geographies without reporting claims produce no records. Bot
 
 ## Limitations
 
-This source only captures admissions from healthcare facilities that partner with Delphi, which does not cover all hospitals in the United States. Coverage density varies across states and counties.
+This source only captures medical visits at healthcare facilities that partner with Nickel, which does not cover all such facilities in the United States.
+Coverage varies by location and is not strongly related to population.
 
-The data reflects insured patients admitted to participating inpatient facilities. Uninsured individuals and admissions at non-participating institutions are not represented.
+The data reflects insured patients seeking care at participating medical facilities.
+Uninsured individuals and admissions at non-participating facilities are not represented.
 
-Standard errors and sample sizes are not published for this source.
+Sample sizes are not published for this source.
 
-Differences in local coding habits, billing practices, and facility participation mean that absolute levels are not always comparable across different regions. Trends within a single location over time are generally more reliable than spatial comparisons.
+Differences in local and facility coding habits, billing practices, and facility participation mean that absolute levels are not always comparable across different regions.
+Trends within a single location over time are generally more reliable than spatial comparisons.
+
+When facilities join or leave the network, it can cause sharp changes in the sample size of the location they are part of.
+Because facilities can have differences in coding practices, changes in the facility network can also change the long-term average of the estimate for a given pathogen or symptom.
+It also depends on the coverage in a particular region.
+If the facility makes up a large share of the medical care there, we expect bigger changes of course.
+We find that significant network changes aren't that common, and that they're obvious when they do happen.
+
+We report data split by patient age, location of care, and encounter type (care setting).
+All of these are missing in some portion of the data.
+
+Specifically, location of care is based on the provider's reported place of work in the NPI registry.
+The registry we're using does not include all providers -- about 30% of providers in the visit data do not have location information available.
+Providers can also be added or change their information at any point.
+It's also possible that the provider's registered place of work could be far away from the actual location of care.
+For example, a provider employed by a private practice that is contracted by a hospital located in a different city, or a travel nurse.
+Therefore, not all care can be linked to a location and locations may occasionally be incorrect.
+
+Care setting is often unavailable in the source data, with observations being reported with `NULL` and `Other` encounter type.
+TODO how often?
+There's a strong relationship between `NULL`/`Other` encountertype frequency and location (state) of care.
+We believe this is due to differences in coding between facilities.
+Again, if a facility makes up a large share of the medical care in a given location, most of all of the data in a region could have no care setting label.
 
 ---
 
 ## Lag & Backfill
 
-Hospital admissions are reported with several days of lag, so estimates for a given date of service typically become available 3 to 7 days later.
+Although this source reports daily data, the underlying dataset is only updated once a week (on Thursday night).
+Therefore, estimates for a given date of service become available 1 to 7 days later.
+This also means that revisions only come out once a week, so it's possible to have only poor quality data for a week for e.g. the most recent Wednesday.
 
-Insurance claims experience substantial backfill over several weeks as facilities and payers submit and process claims on varying schedules. Delphi runs daily updates across historical dates to incorporate late-arriving records.
+Delphi runs daily updates across historical dates to incorporate late-arriving records.
+We currently only keep the first 90 days of revisions for each observation, i.e. where the reporting lag is 90 days or less.
+This may result in us missing some revisions, but should capture the vast majority.
 
-Estimates for the most recent 7 to 13 days change significantly across subsequent revisions, often showing median shifts of 10 percent or more. Data points older than 57 days are generally stable, with subsequent median revisions under 1 percent. Full revision histories can be queried through the [`/archive/`](../v5_api_queries.md) and [`/snapshot/`](../v5_api_queries.md) endpoints. Delphi documented the empirical behavior of this backfill process in a [blog post on claims backfill](https://delphi.cmu.edu/blog/2020/11/05/a-syndromic-covid-19-indicator-based-on-insurance-claims-of-outpatient-visits/#backfill).
+<!-- TODO Insurance claims experience substantial backfill over several weeks as facilities and payers submit and process claims on varying schedules. -->
+
+<!-- TODO Estimates for the most recent 7 to 13 days change significantly across subsequent revisions, often showing median shifts of 10 percent or more. Data points older than 57 days are generally stable, with subsequent median revisions under 1 percent.  -->
+
+Full revision histories can be queried through the [`/archive/`](../v5_api_queries.md) and [`/snapshot/`](../v5_api_queries.md) endpoints.
 
 ---
 
 ## Source and Licensing
 
-De-identified medical billing claims contributed by Delphi health system partners. This dataset is made available under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+De-identified EHR visit records contributed by Delphi health system partners.
+This dataset is made available under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
