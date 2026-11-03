@@ -53,11 +53,12 @@ The data covers COVID-19, influenza, respiratory syncytial virus (RSV), diarrhea
 | `rsv_pct_ed_7dav` | RSV | Percentage, 7-day window | Share of emergency department (ED) medical encounters associated with RSV. |
 | `rsv_pct_ip_7dav` | RSV | Percentage, 7-day window | Share of inpatient medical encounters associated with RSV. |
 | `rsv_pct_op_7dav` | RSV | Percentage, 7-day window | Share of outpatient medical encounters associated with RSV. |
-| `ari_pct_ed_7dav` | ILI | Percentage, 7-day window | Share of emergency department (ED) medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
-| `ari_pct_ip_7dav` | ILI | Percentage, 7-day window | Share of inpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
-| `ari_pct_op_7dav` | ILI | Percentage, 7-day window | Share of outpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
+| `ari_pct_ed_7dav` | ILI, ARI | Percentage, 7-day window | Share of emergency department (ED) medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
+| `ari_pct_ip_7dav` | ILI, ARI | Percentage, 7-day window | Share of inpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
+| `ari_pct_op_7dav` | ILI, ARI | Percentage, 7-day window | Share of outpatient medical encounters associated with an acute respiratory illness diagnosis not attributed to COVID-19 or influenza. |
 
 
+<!-- # Map between new and old names
 'covid_pct_ed_7dav' ~ 'covid_ed'
 'covid_pct_ip_7dav' ~ 'covid_ip'
 'covid_pct_op_7dav' ~ 'covid_op'
@@ -72,7 +73,7 @@ The data covers COVID-19, influenza, respiratory syncytial virus (RSV), diarrhea
 'rsv_pct_op_7dav' ~ 'rsv_op'
 'ari_pct_ed_7dav' ~ 'resp_synd_ed'
 'ari_pct_ip_7dav' ~ 'resp_synd_ip'
-'ari_pct_op_7dav' ~ 'resp_synd_op'
+'ari_pct_op_7dav' ~ 'resp_synd_op' -->
 
 
 ---
