@@ -387,12 +387,15 @@ Aggregation is performed on raw daily counts before computing 7-day sums, withou
 | Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
 | :--- | :--- | :--- | :--- |
 | `signal` | Primary Key | string | The name of the requested indicator. |
-| `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
-| `geo_type` | Primary Key | string | Geographic level (e.g., `county`, `state`, `nation`); see the summary table above for the full list. |
-| `geo_value` | Primary Key | string | Unique code for the location (e.g., `pa` for Pennsylvania, `42003` for Allegheny County). |
-| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation, always `source` for this source. |
-| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`, date of service). |
-| `value` | Value Column | float | The recorded percentage of medical encounters over the trailing 7-day window. |
+| `report_time` | Primary Key | datetime | Ingestion timestamp in UTC (`YYYY-MM-DD HH:MM:SS`). |
+| `geo_type` | Primary Key | string | Geographic level (e.g., `county`, `state`). |
+| `geo_value` | Primary Key | string | Unique code for the location (e.g., FIPS, state abbreviation). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
+| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`). |
+| `age_group` | Primary Key (Extra Key) | string | Age group category. |
+| `value` | Value Column | float | The recorded measurement (e.g., count, percentage, rate, or statistical estimate). |
+| `ci_lower` | Value Column | float | Lower bound of the 90% confidence interval. |
+| `ci_upper` | Value Column | float | Upper bound of the 90% confidence interval. |
 
 ---
 
