@@ -405,38 +405,35 @@ Unobserved dates or geographies without reporting claims produce no records. Bot
 
 ## Limitations
 
-This source only captures medical visits at healthcare facilities that partner with Nickel, which does not cover all such facilities in the United States.
-Coverage varies by location and is not strongly related to population.
+This source only includes data from medical facilities (hospitals and associated outpatient clinics) that are part of the 22 healthcare systems parterning with Nickel.
+Not all facilities in the United States are included.
+Medical visits at non-participating facilities are not captured.
 
-The data reflects insured patients seeking care at participating medical facilities.
-Uninsured individuals and admissions at non-participating facilities are not represented.
+The portion of the local population that's included in the particpating facilities varies by location.
 
-Sample sizes are not published for this source.
-
-Differences in local and facility coding habits, billing practices, and facility participation mean that absolute levels are not always comparable across different regions.
+Differences in local and facility coding habits and billing practices mean that absolute levels are not always comparable between different regions.
 Trends within a single location over time are generally more reliable than spatial comparisons.
 
-When facilities join or leave the network, it can cause sharp changes in the sample size of the location they are part of.
-Because facilities can have differences in coding practices, changes in the facility network can also change the long-term average of the estimate for a given pathogen or symptom.
-It also depends on the coverage in a particular region.
-If the facility makes up a large share of the medical care there, we expect bigger changes of course.
-We find that significant network changes aren't that common, and that they're obvious when they do happen.
+When healthcare systems or facilities join or leave the network, it can cause sharp changes in the sample sizes of the locations they are part of, especially if the facility makes up a large share of the medical care there.
+Because facilities can have differences in coding practices and may see different types of patients, changes in the facility network can also change the long-term average of the estimate for a given pathogen or symptom.
 
 We report data split by patient age, location of care, and encounter type (care setting).
-All of these are missing in some portion of the data.
+All of these are missing in some portion of the source data.
 
 Specifically, location of care is based on the provider's reported place of work in the NPI registry.
 The registry we're using does not include all providers -- about 30% of providers in the visit data do not have location information available.
-Providers can also be added or change their information at any point.
-It's also possible that the provider's registered place of work could be far away from the actual location of care.
+Providers can be added or change their NPI information at any point, but our copy of the registry may have a delay before syncing.
+The provider's registered place of work could also be far away from the actual location of care.
 For example, a provider employed by a private practice that is contracted by a hospital located in a different city, or a travel nurse.
 Therefore, not all care can be linked to a location and locations may occasionally be incorrect.
 
 Care setting is often unavailable in the source data, with observations being reported with `NULL` and `Other` encounter type.
 TODO how often?
+We exclude these observations from our estimates.
 There's a strong relationship between `NULL`/`Other` encountertype frequency and location (state) of care.
 We believe this is due to differences in coding between facilities.
-Again, if a facility makes up a large share of the medical care in a given location, most of all of the data in a region could have no care setting label.
+
+Sample sizes are not published for this source.
 
 ---
 
@@ -444,12 +441,12 @@ Again, if a facility makes up a large share of the medical care in a given locat
 
 Although this source reports daily data, the underlying dataset is only updated once a week (on Thursday night).
 Therefore, estimates for a given date of service become available 1 to 7 days later.
-This also means that revisions only come out once a week, so it's possible to have only poor quality data for a week for e.g. the most recent Wednesday.
+This also means that revisions only come out once a week, so it's possible to have only poor quality data for the most recent Wednesday, e.g., until the next issue comes out.
 
 Delphi runs daily updates across historical dates to incorporate late-arriving records.
 We currently only keep the first 90 days of revisions for each observation, i.e. where the reporting lag is 90 days or less.
 This may result in us missing some revisions, but should capture the vast majority.
-
+TODO backfill analysis
 <!-- TODO Insurance claims experience substantial backfill over several weeks as facilities and payers submit and process claims on varying schedules. -->
 
 <!-- TODO Estimates for the most recent 7 to 13 days change significantly across subsequent revisions, often showing median shifts of 10 percent or more. Data points older than 57 days are generally stable, with subsequent median revisions under 1 percent.  -->
