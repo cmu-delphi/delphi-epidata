@@ -397,9 +397,17 @@ Aggregation is performed on raw daily counts before computing 7-day sums, withou
 
 ## Missingness & Privacy
 
-To protect patient privacy, observations with fewer than 100 total claims across the trailing 7-day window are suppressed and omitted from publication. Windows with fewer than 5 days of data are withheld due to data sparsity and are likewise omitted. Missing days within an otherwise-qualifying window (at least 5 days and at least 100 claims) do not block publication.
+Under the guarantees of differential privacy, we are _able_ to release values for all locations, even those with very small sample sizes.
+However, we restrict locations from being reported when we consider them to be too noisy, sparse, or generally not useful.
+For example, a signal for a given location with a confidence interval of 0-100% isn't useful and will not be reported.
 
-Unobserved dates or geographies without reporting claims produce no records. Both suppressed and unobserved values are omitted entirely from query responses rather than reported as `null`.
+Because of this, as of Nov 1 2026, we only report 119 counties, 58 HRRs, 64 MSAs, and 29 states.
+These are not necessarily the most populous locations at a given geographic resolution since it depends on where participating facilities are located.
+All locations are reported for higher geographic types (census division, census region, nation).
+
+Observations with fewer than 5 days of data across the trailing 7-day window are suppressed due to data sparsity and omitted from publication.
+Unobserved dates or geographies without reporting claims produce no records.
+Both suppressed and unobserved values are omitted entirely from query responses rather than reported as `NULL`.
 
 ---
 
