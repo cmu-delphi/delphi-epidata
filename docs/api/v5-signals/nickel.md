@@ -5,7 +5,7 @@ grand_parent: Delphi V5 API
 nav_order: 7
 ---
 
-# Inpatient Claims
+# Nickel ED, Inpatient, Outpatient EHR
 {: .no_toc}
 
 | Attribute | Details |
@@ -362,13 +362,12 @@ The window must contain at least 5 of 7 days to produce a value.
 Dates refer to the clinical date of service.
 <!-- TODO? Service dates before 2015-01-01 and service dates in the future are dropped. -->
 
-Data starts in Jan 2010, but with very small sample size.
-It is much more useful and better behaved after January 1 2015.
-
+Data starts in January 2015.
 Data for COVID signals is dropped for reference dates before March 1 2020.
 
 We currently only keep the first 90 days of revisions for each observation, i.e. where the reporting lag is 90 days or less.
-This may result in us missing some revisions, but should capture the vast majority.
+This may result in us missing some revisions, but should capture the vast majority and all significant revisions.
+See [the Lag & Backfill section](lag--backfill) for more detail.
 
 ### Geographic Handling
 
@@ -418,10 +417,10 @@ Both suppressed and unobserved values are omitted entirely from query responses 
 ## Limitations
 
 This source only includes data from medical facilities (hospitals and associated outpatient clinics) that are part of the 22 healthcare systems parterning with Nickel.
-Not all facilities in the United States are included.
-Medical visits at non-participating facilities are not captured.
+Not all facilities in the United States are included, and medical visits at those non-participating facilities are not captured.
 
 The portion of the local population that's included in the particpating facilities varies by location.
+At the state level, Ohio, Conneticut, and Virginia have the largest sample sizes.
 
 Differences in local and facility coding habits and billing practices mean that absolute levels are not always comparable between different regions.
 Trends within a single location over time are generally more reliable than spatial comparisons.
@@ -440,7 +439,9 @@ For example, a provider employed by a private practice that is contracted by a h
 Therefore, not all care can be linked to a location and locations may occasionally be incorrect.
 
 Care setting is often unavailable in the source data, with observations being reported with `NULL` and `Other` encounter type.
-TODO how often?
+For example, in the state of Kansas, about 80% of all encounters have `NULL` or `Other` encounter type.
+Almost all of those are `NULL`.
+In the state of Ohio, 2% of encounters are `NULL` but 25% are `Other`.
 We exclude these observations from our estimates.
 There's a strong relationship between `NULL`/`Other` encountertype frequency and location (state) of care.
 We believe this is due to differences in coding between facilities.
@@ -457,11 +458,11 @@ This also means that revisions only come out once a week, so it's possible to ha
 
 Delphi runs daily updates across historical dates to incorporate late-arriving records.
 We currently only keep the first 90 days of revisions for each observation, i.e. where the reporting lag is 90 days or less.
-This may result in us missing some revisions, but should capture the vast majority.
-TODO backfill analysis
-<!-- TODO Insurance claims experience substantial backfill over several weeks as facilities and payers submit and process claims on varying schedules. -->
+This may result in us missing some revisions, but should capture the vast majority and all significant revisions.
 
-<!-- TODO Estimates for the most recent 7 to 13 days change significantly across subsequent revisions, often showing median shifts of 10 percent or more. Data points older than 57 days are generally stable, with subsequent median revisions under 1 percent.  -->
+This source experiences substantial backfill over the first 3 issues (3 weeks).
+Estimates for the most recent 21 days change significantly across subsequent revisions, often showing median shifts of 30 percent or more.
+Data points older than about 30 days are generally stable, with subsequent median revisions under 1 percent.
 
 Full revision histories can be queried through the [`/archive/`](../v5_api_queries.md) and [`/snapshot/`](../v5_api_queries.md) endpoints.
 
