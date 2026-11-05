@@ -202,15 +202,9 @@ These signals are inactive. They were updated until May 19, 2020.
 
 ### Changelog Flu Tests
 
-<details>
-
-<summary>Click to expand</summary>
-
 #### October 22, 2020
 
 We went from a custom geo mapping file (for aggregating from zip->(county, msa, hrr, state)) to a central geo file based on rigorously sourced US census data.
-
-</details>
 
 ### Overview
 {: .no_toc}
