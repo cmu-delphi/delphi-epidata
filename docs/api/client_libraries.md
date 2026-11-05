@@ -6,7 +6,7 @@ nav_order: 6
 # Getting Started with R and Python
 {: .no_toc}
 
-The [`epidatr`](https://cmu-delphi.github.io/epidatr/) (R) and [`epidatpy`](https://cmu-delphi.github.io/epidatpy/) (Python) packages provide access to all the endpoints of the Delphi Epidata API, and can be used to make requests for specific signals on specific dates and in select geographic regions.
+The [`epidatr`](https://cmu-delphi.github.io/epidatr/) (R) and [`epidatpy`](https://cmu-delphi.github.io/epidatpy/) (Python) packages provide access to all the endpoints of the Delphi Epidata API, and can be used to make requests for specific signals on specific dates and in select geographic regions. Modern Delphi API clients natively support the Delphi V5 API. To explore endpoints, filter syntax, rate limits, and runnable recipes interactively, see the [Epidata API Guide](https://delphi.cmu.edu/epidata/v5/guide#start).
 
 ## Table of Contents
 {: .no_toc .text-delta}
@@ -30,22 +30,29 @@ You can install the stable version of `epidatr` from CRAN:
 
 ```r
 install.packages("epidatr")
-# Or use pak/renv
+# Or use pak
 pak::pkg_install("epidatr")
 ```
 If you want the development version, install from GitHub:
 
 ```r
+pak::pkg_install("cmu-delphi/epidatr@dev")
+# Or using remotes
 remotes::install_github("cmu-delphi/epidatr", ref = "dev")
 ```
 
   </div>
   <div class="tab-content" data-tab="python" markdown="1">
 
-The `epidatpy` package will soon be [available on PyPI as `epidatpy`](https://pypi.org/project/epidatpy/).
-Meanwhile, it can be [installed from GitHub](https://github.com/cmu-delphi/epidatpy/) with
+Install `epidatpy` from PyPI:
 
-```python
+```sh
+pip install epidatpy
+```
+
+Or install the latest development version from GitHub:
+
+```sh
 pip install "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 ```
 
@@ -54,21 +61,21 @@ pip install "git+https://github.com/cmu-delphi/epidatpy.git#egg=epidatpy"
 
 ### API Keys
 
-The Delphi API requires a (free) API key for full functionality. While most endpoints are available without one, there are [limits on API usage for anonymous users](/api_keys.md), including a rate limit.
+The Delphi API requires a (free) API key for full functionality. While most endpoints are available without one, there are [limits on API usage for anonymous users](api_keys.md), including rate limits.
 
-To generate your key, [register for a pseudo-anonymous account](https://api.delphi.cmu.edu/epidata/admin/registration_form).
+To generate your key, [register for a free account](https://api.delphi.cmu.edu/epidata/admin/registration_form).
 
-  * **R:** See the `save_api_key()` function documentation for details on how to set up `epidatr` to use your API key.
-  * **Python:** The `epidatpy` client will automatically look for this key in the environment variable `DELPHI_EPIDATA_KEY`. We recommend storing your key in a `.env` file, using `python-dotenv` to load it into your environment, and adding `.env` to your `.gitignore` file.
+  * **R:** `epidatr` automatically looks for this key in the environment variable `DELPHI_EPIDATA_KEY` (e.g. in your `~/.Renviron` file). You can also configure it using the `save_api_key()` function.
+  * **Python:** `epidatpy` automatically looks for this key in the environment variable `DELPHI_EPIDATA_KEY`. We recommend storing your key in a `.env` file and loading it with `python-dotenv`.
 
 > **Note:** Private endpoints (i.e. those prefixed with `pvt_`) require a separate key that needs to be passed as an argument. These endpoints require specific data use agreements to access.
 {: .note }
 
 ## Basic Usage
 
-Fetching data from the Delphi Epidata API is simple. Suppose we are interested in the [main endpoint](/covidcast.md) (formerly called `covidcast`), which provides access to a [wide range of data](/covidcast_signals.md) on COVID-19 and other diseases. Reviewing the endpoint documentation, we see that we [need to specify](/covidcast_api_queries.md) a data source name, a signal name, a geographic level, a time resolution, and the location and times of interest.
+To fetch the most recent data for a signal, use `epidata_snapshot()`. This function requires a `source`, `signal` (or `signals`), and a `geo_type`.
 
-The `pub_covidcast()` function lets us access the main (`covidcast`) endpoint:
+Suppose we are interested in emergency department visits for influenza from the `nssp` source across the nation:
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -82,15 +89,11 @@ The `pub_covidcast()` function lets us access the main (`covidcast`) endpoint:
 library(epidatr)
 library(dplyr)
 
-# Obtain the most up-to-date version of the smoothed covid-like illness (CLI)
-# signal from the COVID-19 Trends and Impact survey for the US
-epidata <- pub_covidcast(
-  source = "fb-survey",
-  signals = "smoothed_cli",
-  geo_type = "nation",
-  time_type = "day",
-  geo_values = "us",
-  time_values = epirange(20210105, 20210410)
+# Obtain the latest snapshot of influenza ED visits from NSSP for the US
+epidata <- epidata_snapshot(
+  source = "nssp",
+  signals = "pct_ed_visits_influenza",
+  geo_type = "nation"
 )
 head(epidata)
 ```
@@ -99,29 +102,26 @@ head(epidata)
   <div class="tab-content" data-tab="python" markdown="1">
 
 ```python
-from epidatpy import CovidcastEpidata, EpiDataContext, EpiRange
+from epidatpy import EpiDataContext, EpiRange
 
-epidata = EpiDataContext(use_cache=True)
+epidata = EpiDataContext()
 
-# Obtain the most up-to-date version of the confirmed cumulative cases
-# from JHU CSSE for the US
-apicall = epidata.pub_covidcast(
-    data_source="jhu-csse",
-    signals="confirmed_cumulative_num",
+# Obtain the latest snapshot of influenza ED visits from NSSP for the US
+call = epidata.epidata_snapshot(
+    source="nssp",
+    signals="pct_ed_visits_influenza",
     geo_type="nation",
-    time_type="day",
-    geo_values="us",
-    time_values=EpiRange(20210405, 20210410),
 )
-print(apicall.df().head())
+df = call.df()
+print(df.head())
 ```
 
   </div>
 </div>
 
-`pub_covidcast()` returns a `tibble` in R and an `EpiDataCall` (convertible to a pandas DataFrame via `.df()`) in Python. Each row represents one observation in the specified location on one day. The location abbreviation is given in the `geo_value` column, the date in the `time_value` column. Here `value` is the requested signal—in this case, the smoothed estimate of the percentage of people with COVID-like illness or case counts—and `stderr` is its standard error.
+`epidata_snapshot()` returns a `tibble` in R and an `EpiDataCall` (convertible to a pandas DataFrame via `.df()`) in Python. Each row represents one observation. The location is given in `geo_value`, the observation date in `reference_time`, publication/release timestamp in `report_time`, and the observation estimate in `value`.
 
-The Epidata API makes signals available at different geographic levels, depending on the endpoint. To request signals for all states instead of the entire US, we use the `geo_type` argument paired with `*` for the `geo_values` argument. (Only some endpoints allow for the use of `*` to access data at all locations. Check the help for a given endpoint to see if it supports `*`.)
+To request signals across states instead of the whole nation, specify `geo_type = "state"`. By default, omitting `geo_values` returns all locations for that geographic level:
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -133,13 +133,10 @@ The Epidata API makes signals available at different geographic levels, dependin
 
 ```r
 # Obtain data for all states
-pub_covidcast(
-  source = "fb-survey",
-  signals = "smoothed_cli",
-  geo_type = "state",
-  time_type = "day",
-  geo_values = "*",
-  time_values = epirange(20210105, 20210410)
+epidata_snapshot(
+  source = "nssp",
+  signals = "pct_ed_visits_influenza",
+  geo_type = "state"
 )
 ```
 
@@ -148,20 +145,17 @@ pub_covidcast(
 
 ```python
 # Obtain data for all states
-epidata.pub_covidcast(
-    data_source="fb-survey",
-    signals="smoothed_cli",
+epidata.epidata_snapshot(
+    source="nssp",
+    signals="pct_ed_visits_influenza",
     geo_type="state",
-    time_type="day",
-    geo_values="*",
-    time_values=EpiRange(20210405, 20210410),
 ).df()
 ```
 
   </div>
 </div>
 
-Alternatively, we can fetch the full time series for a subset of states by listing out the desired locations in the `geo_value` argument and using `*` in the `time_values` argument:
+To filter for specific locations and time ranges, use `geo_values` and `reference_time`:
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -172,14 +166,13 @@ Alternatively, we can fetch the full time series for a subset of states by listi
   <div class="tab-content active" data-tab="r" markdown="1">
 
 ```r
-# Obtain data for PA, CA, and FL
-pub_covidcast(
-  source = "fb-survey",
-  signals = "smoothed_cli",
+# Obtain data for PA, CA, and FL over a date range
+epidata_snapshot(
+  source = "nssp",
+  signals = "pct_ed_visits_influenza",
   geo_type = "state",
-  time_type = "day",
   geo_values = c("pa", "ca", "fl"),
-  time_values = "*"
+  reference_time = epirange(20240101, 20241231)
 )
 ```
 
@@ -187,23 +180,26 @@ pub_covidcast(
   <div class="tab-content" data-tab="python" markdown="1">
 
 ```python
-# Obtain data for PA, CA, and FL
-epidata.pub_covidcast(
-    data_source="fb-survey",
-    signals="smoothed_cli",
+# Obtain data for PA, CA, and FL over a date range
+epidata.epidata_snapshot(
+    source="nssp",
+    signals="pct_ed_visits_influenza",
     geo_type="state",
-    time_type="day",
-    geo_values="pa,ca,fl",
-    time_values="*",
+    geo_values=["pa", "ca", "fl"],
+    reference_time=EpiRange("2024-01-01", "2024-12-31"),
 ).df()
 ```
 
   </div>
 </div>
 
-## Getting versioned data
+## Getting Versioned Data
 
-The Epidata API stores a historical record of all data, including corrections and updates, which is particularly useful for accurately backtesting forecasting models. To retrieve versioned data, we can use the `as_of` argument, which fetches the data as it was known on a specific date.
+The Epidata API records historical releases, updates, and corrections, allowing researchers to reconstruct exactly what was known at any point in the past.
+
+### Point-in-time Snapshots
+
+To retrieve data as it was known on a specific release date in the past, use `snapshot_date` in `epidata_snapshot()`:
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -214,15 +210,13 @@ The Epidata API stores a historical record of all data, including corrections an
   <div class="tab-content active" data-tab="r" markdown="1">
 
 ```r
-# Obtain the signal as it was on 2021-06-01
-pub_covidcast(
-  source = "fb-survey",
-  signals = "smoothed_cli",
+# Obtain NSSP influenza data for PA as it was known on 2025-01-01
+epidata_snapshot(
+  source = "nssp",
+  signals = "pct_ed_visits_influenza",
   geo_type = "state",
-  time_type = "day",
   geo_values = "pa",
-  time_values = epirange(20210105, 20210410),
-  as_of = "2021-06-01"
+  snapshot_date = "2025-01-01"
 )
 ```
 
@@ -230,22 +224,22 @@ pub_covidcast(
   <div class="tab-content" data-tab="python" markdown="1">
 
 ```python
-# Obtain the signal as it was on 2021-06-01
-epidata.pub_covidcast(
-    data_source="fb-survey",
-    signals="smoothed_cli",
+# Obtain NSSP influenza data for PA as it was known on 2025-01-01
+epidata.epidata_snapshot(
+    source="nssp",
+    signals="pct_ed_visits_influenza",
     geo_type="state",
-    time_type="day",
     geo_values="pa",
-    time_values=EpiRange(20210405, 20210410),
-    as_of="2021-06-01",
+    snapshot_date="2025-01-01",
 ).df()
 ```
 
   </div>
 </div>
 
-We can also request all versions of the data issued within a specific time period using the `issues` argument.
+### Full Revision History
+
+To fetch all revisions across time, use `epidata_archive()`. You can filter reports using `report_time` with range queries or comparison operators (e.g. `<2025-01-01` or `EpiRange`):
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -256,16 +250,14 @@ We can also request all versions of the data issued within a specific time perio
   <div class="tab-content active" data-tab="r" markdown="1">
 
 ```r
-# See how the estimate for a SINGLE day (March 1, 2021) evolved
-# by fetching all issues reported between March and April 2021.
-pub_covidcast(
-  source = "fb-survey",
-  signals = "smoothed_cli",
+# Fetch all revisions for PA reported between Nov 2024 and Jan 2025
+epidata_archive(
+  source = "nssp",
+  signals = "pct_ed_visits_influenza",
   geo_type = "state",
-  time_type = "day",
   geo_values = "pa",
-  time_values = "2021-03-01",
-  issues = epirange("2021-03-01", "2021-04-30")
+  reference_time = epirange(20241001, 20241201),
+  report_time = epirange(20241101, 20250101)
 )
 ```
 
@@ -273,74 +265,26 @@ pub_covidcast(
   <div class="tab-content" data-tab="python" markdown="1">
 
 ```python
-# See how the estimate for a SINGLE day (March 1, 2021) evolved
-# by fetching all issues reported between March and April 2021.
-epidata.pub_covidcast(
-    data_source="fb-survey",
-    signals="smoothed_cli",
+# Fetch all revisions for PA reported between Nov 2024 and Jan 2025
+epidata.epidata_archive(
+    source="nssp",
+    signals="pct_ed_visits_influenza",
     geo_type="state",
-    time_type="day",
     geo_values="pa",
-    time_values="2021-03-01",
-    issues=EpiRange("2021-03-01", "2021-04-30"),
+    reference_time=EpiRange("2024-10-01", "2024-12-01"),
+    report_time=EpiRange("2024-11-01", "2025-01-01"),
 ).df()
 ```
 
   </div>
 </div>
 
-> **Note:** Requesting a large number of issues for several locations or several time values at once can result in slow-running queries or timeouts. If you encounter timeouts, try querying subsets of locations or dates.
+> **Note:** Full revision histories can be large. Use `reference_time` or `report_time` constraints.
 {: .note }
-
-Finally, we can use the `lag` argument to request only data that was reported a certain number of days after the event.
-
-<div class="code-tabs">
-  <div class="tab-header">
-    <button class="active" data-tab="r">R</button>
-    <button data-tab="python">Python</button>
-  </div>
-
-  <div class="tab-content active" data-tab="r" markdown="1">
-
-```r
-# Fetch survey data for January 2021, but ONLY include data
-# that was issued exactly 2 days after it was collected.
-pub_covidcast(
-  source = "fb-survey",
-  signals = "smoothed_cli",
-  geo_type = "state",
-  time_type = "day",
-  geo_values = "pa",
-  time_values = epirange(20210101, 20210131),
-  lag = 2
-)
-```
-
-See the [versioned data vignette](https://cmu-delphi.github.io/epidatr/articles/versioned-data.html) for details and more ways to specify versioned data.
-  </div>
-  <div class="tab-content" data-tab="python" markdown="1">
-
-```python
-# Fetch survey data for January 2021, but ONLY include data
-# that was issued exactly 2 days after it was collected.
-epidata.pub_covidcast(
-    data_source="fb-survey",
-    signals="smoothed_cli",
-    geo_type="state",
-    time_type="day",
-    geo_values="pa",
-    time_values=EpiRange(20210101, 20210131),
-    lag=2,
-).df()
-```
-
-See the [versioned data documentation](https://cmu-delphi.github.io/epidatpy/versioned_data.html) for details and more ways to specify versioned data.
-  </div>
-</div>
 
 ## Plotting
 
-Because the output data is in a standard `tibble` (R) or `DataFrame` (Python) format, we can easily plot it using standard libraries like `ggplot2` or `matplotlib`.
+Because output data is returned as a standard `tibble` (R) or pandas `DataFrame` (Python), you can plot it directly using standard libraries like `ggplot2` or `matplotlib`:
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -352,13 +296,22 @@ Because the output data is in a standard `tibble` (R) or `DataFrame` (Python) fo
 
 ```r
 library(ggplot2)
-ggplot(epidata, aes(x = time_value, y = value)) +
-  geom_line() +
+
+data <- epidata_snapshot(
+  source = "nssp",
+  signals = "pct_ed_visits_influenza",
+  geo_type = "state",
+  geo_values = c("pa", "ca", "fl"),
+  reference_time = epirange(20240101, 20241231)
+)
+
+ggplot(data, aes(x = reference_time, y = value, color = geo_value)) +
+  geom_line(linewidth = 1) +
   labs(
-    title = "Smoothed CLI from Facebook Survey",
-    subtitle = "PA, 2021",
+    title = "Influenza ED visits from NSSP (2024)",
     x = "Date",
-    y = "CLI"
+    y = "% of ED visits",
+    color = "State"
   )
 ```
 
@@ -368,59 +321,29 @@ ggplot(epidata, aes(x = time_value, y = value)) +
 ```python
 import matplotlib.pyplot as plt
 
-# Fetch data for PA, CA, FL
-apicall = epidata.pub_covidcast(
-    data_source="fb-survey",
-    signals="smoothed_cli",
+data = epidata.epidata_snapshot(
+    source="nssp",
+    signals="pct_ed_visits_influenza",
     geo_type="state",
-    geo_values="pa,ca,fl",
-    time_type="day",
-    time_values=EpiRange(20210405, 20210410),
-)
+    geo_values=["pa", "ca", "fl"],
+    reference_time=EpiRange("2024-01-01", "2024-12-31"),
+).df()
 
-# Plot
-fig, ax = plt.subplots(figsize=(6, 5))
+fig, ax = plt.subplots(figsize=(8, 4))
 (
-    apicall.df()
-    .pivot_table(values="value", index="time_value", columns="geo_value")
-    .plot(xlabel="Date", ylabel="CLI", ax=ax, linewidth=1.5)
+    data.pivot_table(values="value", index="reference_time", columns="geo_value")
+    .plot(xlabel="Date", ylabel="% of ED visits", ax=ax, linewidth=1.5)
 )
-plt.title("Smoothed CLI from Facebook Survey")
+ax.set_title("Influenza ED visits from NSSP (2024)")
 plt.show()
 ```
 
   </div>
 </div>
 
-## Finding locations of interest
+## Discovering Sources and Metadata
 
-Most data is only available for the US. Select endpoints report other countries at the national and/or regional levels. Endpoint descriptions explicitly state when they cover non-US locations.
-
-For endpoints that report US data, consult the geographic coding documentation for [COVID-19](/covidcast_geography.md) and for [other diseases](/geographic_codes.md) to see available geographic levels.
-
-### International data
-
-International data is available via
-
-  * `pub_dengue_nowcast` (North and South America)
-  * `pub_ecdc_ili` (Europe)
-  * `pub_kcdc_ili` (Korea)
-  * `pub_nidss_dengue` (Taiwan)
-  * `pub_nidss_flu` (Taiwan)
-  * `pub_paho_dengue` (North and South America)
-  * `pvt_dengue_sensors` (North and South America)
-
-## Finding data sources and signals of interest
-
-Above we used data from [Delphi’s symptom surveys](../symptom-survey/index.md), but the Epidata API includes numerous data streams: medical claims data, cases and deaths, mobility, and many others. This can make it a challenge to find the data stream that you are most interested in.
-
-The [EpiPortal data browser](https://delphi.cmu.edu/epiportal) is a convenient way to find new data streams and indicators. It has filter functionality, and also generates data previews, plots, extracts, and API client code.
-We recommend starting here to get an overview of Delphi's data offerings.
-
-The Epidata documentation lists all the data sources and signals available through the API's [main endpoint](/covidcast_signals.md), focused on respiratory diseases, and [the collection of legacy endpoints](README.md#source-specific-parameters), covering additional diseases such as dengue.
-The Epidata documentation has in-depth information about each source.
-
-You can also use the client libraries to discover endpoints interactively:
+To discover what sources, signals, geographic types, and date ranges are available in the V5 API, use `epidata_meta()`:
 
 <div class="code-tabs">
   <div class="tab-header">
@@ -431,20 +354,79 @@ You can also use the client libraries to discover endpoints interactively:
   <div class="tab-content active" data-tab="r" markdown="1">
 
 ```r
-# Get a table of endpoint functions
-avail_endpoints()
+# Discover what a source offers: signals, geo types, and date ranges
+meta <- epidata_meta(source = "nssp")
+meta$signals
+meta$geo_types
+meta$reference_time_range
+
+# Or discover all available sources
+all_meta <- epidata_meta()
+names(all_meta)
 ```
 
   </div>
   <div class="tab-content" data-tab="python" markdown="1">
 
 ```python
-# List sources available in the pub_covidcast endpoint
-covidcast = CovidcastEpidata(use_cache=True)
-print(covidcast.source_names())
+# Discover what a source offers: signals, geo types, and date ranges
+meta = epidata.epidata_meta(source="nssp")
+print(meta["signals"])
+print(meta["geo_types"])
+print(meta["reference_time_range"])
 
-# List signals available for a specific source (e.g., jhu-csse)
-print(covidcast.signal_names("jhu-csse"))
+# Or discover all available sources
+all_meta = epidata.epidata_meta()
+print(sorted(all_meta.keys()))
+```
+
+  </div>
+</div>
+
+For interactive visual discovery and code generation, browse data streams on [EpiPortal](https://delphi.cmu.edu/epiportal). For runnable API queries and interactive parameter examples, see the [Epidata API Guide](https://delphi.cmu.edu/epidata/v5/guide#start).
+
+---
+
+## Legacy Endpoints (V4 & V3)
+
+> **The legacy V3/V4 endpoints (`pub_covidcast()` and legacy `pub_*` functions) are deprecated in favor of the V5 API.** They stopped receiving new data on September 22, 2026, but remain accessible for querying historical data. See the [V4 to V5 Migration Guide](v5_migration.md).
+{: .warning }
+
+For historical COVIDcast queries, `pub_covidcast()` is still available:
+
+<div class="code-tabs">
+  <div class="tab-header">
+    <button class="active" data-tab="r">R</button>
+    <button data-tab="python">Python</button>
+  </div>
+
+  <div class="tab-content active" data-tab="r" markdown="1">
+
+```r
+# Querying historical COVIDcast data
+pub_covidcast(
+  source = "fb-survey",
+  signals = "smoothed_cli",
+  geo_type = "state",
+  geo_values = "pa",
+  time_type = "day",
+  time_values = epirange(20210101, 20210410)
+)
+```
+
+  </div>
+  <div class="tab-content" data-tab="python" markdown="1">
+
+```python
+# Querying historical COVIDcast data
+epidata.pub_covidcast(
+    data_source="fb-survey",
+    signals="smoothed_cli",
+    geo_type="state",
+    geo_values="pa",
+    time_type="day",
+    time_values=EpiRange(20210101, 20210410),
+).df()
 ```
 
   </div>

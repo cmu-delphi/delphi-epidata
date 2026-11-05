@@ -6,7 +6,7 @@ nav_order: 1
 
 # Understanding and Querying the V5 API
 
-The Delphi V5 API is hosted at `https://delphi.cmu.edu`. All endpoints are prefixed with `/epidata/v5/`. Interactive, endpoint-level documentation is available on the [Delphi V5 API Landing Page](https://delphi.cmu.edu/epidata/v5/docs).
+The Delphi V5 API is hosted at `https://delphi.cmu.edu`. All endpoints are prefixed with `/epidata/v5/`. Interactive, endpoint-level documentation is available on the [Delphi V5 API Landing Page](https://delphi.cmu.edu/epidata/v5/docs), and practical recipes and filter concepts are covered in the [Epidata API Guide](https://delphi.cmu.edu/epidata/v5/guide#start).
 
 By default, queries return a streaming CSV response. However, you can configure the output format to plain text. The API is designed to encourage users to download complete slices or snapshots and filter them client-side rather than executing complex filters inside the database.
 
