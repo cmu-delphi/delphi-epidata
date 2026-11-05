@@ -360,9 +360,7 @@ The window must contain at least 5 of 7 days to produce a value.
 ### Temporal Handling
 
 Dates refer to the clinical date of service.
-<!-- TODO? Service dates before 2015-01-01 and service dates in the future are dropped. -->
-
-Data starts in January 2015.
+Service dates before 2015-01-02 and service dates in the future are dropped.
 Data for COVID signals is dropped for reference dates before March 1 2020.
 
 We currently only keep the first 90 days of revisions for each observation, i.e. where the reporting lag is 90 days or less.
