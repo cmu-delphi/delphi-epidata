@@ -194,7 +194,16 @@ If not associated with such a diagnosis or lab test, the encounter is only count
 We count each patient only once per day, although it's possible for a patient to have multiple medical encounters on the same day.
 
 <details>
-<summary><b>ICD10 diagnosis codes and LOINC lab test codes used</b></summary>
+
+<summary>
+
+<b>
+
+ICD10 diagnosis codes and LOINC lab test codes used
+
+</b>
+
+</summary>
 
 # ICD-10 diagnosis codes
 
@@ -351,6 +360,7 @@ All other codes match exactly.
   - 6437-8
 
 </details>
+
 
 ### Smoothing
 
