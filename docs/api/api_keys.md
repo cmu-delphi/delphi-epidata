@@ -48,28 +48,20 @@ there are several ways to use your key to authenticate your requests:
   * [R client](https://cmu-delphi.github.io/covidcast/covidcastR/reference/covidcast_signal.html#api-keys-1)
   * [Python client](https://cmu-delphi.github.io/covidcast/covidcast-py/html/signals.html#covidcast.use_api_key)
 
-More details on how to use the clients [here](api/client_libraries.html).
+More details on how to use the clients [here](client_libraries.md).
+
+### Via Header
+
+Pass the key in a request header named `token`:
+
+```
+curl -H 'token: your_api_key_here' 'https://delphi.cmu.edu/epidata/v5/snapshot/?source=nhsn&signal=confirmed_admissions_covid_ew&geo_type=state'
+```
 
 ### Via request parameter
 
-The request parameter “api_key” can be used to pass the API key to the server.
-Example:
-
-    https://api.delphi.cmu.edu/epidata/covidcast/meta?api_key=your_api_key_here
-
-### Via Basic Authentication
-
-Another method is using the HTTP basic authorization header with the username
-"epidata" and the API key as the password. Example:
+Pass the key via the `token` parameter:
 
 ```
-curl -u 'epidata:your_api_key_here' https://api.delphi.cmu.edu/epidata/covidcast/meta
-```
-
-### Via Bearer Token
-
-Another method is providing the key in a bearer token header. Example:
-
-```
-curl -H 'Authorization: Bearer your_api_key_here' https://api.delphi.cmu.edu/epidata/covidcast/meta
+curl 'https://delphi.cmu.edu/epidata/v5/snapshot/?source=nhsn&signal=confirmed_admissions_covid_ew&geo_type=state&token=your_api_key_here'
 ```
