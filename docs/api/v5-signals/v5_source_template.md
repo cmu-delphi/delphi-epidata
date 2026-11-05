@@ -60,7 +60,7 @@ Jekyll frontmatter, then the dataset title, then a table of core attributes.
 
 ```yaml
 ---
-title: Short Name (e.g. NSSP ED Visits, VA Respiratory)
+title: Short Name (e.g. NSSP ED Visits, VHA Respiratory)
 parent: Delphi V5 Sources and Signals
 grand_parent: Delphi V5 API
 nav_order: <integer>
@@ -69,7 +69,7 @@ nav_order: <integer>
 
 | Attribute | Description |
 | :--- | :--- |
-| `Source Name` | API source identifier (e.g. `nssp`, `va_respiratory`). |
+| `Source Name` | API source identifier (e.g. `nssp`, `vha_respiratory_cases`). |
 | `Data Source` | Link to the upstream provider or portal. |
 | `Geographic Levels` | Supported `geo_type` values, ordered by size from smallest to largest (e.g. `county`, `hrr`, `msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`). |
 | `Temporal Granularity` | Frequency of the data, with the week-ending day for weekly sources. |
