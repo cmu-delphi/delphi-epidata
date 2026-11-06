@@ -20,7 +20,7 @@ nav_order: 2
 | **Extra Key Columns** | None |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
-> This source reproduces the legacy V4 [`nhsn`](../covidcast-signals/nhsn.md) source, itself the continuation of the earlier [`hhs`](../covidcast-signals/hhs.md) hospitalization source. V5 expands coverage from raw admission counts to the complete NHSN metric suite (including bed capacity and occupancy, current inpatient and ICU census, age-stratified admissions, population-adjusted rates, and hospital reporting compliance), adds census-level aggregation, and folds the preliminary dataset into each signal's revision history rather than publishing separate `_prelim` signals. See [Relationship to V4](#relationship-to-v4).
+> This source reproduces the legacy V4 [`nhsn`](../covidcast-signals/nhsn.md) source, itself the continuation of the earlier [`hhs`](../covidcast-signals/hhs.md) hospitalization source. V5 expands coverage from raw admission counts to the complete NHSN metric suite (including bed capacity and occupancy, current inpatient and ICU census, age-stratified admissions, population-adjusted rates, and hospital reporting compliance), adds census-level aggregation, and folds the preliminary dataset into each signal's revision history rather than publishing separate `_prelim` signals. See [Relationship to V4](#relationship-to-v4) for more information.
 {: .note }
 
 ## Table of contents
@@ -33,9 +33,9 @@ nav_order: 2
 
 ## Overview
 
-The National Healthcare Safety Network (NHSN) collects weekly respiratory admission, inpatient and ICU census, bed capacity, and reporting compliance metrics from acute care hospitals across the United States. Delphi ingests the weekly Hospital Respiratory Data release published by the CDC on HealthData.gov, covering COVID-19, influenza, and RSV admissions, patient census, bed occupancy, reporting coverage, and seasonal cumulative totals.
+The [National Healthcare Safety Network (NHSN)](https://www.cdc.gov/nhsn/index.html) collects weekly respiratory admission, inpatient and ICU census, bed capacity, and reporting compliance metrics from acute care hospitals across the United States. Delphi ingests the weekly [Hospital Respiratory Data](https://data.cdc.gov/Public-Health-Surveillance/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/ua7e-t2fy/about_data) release published by the CDC on [HealthData.gov](https://healthdata.gov/), covering COVID-19, influenza, and RSV admissions, patient census, bed occupancy, reporting coverage, and seasonal cumulative totals.
 
-All 319 active indicators defined in the upstream CDC dataset schema are ingested and standardized into Delphi's unified V5 schema.
+All 319 active indicators defined in the upstream CDC dataset schema are standardized into Delphi's unified V5 schema.
 
 ---
 
@@ -43,7 +43,7 @@ All 319 active indicators defined in the upstream CDC dataset schema are ingeste
 
 ### Primary Indicators
 
-The table below highlights the primary headline indicators for respiratory admissions, bed occupancy, inpatient census, and reporting facility counts, along with their corresponding upstream CDC field names:
+The table below highlights the primary headline indicators along with their corresponding upstream CDC field names. Admissions represent 7-day weekly sums (Sunday through Saturday), while bed capacity, bed occupancy, and patient census represent single-day Wednesday snapshots:
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
@@ -53,19 +53,19 @@ The table below highlights the primary headline indicators for respiratory admis
 | `confirmed_admissions_covid_cumulative_ew` | `totalconfc19newadmcumulativeseasonalsum` | COVID-19 | Cumulative Count | Cumulative season-to-date confirmed COVID-19 hospital admissions (since week 40). |
 | `confirmed_admissions_flu_cumulative_ew` | `totalconfflunewadmcumulativeseasonalsum` | Influenza | Cumulative Count | Cumulative season-to-date confirmed influenza hospital admissions (since week 40). |
 | `confirmed_admissions_rsv_cumulative_ew` | `totalconfrsvnewadmcumulativeseasonalsum` | RSV | Cumulative Count | Cumulative season-to-date confirmed RSV hospital admissions (since week 40). |
-| `confirmed_admissions_cumulative_ew` | `totalconfnewadmcumulativeseasonalsum` | Combined | Cumulative Count | Cumulative season-to-date total respiratory hospital admissions across all three pathogens. |
-| `inpatient_beds_ew` | `numinptbeds` | — | Count | Total number of inpatient beds (Wednesday snapshot). |
-| `inpatient_beds_occupied_ew` | `numinptbedsocc` | — | Count | Number of occupied inpatient beds (Wednesday snapshot). |
-| `inpatient_beds_occupied_pct_ew` | `pctinptbedsocc` | — | Percentage | Percentage of inpatient beds occupied (Wednesday snapshot). |
-| `icu_beds_ew` | `numicubeds` | — | Count | Total number of ICU beds (Wednesday snapshot). |
-| `icu_beds_occupied_ew` | `numicubedsocc` | — | Count | Number of occupied ICU beds (Wednesday snapshot). |
-| `icu_beds_occupied_pct_ew` | `pcticubedsocc` | — | Percentage | Percentage of ICU beds occupied (Wednesday snapshot). |
-| `covid_inpatients_ew` | `totalconfc19hosppats` | COVID-19 | Count | Total patients hospitalized with COVID-19 (Wednesday snapshot). |
-| `flu_inpatients_ew` | `totalconffluhosppats` | Influenza | Count | Total patients hospitalized with influenza (Wednesday snapshot). |
-| `rsv_inpatients_ew` | `totalconfrsvhosppats` | RSV | Count | Total patients hospitalized with RSV (Wednesday snapshot). |
-| `covid_icu_patients_ew` | `totalconfc19icupats` | COVID-19 | Count | Total ICU patients with COVID-19 (Wednesday snapshot). |
-| `flu_icu_patients_ew` | `totalconffluicupats` | Influenza | Count | Total ICU patients with influenza (Wednesday snapshot). |
-| `rsv_icu_patients_ew` | `totalconfrsvicupats` | RSV | Count | Total ICU patients with RSV (Wednesday snapshot). |
+| `confirmed_admissions_cumulative_ew` | `totalconfnewadmcumulativeseasonalsum` | Combined COVID-19, Influenza, and RSV | Cumulative Count | Cumulative season-to-date total respiratory hospital admissions (COVID-19, Influenza, and RSV). |
+| `inpatient_beds_ew` | `numinptbeds` | — | Count | Total number of inpatient beds. |
+| `inpatient_beds_occupied_ew` | `numinptbedsocc` | — | Count | Number of occupied inpatient beds. |
+| `inpatient_beds_occupied_pct_ew` | `pctinptbedsocc` | — | Percentage | Percentage of inpatient beds occupied. |
+| `icu_beds_ew` | `numicubeds` | — | Count | Total number of ICU beds. |
+| `icu_beds_occupied_ew` | `numicubedsocc` | — | Count | Number of occupied ICU beds. |
+| `icu_beds_occupied_pct_ew` | `pcticubedsocc` | — | Percentage | Percentage of ICU beds occupied. |
+| `covid_inpatients_ew` | `totalconfc19hosppats` | COVID-19 | Count | Total patients hospitalized with COVID-19. |
+| `flu_inpatients_ew` | `totalconffluhosppats` | Influenza | Count | Total patients hospitalized with influenza. |
+| `rsv_inpatients_ew` | `totalconfrsvhosppats` | RSV | Count | Total patients hospitalized with RSV. |
+| `covid_icu_patients_ew` | `totalconfc19icupats` | COVID-19 | Count | Total ICU patients with COVID-19. |
+| `flu_icu_patients_ew` | `totalconffluicupats` | Influenza | Count | Total ICU patients with influenza. |
+| `rsv_icu_patients_ew` | `totalconfrsvicupats` | RSV | Count | Total ICU patients with RSV. |
 | `hosprep_confirmed_admissions_covid_ew` | `totalconfc19newadmhosprep` | COVID-19 | Facility Count | Number of acute care hospitals reporting COVID-19 admissions. |
 | `hosprep_confirmed_admissions_flu_ew` | `totalconfflunewadmhosprep` | Influenza | Facility Count | Number of acute care hospitals reporting influenza admissions. |
 | `hosprep_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmhosprep` | RSV | Facility Count | Number of acute care hospitals reporting RSV admissions. |
@@ -74,22 +74,22 @@ The table below highlights the primary headline indicators for respiratory admis
 
 Beyond headline totals, the `nhsn` source publishes 319 indicators. Expand each subsection below for the complete indicator catalog with upstream CDC field names.
 
-#### 1. Bed Capacity and Occupancy
+#### Bed Capacity and Occupancy
 
-Bed metrics capture hospital capacity and utilization across inpatient and ICU settings (adult, pediatric, and total), reported as Wednesday snapshots.
+Bed metrics capture hospital capacity and utilization across inpatient and ICU settings (adult, pediatric, and total), reported as single-day Wednesday snapshots.
 
 <details markdown="1">
 <summary><strong>Bed Capacity and Occupancy Counts</strong></summary>
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `inpatient_beds_ew` | `numinptbeds` | — | Count | Number of Inpatient Beds (Wednesday snapshot) |
+| `inpatient_beds_ew` | `numinptbeds` | — | Count | Number of Inpatient Beds |
 | `inpatient_beds_adult_ew` | `numinptbedsadult` | — | Count | Number of Adult Inpatient Beds |
 | `inpatient_beds_ped_ew` | `numinptbedsped` | — | Count | Number of Pediatric Inpatient Beds |
 | `icu_beds_ew` | `numicubeds` | — | Count | Number of ICU Beds |
 | `icu_beds_adult_ew` | `numicubedsadult` | — | Count | Number of Adult ICU Beds |
 | `icu_beds_ped_ew` | `numicubedsped` | — | Count | Number of Pediatric ICU Beds |
-| `inpatient_beds_occupied_ew` | `numinptbedsocc` | — | Count | Number of Inpatient Beds Occupied (Wednesday snapshot) |
+| `inpatient_beds_occupied_ew` | `numinptbedsocc` | — | Count | Number of Inpatient Beds Occupied |
 | `inpatient_beds_occupied_adult_ew` | `numinptbedsoccadult` | — | Count | Number of Adult Inpatient Beds Occupied |
 | `inpatient_beds_occupied_ped_ew` | `numinptbedsoccped` | — | Count | Number of Pediatric Inpatient Beds Occupied |
 | `icu_beds_occupied_ew` | `numicubedsocc` | — | Count | Number of ICU Beds Occupied |
@@ -103,36 +103,36 @@ Bed metrics capture hospital capacity and utilization across inpatient and ICU s
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `inpatient_beds_occupied_pct_ew` | `pctinptbedsocc` | — | Percentage | Percent Inpatient Beds Occupied (Wednesday snapshot) |
-| `inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadult` | — | Percentage | Percent Adult Inpatient Beds Occupied (Wednesday snapshot) |
-| `inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccped` | — | Percentage | Percent Pediatric Inpatient Beds Occupied (Wednesday snapshot) |
-| `icu_beds_occupied_pct_ew` | `pcticubedsocc` | — | Percentage | Percent ICU Beds Occupied (Wednesday snapshot) |
-| `icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadult` | — | Percentage | Percent Adult ICU Beds Occupied (Wednesday snapshot) |
-| `icu_beds_occupied_ped_pct_ew` | `pcticubedsoccped` | — | Percentage | Percent Pediatric ICU Beds Occupied (Wednesday snapshot) |
-| `inpatient_beds_covid_pct_ew` | `pctconfc19inptbeds` | COVID-19 | Percentage | Percent Inpatient Beds Occupied by COVID-19 Patients |
-| `inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadult` | COVID-19 | Percentage | Percent Adult Inpatient Beds Occupied by COVID-19 Patients |
-| `inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedsped` | COVID-19 | Percentage | Percent Pediatric Inpatient Beds Occupied by COVID-19 Patients |
-| `icu_beds_covid_pct_ew` | `pctconfc19icubeds` | COVID-19 | Percentage | Percent ICU Beds Occupied by COVID-19 Patients |
-| `icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadult` | COVID-19 | Percentage | Percent Adult ICU Beds Occupied by COVID-19 Patients |
-| `icu_beds_covid_ped_pct_ew` | `pctconfc19icubedsped` | COVID-19 | Percentage | Percent Pediatric ICU Beds Occupied by COVID-19 Patients |
-| `inpatient_beds_flu_pct_ew` | `pctconffluinptbeds` | Influenza | Percentage | Percent Inpatient Beds Occupied by Influenza Patients |
-| `inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadult` | Influenza | Percentage | Percent Adult Inpatient Beds Occupied by Influenza Patients |
-| `inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedsped` | Influenza | Percentage | Percent Pediatric Inpatient Beds Occupied by Influenza Patients |
-| `icu_beds_flu_pct_ew` | `pctconffluicubeds` | Influenza | Percentage | Percent ICU Beds Occupied by Influenza Patients |
-| `icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadult` | Influenza | Percentage | Percent Adult ICU Beds Occupied by Influenza Patients |
-| `icu_beds_flu_ped_pct_ew` | `pctconffluicubedsped` | Influenza | Percentage | Percent Pediatric ICU Beds Occupied by Influenza Patients |
-| `inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbeds` | RSV | Percentage | Percent Inpatient Beds Occupied by RSV Patients |
-| `inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadult` | RSV | Percentage | Percent Adult Inpatient Beds Occupied by RSV Patients |
-| `inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedsped` | RSV | Percentage | Percent Pediatric Inpatient Beds Occupied by RSV Patients |
-| `icu_beds_rsv_pct_ew` | `pctconfrsvicubeds` | RSV | Percentage | Percent ICU Beds Occupied by RSV Patients |
-| `icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadult` | RSV | Percentage | Percent Adult ICU Beds Occupied by RSV Patients |
-| `icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedsped` | RSV | Percentage | Percent Pediatric ICU Beds Occupied by RSV Patients |
+| `inpatient_beds_occupied_pct_ew` | `pctinptbedsocc` | — | Percentage | Percentage of inpatient beds occupied. |
+| `inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadult` | — | Percentage | Percentage of adult inpatient beds occupied. |
+| `inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccped` | — | Percentage | Percentage of pediatric inpatient beds occupied. |
+| `icu_beds_occupied_pct_ew` | `pcticubedsocc` | — | Percentage | Percentage of ICU beds occupied. |
+| `icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadult` | — | Percentage | Percentage of adult ICU beds occupied. |
+| `icu_beds_occupied_ped_pct_ew` | `pcticubedsoccped` | — | Percentage | Percentage of pediatric ICU beds occupied. |
+| `inpatient_beds_covid_pct_ew` | `pctconfc19inptbeds` | COVID-19 | Percentage | Percentage of inpatient beds occupied by COVID-19 patients. |
+| `inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadult` | COVID-19 | Percentage | Percentage of adult inpatient beds occupied by COVID-19 patients. |
+| `inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedsped` | COVID-19 | Percentage | Percentage of pediatric inpatient beds occupied by COVID-19 patients. |
+| `icu_beds_covid_pct_ew` | `pctconfc19icubeds` | COVID-19 | Percentage | Percentage of ICU beds occupied by COVID-19 patients. |
+| `icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadult` | COVID-19 | Percentage | Percentage of adult ICU beds occupied by COVID-19 patients. |
+| `icu_beds_covid_ped_pct_ew` | `pctconfc19icubedsped` | COVID-19 | Percentage | Percentage of pediatric ICU beds occupied by COVID-19 patients. |
+| `inpatient_beds_flu_pct_ew` | `pctconffluinptbeds` | Influenza | Percentage | Percentage of inpatient beds occupied by influenza patients. |
+| `inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadult` | Influenza | Percentage | Percentage of adult inpatient beds occupied by influenza patients. |
+| `inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedsped` | Influenza | Percentage | Percentage of pediatric inpatient beds occupied by influenza patients. |
+| `icu_beds_flu_pct_ew` | `pctconffluicubeds` | Influenza | Percentage | Percentage of ICU beds occupied by influenza patients. |
+| `icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadult` | Influenza | Percentage | Percentage of adult ICU beds occupied by influenza patients. |
+| `icu_beds_flu_ped_pct_ew` | `pctconffluicubedsped` | Influenza | Percentage | Percentage of pediatric ICU beds occupied by influenza patients. |
+| `inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbeds` | RSV | Percentage | Percentage of inpatient beds occupied by RSV patients. |
+| `inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadult` | RSV | Percentage | Percentage of adult inpatient beds occupied by RSV patients. |
+| `inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedsped` | RSV | Percentage | Percentage of pediatric inpatient beds occupied by RSV patients. |
+| `icu_beds_rsv_pct_ew` | `pctconfrsvicubeds` | RSV | Percentage | Percentage of ICU beds occupied by RSV patients. |
+| `icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadult` | RSV | Percentage | Percentage of adult ICU beds occupied by RSV patients. |
+| `icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedsped` | RSV | Percentage | Percentage of pediatric ICU beds occupied by RSV patients. |
 
 </details>
 
-#### 2. Current Hospital Census
+#### Current Hospital Census
 
-Wednesday snapshot counts of hospitalized patients with confirmed COVID-19, influenza, or RSV infection across all ages, adult, and pediatric strata.
+Current hospital census metrics capture point-in-time counts of hospitalized patients with confirmed COVID-19, influenza, or RSV infection across all ages, adult, and pediatric strata, reported as single-day Wednesday snapshots.
 
 <details markdown="1">
 <summary><strong>Current Inpatient and ICU Census</strong></summary>
@@ -169,7 +169,7 @@ Wednesday snapshot counts of hospitalized patients with confirmed COVID-19, infl
 
 </details>
 
-#### 3. New Admissions by Age Group
+#### New Admissions by Age Group
 
 Weekly counts of new confirmed patient admissions are reported across 10 age brackets (0–4, 5–17, pediatric total, 18–49, 50–64, 65–74, 75+, adult total, unknown age, and total all ages) for COVID-19, influenza, and RSV.
 In the near future these will be migrated to long-format with age group as a key column.
@@ -213,16 +213,18 @@ In the near future these will be migrated to long-format with age group as a key
 </details>
 
 <details markdown="1">
-<summary><strong>Admissions Age-Mix Percentages</strong></summary>
+<summary><strong>Adult vs. Pediatric Share of Admissions (%)</strong></summary>
+
+Percentage of confirmed admissions for each pathogen accounted for by adult or pediatric patients:
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `confirmed_admissions_covid_adult_pct_ew` | `pctconfc19newadmadult` | COVID-19 | Percentage | Percent Adult COVID-19 Admissions |
-| `confirmed_admissions_covid_ped_pct_ew` | `pctconfc19newadmped` | COVID-19 | Percentage | Percent Pediatric COVID-19 Admissions |
-| `confirmed_admissions_flu_adult_pct_ew` | `pctconfflunewadmadult` | Influenza | Percentage | Percent Adult Influenza Admissions |
-| `confirmed_admissions_flu_ped_pct_ew` | `pctconfflunewadmped` | Influenza | Percentage | Percent Pediatric Influenza Admissions |
-| `confirmed_admissions_rsv_adult_pct_ew` | `pctconfrsvnewadmadult` | RSV | Percentage | Percent Adult RSV Admissions |
-| `confirmed_admissions_rsv_ped_pct_ew` | `pctconfrsvnewadmped` | RSV | Percentage | Percent Pediatric RSV Admissions |
+| `confirmed_admissions_covid_adult_pct_ew` | `pctconfc19newadmadult` | COVID-19 | Percentage | Adult share of confirmed COVID-19 admissions. |
+| `confirmed_admissions_covid_ped_pct_ew` | `pctconfc19newadmped` | COVID-19 | Percentage | Pediatric share of confirmed COVID-19 admissions. |
+| `confirmed_admissions_flu_adult_pct_ew` | `pctconfflunewadmadult` | Influenza | Percentage | Adult share of confirmed influenza admissions. |
+| `confirmed_admissions_flu_ped_pct_ew` | `pctconfflunewadmped` | Influenza | Percentage | Pediatric share of confirmed influenza admissions. |
+| `confirmed_admissions_rsv_adult_pct_ew` | `pctconfrsvnewadmadult` | RSV | Percentage | Adult share of confirmed RSV admissions. |
+| `confirmed_admissions_rsv_ped_pct_ew` | `pctconfrsvnewadmped` | RSV | Percentage | Pediatric share of confirmed RSV admissions. |
 
 </details>
 
@@ -266,37 +268,37 @@ In the near future these will be migrated to long-format with age group as a key
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `confirmed_admissions_covid_0_4_chg_pct_ew` | `numconfc19newadmped0to4pctchg` | COVID-19 | Percentage change | % Change Pediatric COVID-19 Admissions, 0–4 yrs, from Prior Week |
-| `confirmed_admissions_covid_5_17_chg_pct_ew` | `numconfc19newadmped5to17pctchg` | COVID-19 | Percentage change | % Change Pediatric COVID-19 Admissions, 5–17 yrs, from Prior Week |
-| `confirmed_admissions_covid_ped_chg_pct_ew` | `totalconfc19newadmpedpctchg` | COVID-19 | Percentage change | % Change Total Pediatric COVID-19 Admissions from Prior Week |
-| `confirmed_admissions_covid_18_49_chg_pct_ew` | `numconfc19newadmadult18to49pctchg` | COVID-19 | Percentage change | % Change Adult COVID-19 Admissions, 18–49 yrs, from Prior Week |
-| `confirmed_admissions_covid_50_64_chg_pct_ew` | `numconfc19newadmadult50to64pctchg` | COVID-19 | Percentage change | % Change Adult COVID-19 Admissions, 50–64 yrs, from Prior Week |
-| `confirmed_admissions_covid_65_74_chg_pct_ew` | `numconfc19newadmadult65to74pctchg` | COVID-19 | Percentage change | % Change Adult COVID-19 Admissions, 65–74 yrs, from Prior Week |
-| `confirmed_admissions_covid_75_chg_pct_ew` | `numconfc19newadmadult75pluspctchg` | COVID-19 | Percentage change | % Change Adult COVID-19 Admissions, 75+ yrs, from Prior Week |
-| `confirmed_admissions_covid_adult_chg_pct_ew` | `totalconfc19newadmadultpctchg` | COVID-19 | Percentage change | % Change Total Adult COVID-19 Admissions from Prior Week |
-| `confirmed_admissions_covid_chg_pct_ew` | `totalconfc19newadmpctchg` | COVID-19 | Percentage change | % Change Total COVID-19 Admissions from Prior Week |
-| `confirmed_admissions_flu_0_4_chg_pct_ew` | `numconfflunewadmped0to4pctchg` | Influenza | Percentage change | % Change Pediatric Influenza Admissions, 0–4 yrs, from Prior Week |
-| `confirmed_admissions_flu_5_17_chg_pct_ew` | `numconfflunewadmped5to17pctchg` | Influenza | Percentage change | % Change Pediatric Influenza Admissions, 5–17 yrs, from Prior Week |
-| `confirmed_admissions_flu_ped_chg_pct_ew` | `totalconfflunewadmpedpctchg` | Influenza | Percentage change | % Change Total Pediatric Influenza Admissions from Prior Week |
-| `confirmed_admissions_flu_18_49_chg_pct_ew` | `numconfflunewadmadult18to49pctchg` | Influenza | Percentage change | % Change Adult Influenza Admissions, 18–49 yrs, from Prior Week |
-| `confirmed_admissions_flu_50_64_chg_pct_ew` | `numconfflunewadmadult50to64pctchg` | Influenza | Percentage change | % Change Adult Influenza Admissions, 50–64 yrs, from Prior Week |
-| `confirmed_admissions_flu_65_74_chg_pct_ew` | `numconfflunewadmadult65to74pctchg` | Influenza | Percentage change | % Change Adult Influenza Admissions, 65–74 yrs, from Prior Week |
-| `confirmed_admissions_flu_75_chg_pct_ew` | `numconfflunewadmadult75pluspctchg` | Influenza | Percentage change | % Change Adult Influenza Admissions, 75+ yrs, from Prior Week |
-| `confirmed_admissions_flu_adult_chg_pct_ew` | `totalconfflunewadmadultpctchg` | Influenza | Percentage change | % Change Total Adult Influenza Admissions from Prior Week |
-| `confirmed_admissions_flu_chg_pct_ew` | `totalconfflunewadmpctchg` | Influenza | Percentage change | % Change Total Influenza Admissions from Prior Week |
-| `confirmed_admissions_rsv_0_4_chg_pct_ew` | `numconfrsvnewadmped0to4pctchg` | RSV | Percentage change | % Change Pediatric RSV Admissions, 0–4 yrs, from Prior Week |
-| `confirmed_admissions_rsv_5_17_chg_pct_ew` | `numconfrsvnewadmped5to17pctchg` | RSV | Percentage change | % Change Pediatric RSV Admissions, 5–17 yrs, from Prior Week |
-| `confirmed_admissions_rsv_ped_chg_pct_ew` | `totalconfrsvnewadmpedpctchg` | RSV | Percentage change | % Change Total Pediatric RSV Admissions from Prior Week |
-| `confirmed_admissions_rsv_18_49_chg_pct_ew` | `numconfrsvnewadmadult18to49pctchg` | RSV | Percentage change | % Change Adult RSV Admissions, 18–49 yrs, from Prior Week |
-| `confirmed_admissions_rsv_50_64_chg_pct_ew` | `numconfrsvnewadmadult50to64pctchg` | RSV | Percentage change | % Change Adult RSV Admissions, 50–64 yrs, from Prior Week |
-| `confirmed_admissions_rsv_65_74_chg_pct_ew` | `numconfrsvnewadmadult65to74pctchg` | RSV | Percentage change | % Change Adult RSV Admissions, 65–74 yrs, from Prior Week |
-| `confirmed_admissions_rsv_75_chg_pct_ew` | `numconfrsvnewadmadult75pluspctchg` | RSV | Percentage change | % Change Adult RSV Admissions, 75+ yrs, from Prior Week |
-| `confirmed_admissions_rsv_adult_chg_pct_ew` | `totalconfrsvnewadmadultpctchg` | RSV | Percentage change | % Change Total Adult RSV Admissions from Prior Week |
-| `confirmed_admissions_rsv_chg_pct_ew` | `totalconfrsvnewadmpctchg` | RSV | Percentage change | % Change Total RSV Admissions from Prior Week |
+| `confirmed_admissions_covid_0_4_chg_pct_ew` | `numconfc19newadmped0to4pctchg` | COVID-19 | Percentage change | Percentage change in pediatric COVID-19 admissions (0–4 years) from prior week. |
+| `confirmed_admissions_covid_5_17_chg_pct_ew` | `numconfc19newadmped5to17pctchg` | COVID-19 | Percentage change | Percentage change in pediatric COVID-19 admissions (5–17 years) from prior week. |
+| `confirmed_admissions_covid_ped_chg_pct_ew` | `totalconfc19newadmpedpctchg` | COVID-19 | Percentage change | Percentage change in total pediatric COVID-19 admissions from prior week. |
+| `confirmed_admissions_covid_18_49_chg_pct_ew` | `numconfc19newadmadult18to49pctchg` | COVID-19 | Percentage change | Percentage change in adult COVID-19 admissions (18–49 years) from prior week. |
+| `confirmed_admissions_covid_50_64_chg_pct_ew` | `numconfc19newadmadult50to64pctchg` | COVID-19 | Percentage change | Percentage change in adult COVID-19 admissions (50–64 years) from prior week. |
+| `confirmed_admissions_covid_65_74_chg_pct_ew` | `numconfc19newadmadult65to74pctchg` | COVID-19 | Percentage change | Percentage change in adult COVID-19 admissions (65–74 years) from prior week. |
+| `confirmed_admissions_covid_75_chg_pct_ew` | `numconfc19newadmadult75pluspctchg` | COVID-19 | Percentage change | Percentage change in adult COVID-19 admissions (75+ years) from prior week. |
+| `confirmed_admissions_covid_adult_chg_pct_ew` | `totalconfc19newadmadultpctchg` | COVID-19 | Percentage change | Percentage change in total adult COVID-19 admissions from prior week. |
+| `confirmed_admissions_covid_chg_pct_ew` | `totalconfc19newadmpctchg` | COVID-19 | Percentage change | Percentage change in total COVID-19 admissions from prior week. |
+| `confirmed_admissions_flu_0_4_chg_pct_ew` | `numconfflunewadmped0to4pctchg` | Influenza | Percentage change | Percentage change in pediatric influenza admissions (0–4 years) from prior week. |
+| `confirmed_admissions_flu_5_17_chg_pct_ew` | `numconfflunewadmped5to17pctchg` | Influenza | Percentage change | Percentage change in pediatric influenza admissions (5–17 years) from prior week. |
+| `confirmed_admissions_flu_ped_chg_pct_ew` | `totalconfflunewadmpedpctchg` | Influenza | Percentage change | Percentage change in total pediatric influenza admissions from prior week. |
+| `confirmed_admissions_flu_18_49_chg_pct_ew` | `numconfflunewadmadult18to49pctchg` | Influenza | Percentage change | Percentage change in adult influenza admissions (18–49 years) from prior week. |
+| `confirmed_admissions_flu_50_64_chg_pct_ew` | `numconfflunewadmadult50to64pctchg` | Influenza | Percentage change | Percentage change in adult influenza admissions (50–64 years) from prior week. |
+| `confirmed_admissions_flu_65_74_chg_pct_ew` | `numconfflunewadmadult65to74pctchg` | Influenza | Percentage change | Percentage change in adult influenza admissions (65–74 years) from prior week. |
+| `confirmed_admissions_flu_75_chg_pct_ew` | `numconfflunewadmadult75pluspctchg` | Influenza | Percentage change | Percentage change in adult influenza admissions (75+ years) from prior week. |
+| `confirmed_admissions_flu_adult_chg_pct_ew` | `totalconfflunewadmadultpctchg` | Influenza | Percentage change | Percentage change in total adult influenza admissions from prior week. |
+| `confirmed_admissions_flu_chg_pct_ew` | `totalconfflunewadmpctchg` | Influenza | Percentage change | Percentage change in total influenza admissions from prior week. |
+| `confirmed_admissions_rsv_0_4_chg_pct_ew` | `numconfrsvnewadmped0to4pctchg` | RSV | Percentage change | Percentage change in pediatric RSV admissions (0–4 years) from prior week. |
+| `confirmed_admissions_rsv_5_17_chg_pct_ew` | `numconfrsvnewadmped5to17pctchg` | RSV | Percentage change | Percentage change in pediatric RSV admissions (5–17 years) from prior week. |
+| `confirmed_admissions_rsv_ped_chg_pct_ew` | `totalconfrsvnewadmpedpctchg` | RSV | Percentage change | Percentage change in total pediatric RSV admissions from prior week. |
+| `confirmed_admissions_rsv_18_49_chg_pct_ew` | `numconfrsvnewadmadult18to49pctchg` | RSV | Percentage change | Percentage change in adult RSV admissions (18–49 years) from prior week. |
+| `confirmed_admissions_rsv_50_64_chg_pct_ew` | `numconfrsvnewadmadult50to64pctchg` | RSV | Percentage change | Percentage change in adult RSV admissions (50–64 years) from prior week. |
+| `confirmed_admissions_rsv_65_74_chg_pct_ew` | `numconfrsvnewadmadult65to74pctchg` | RSV | Percentage change | Percentage change in adult RSV admissions (65–74 years) from prior week. |
+| `confirmed_admissions_rsv_75_chg_pct_ew` | `numconfrsvnewadmadult75pluspctchg` | RSV | Percentage change | Percentage change in adult RSV admissions (75+ years) from prior week. |
+| `confirmed_admissions_rsv_adult_chg_pct_ew` | `totalconfrsvnewadmadultpctchg` | RSV | Percentage change | Percentage change in total adult RSV admissions from prior week. |
+| `confirmed_admissions_rsv_chg_pct_ew` | `totalconfrsvnewadmpctchg` | RSV | Percentage change | Percentage change in total RSV admissions from prior week. |
 
 </details>
 
-#### 4. Seasonal Cumulative Admissions
+#### Seasonal Cumulative Admissions
 
 Cumulative seasonal total admissions starting from week 40 through week 39 of the subsequent year:
 
@@ -308,11 +310,11 @@ Cumulative seasonal total admissions starting from week 40 through week 39 of th
 | `confirmed_admissions_covid_cumulative_ew` | `totalconfc19newadmcumulativeseasonalsum` | COVID-19 | Cumulative count | Cumulative Seasonal Total Confirmed New COVID-19 Admissions |
 | `confirmed_admissions_flu_cumulative_ew` | `totalconfflunewadmcumulativeseasonalsum` | Influenza | Cumulative count | Cumulative Seasonal Total Confirmed New Influenza Admissions |
 | `confirmed_admissions_rsv_cumulative_ew` | `totalconfrsvnewadmcumulativeseasonalsum` | RSV | Cumulative count | Cumulative Seasonal Total Confirmed New RSV Admissions |
-| `confirmed_admissions_cumulative_ew` | `totalconfnewadmcumulativeseasonalsum` | Combined | Cumulative count | Cumulative Seasonal Total Confirmed New Respiratory Admissions (COVID-19, Influenza, RSV) |
+| `confirmed_admissions_cumulative_ew` | `totalconfnewadmcumulativeseasonalsum` | Combined COVID-19, Influenza, and RSV | Cumulative Count | Cumulative Seasonal Total Confirmed New Respiratory Admissions (COVID-19, Influenza, and RSV) |
 
 </details>
 
-#### 5. Hospital Reporting Compliance Metrics
+#### Hospital Reporting Compliance Metrics
 
 Facility reporting compliance metrics covering reporting hospital counts, jurisdiction coverage percentages, week-over-week coverage changes, and threshold flags.
 
@@ -321,58 +323,58 @@ Facility reporting compliance metrics covering reporting hospital counts, jurisd
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `hosprep_inpatient_beds_ew` | `numinptbedshosprep` | — | Facility count | N Hospitals Reporting Inpatient Beds |
-| `hosprep_inpatient_beds_occupied_ew` | `numinptbedsocchosprep` | — | Facility count | N Hospitals Reporting Inpatient Beds Occupied |
-| `hosprep_icu_beds_ew` | `numicubedshosprep` | — | Facility count | N Hospitals Reporting ICU Beds |
-| `hosprep_icu_beds_occupied_ew` | `numicubedsocchosprep` | — | Facility count | N Hospitals Reporting ICU Beds Occupied |
-| `hosprep_covid_inpatients_ew` | `totalconfc19hosppatshosprep` | COVID-19 | Facility count | N Hospitals Reporting Total COVID-19 Inpatients |
-| `hosprep_flu_inpatients_ew` | `totalconffluhosppatshosprep` | Influenza | Facility count | N Hospitals Reporting Total Influenza Inpatients |
-| `hosprep_rsv_inpatients_ew` | `totalconfrsvhosppatshosprep` | RSV | Facility count | N Hospitals Reporting Total RSV Inpatients |
-| `hosprep_covid_icu_patients_ew` | `totalconfc19icupatshosprep` | COVID-19 | Facility count | N Hospitals Reporting COVID-19 ICU Patients |
-| `hosprep_flu_icu_patients_ew` | `totalconffluicupatshosprep` | Influenza | Facility count | N Hospitals Reporting Influenza ICU Patients |
-| `hosprep_rsv_icu_patients_ew` | `totalconfrsvicupatshosprep` | RSV | Facility count | N Hospitals Reporting RSV ICU Patients |
-| `hosprep_confirmed_admissions_covid_ped_ew` | `totalconfc19newadmpedhosprep` | COVID-19 | Facility count | N Hospitals Reporting Pediatric COVID-19 Admissions |
-| `hosprep_confirmed_admissions_covid_adult_ew` | `totalconfc19newadmadulthosprep` | COVID-19 | Facility count | N Hospitals Reporting Adult COVID-19 Admissions |
-| `hosprep_confirmed_admissions_covid_ew` | `totalconfc19newadmhosprep` | COVID-19 | Facility count | N Hospitals Reporting COVID-19 Admissions |
-| `hosprep_confirmed_admissions_flu_ped_ew` | `totalconfflunewadmpedhosprep` | Influenza | Facility count | N Hospitals Reporting Pediatric Influenza Admissions |
-| `hosprep_confirmed_admissions_flu_adult_ew` | `totalconfflunewadmadulthosprep` | Influenza | Facility count | N Hospitals Reporting Adult Influenza Admissions |
-| `hosprep_confirmed_admissions_flu_ew` | `totalconfflunewadmhosprep` | Influenza | Facility count | N Hospitals Reporting Influenza Admissions |
-| `hosprep_confirmed_admissions_rsv_ped_ew` | `totalconfrsvnewadmpedhosprep` | RSV | Facility count | N Hospitals Reporting Pediatric RSV Admissions |
-| `hosprep_confirmed_admissions_rsv_adult_ew` | `totalconfrsvnewadmadulthosprep` | RSV | Facility count | N Hospitals Reporting Adult RSV Admissions |
-| `hosprep_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmhosprep` | RSV | Facility count | N Hospitals Reporting RSV Admissions |
-| `hosprep_inpatient_beds_occupied_pct_ew` | `pctinptbedsocchosprep` | — | Facility count | N Hospitals Reporting % Inpatient Beds Occupied |
-| `hosprep_icu_beds_occupied_pct_ew` | `pcticubedsocchosprep` | — | Facility count | N Hospitals Reporting % ICU Beds Occupied |
-| `hosprep_inpatient_beds_covid_pct_ew` | `pctconfc19inptbedshosprep` | COVID-19 | Facility count | N Hospitals Reporting % Inpatient Beds Occ. by COVID-19 |
-| `hosprep_inpatient_beds_flu_pct_ew` | `pctconffluinptbedshosprep` | Influenza | Facility count | N Hospitals Reporting % Inpatient Beds Occ. by Influenza |
-| `hosprep_inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbedshosprep` | RSV | Facility count | N Hospitals Reporting % Inpatient Beds Occ. by RSV |
-| `hosprep_icu_beds_covid_pct_ew` | `pctconfc19icubedshosprep` | COVID-19 | Facility count | N Hospitals Reporting % ICU Beds Occ. by COVID-19 |
-| `hosprep_icu_beds_flu_pct_ew` | `pctconffluicubedshosprep` | Influenza | Facility count | N Hospitals Reporting % ICU Beds Occ. by Influenza |
-| `hosprep_icu_beds_rsv_pct_ew` | `pctconfrsvicubedshosprep` | RSV | Facility count | N Hospitals Reporting % ICU Beds Occ. by RSV |
-| `hosprep_inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadulthosprep` | — | Facility count | N Hospitals Reporting % Adult Inpatient Beds Occupied |
-| `hosprep_inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccpedhosprep` | — | Facility count | N Hospitals Reporting % Pediatric Inpatient Beds Occupied |
-| `hosprep_icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadulthosprep` | — | Facility count | N Hospitals Reporting % Adult ICU Beds Occupied |
-| `hosprep_icu_beds_occupied_ped_pct_ew` | `pcticubedsoccpedhosprep` | — | Facility count | N Hospitals Reporting % Pediatric ICU Beds Occupied |
-| `hosprep_inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadulthosprep` | COVID-19 | Facility count | N Hospitals Reporting % Adult Inpatient Beds Occ. by COVID-19 |
-| `hosprep_inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedspedhosprep` | COVID-19 | Facility count | N Hospitals Reporting % Pediatric Inpatient Beds Occ. by COVID-19 |
-| `hosprep_icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadulthosprep` | COVID-19 | Facility count | N Hospitals Reporting % Adult ICU Beds Occ. by COVID-19 |
-| `hosprep_icu_beds_covid_ped_pct_ew` | `pctconfc19icubedspedhosprep` | COVID-19 | Facility count | N Hospitals Reporting % Pediatric ICU Beds Occ. by COVID-19 |
-| `hosprep_inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadulthosprep` | Influenza | Facility count | N Hospitals Reporting % Adult Inpatient Beds Occ. by Influenza |
-| `hosprep_inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedspedhosprep` | Influenza | Facility count | N Hospitals Reporting % Pediatric Inpatient Beds Occ. by Influenza |
-| `hosprep_icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadulthosprep` | Influenza | Facility count | N Hospitals Reporting % Adult ICU Beds Occ. by Influenza |
-| `hosprep_icu_beds_flu_ped_pct_ew` | `pctconffluicubedspedhosprep` | Influenza | Facility count | N Hospitals Reporting % Pediatric ICU Beds Occ. by Influenza |
-| `hosprep_inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadulthosprep` | RSV | Facility count | N Hospitals Reporting % Adult Inpatient Beds Occ. by RSV |
-| `hosprep_inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedspedhosprep` | RSV | Facility count | N Hospitals Reporting % Pediatric Inpatient Beds Occ. by RSV |
-| `hosprep_icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadulthosprep` | RSV | Facility count | N Hospitals Reporting % Adult ICU Beds Occ. by RSV |
-| `hosprep_icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedspedhosprep` | RSV | Facility count | N Hospitals Reporting % Pediatric ICU Beds Occ. by RSV |
-| `hosprep_covid_inpatients_icu_pct_ew` | `pctconfc19hosppatsicuhosprep` | COVID-19 | Facility count | N Hospitals Reporting % COVID-19 Inpatients in ICU |
-| `hosprep_covid_inpatients_adult_icu_pct_ew` | `pctconfc19hosppatsicuadulthosprep` | COVID-19 | Facility count | N Hospitals Reporting % Adult COVID-19 Inpatients in ICU |
-| `hosprep_covid_inpatients_ped_icu_pct_ew` | `pctconfc19hosppatsicupedhosprep` | COVID-19 | Facility count | N Hospitals Reporting % Pediatric COVID-19 Inpatients in ICU |
-| `hosprep_flu_inpatients_icu_pct_ew` | `pctconffluhosppatsicuhosprep` | Influenza | Facility count | N Hospitals Reporting % Influenza Inpatients in ICU |
-| `hosprep_flu_inpatients_adult_icu_pct_ew` | `pctconffluhosppatsicuadulthosprep` | Influenza | Facility count | N Hospitals Reporting % Adult Influenza Inpatients in ICU |
-| `hosprep_flu_inpatients_ped_icu_pct_ew` | `pctconffluhosppatsicupedhosprep` | Influenza | Facility count | N Hospitals Reporting % Pediatric Influenza Inpatients in ICU |
-| `hosprep_rsv_inpatients_icu_pct_ew` | `pctconfrsvhosppatsicuhosprep` | RSV | Facility count | N Hospitals Reporting % RSV Inpatients in ICU |
-| `hosprep_rsv_inpatients_adult_icu_pct_ew` | `pctconfrsvhosppatsicuadulthosprep` | RSV | Facility count | N Hospitals Reporting % Adult RSV Inpatients in ICU |
-| `hosprep_rsv_inpatients_ped_icu_pct_ew` | `pctconfrsvhosppatsicupedhosprep` | RSV | Facility count | N Hospitals Reporting % Pediatric RSV Inpatients in ICU |
+| `hosprep_inpatient_beds_ew` | `numinptbedshosprep` | — | Facility count | Number of hospitals reporting inpatient bed capacity. |
+| `hosprep_inpatient_beds_occupied_ew` | `numinptbedsocchosprep` | — | Facility count | Number of hospitals reporting occupied inpatient beds. |
+| `hosprep_icu_beds_ew` | `numicubedshosprep` | — | Facility count | Number of hospitals reporting ICU bed capacity. |
+| `hosprep_icu_beds_occupied_ew` | `numicubedsocchosprep` | — | Facility count | Number of hospitals reporting occupied ICU beds. |
+| `hosprep_covid_inpatients_ew` | `totalconfc19hosppatshosprep` | COVID-19 | Facility count | Number of hospitals reporting total COVID-19 inpatients. |
+| `hosprep_flu_inpatients_ew` | `totalconffluhosppatshosprep` | Influenza | Facility count | Number of hospitals reporting total influenza inpatients. |
+| `hosprep_rsv_inpatients_ew` | `totalconfrsvhosppatshosprep` | RSV | Facility count | Number of hospitals reporting total RSV inpatients. |
+| `hosprep_covid_icu_patients_ew` | `totalconfc19icupatshosprep` | COVID-19 | Facility count | Number of hospitals reporting COVID-19 ICU patients. |
+| `hosprep_flu_icu_patients_ew` | `totalconffluicupatshosprep` | Influenza | Facility count | Number of hospitals reporting influenza ICU patients. |
+| `hosprep_rsv_icu_patients_ew` | `totalconfrsvicupatshosprep` | RSV | Facility count | Number of hospitals reporting RSV ICU patients. |
+| `hosprep_confirmed_admissions_covid_ped_ew` | `totalconfc19newadmpedhosprep` | COVID-19 | Facility count | Number of hospitals reporting pediatric COVID-19 admissions. |
+| `hosprep_confirmed_admissions_covid_adult_ew` | `totalconfc19newadmadulthosprep` | COVID-19 | Facility count | Number of hospitals reporting adult COVID-19 admissions. |
+| `hosprep_confirmed_admissions_covid_ew` | `totalconfc19newadmhosprep` | COVID-19 | Facility count | Number of hospitals reporting total COVID-19 admissions. |
+| `hosprep_confirmed_admissions_flu_ped_ew` | `totalconfflunewadmpedhosprep` | Influenza | Facility count | Number of hospitals reporting pediatric influenza admissions. |
+| `hosprep_confirmed_admissions_flu_adult_ew` | `totalconfflunewadmadulthosprep` | Influenza | Facility count | Number of hospitals reporting adult influenza admissions. |
+| `hosprep_confirmed_admissions_flu_ew` | `totalconfflunewadmhosprep` | Influenza | Facility count | Number of hospitals reporting total influenza admissions. |
+| `hosprep_confirmed_admissions_rsv_ped_ew` | `totalconfrsvnewadmpedhosprep` | RSV | Facility count | Number of hospitals reporting pediatric RSV admissions. |
+| `hosprep_confirmed_admissions_rsv_adult_ew` | `totalconfrsvnewadmadulthosprep` | RSV | Facility count | Number of hospitals reporting adult RSV admissions. |
+| `hosprep_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmhosprep` | RSV | Facility count | Number of hospitals reporting total RSV admissions. |
+| `hosprep_inpatient_beds_occupied_pct_ew` | `pctinptbedsocchosprep` | — | Facility count | Number of hospitals reporting inpatient bed occupancy percentage. |
+| `hosprep_icu_beds_occupied_pct_ew` | `pcticubedsocchosprep` | — | Facility count | Number of hospitals reporting ICU bed occupancy percentage. |
+| `hosprep_inpatient_beds_covid_pct_ew` | `pctconfc19inptbedshosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of inpatient beds occupied by COVID-19 patients. |
+| `hosprep_inpatient_beds_flu_pct_ew` | `pctconffluinptbedshosprep` | Influenza | Facility count | Number of hospitals reporting percentage of inpatient beds occupied by influenza patients. |
+| `hosprep_inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbedshosprep` | RSV | Facility count | Number of hospitals reporting percentage of inpatient beds occupied by RSV patients. |
+| `hosprep_icu_beds_covid_pct_ew` | `pctconfc19icubedshosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of ICU beds occupied by COVID-19 patients. |
+| `hosprep_icu_beds_flu_pct_ew` | `pctconffluicubedshosprep` | Influenza | Facility count | Number of hospitals reporting percentage of ICU beds occupied by influenza patients. |
+| `hosprep_icu_beds_rsv_pct_ew` | `pctconfrsvicubedshosprep` | RSV | Facility count | Number of hospitals reporting percentage of ICU beds occupied by RSV patients. |
+| `hosprep_inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadulthosprep` | — | Facility count | Number of hospitals reporting adult inpatient bed occupancy percentage. |
+| `hosprep_inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccpedhosprep` | — | Facility count | Number of hospitals reporting pediatric inpatient bed occupancy percentage. |
+| `hosprep_icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadulthosprep` | — | Facility count | Number of hospitals reporting adult ICU bed occupancy percentage. |
+| `hosprep_icu_beds_occupied_ped_pct_ew` | `pcticubedsoccpedhosprep` | — | Facility count | Number of hospitals reporting pediatric ICU bed occupancy percentage. |
+| `hosprep_inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadulthosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of adult inpatient beds occupied by COVID-19 patients. |
+| `hosprep_inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedspedhosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of pediatric inpatient beds occupied by COVID-19 patients. |
+| `hosprep_icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadultperchosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of adult ICU beds occupied by COVID-19 patients. |
+| `hosprep_icu_beds_covid_ped_pct_ew` | `pctconfc19icubedspedhosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of pediatric ICU beds occupied by COVID-19 patients. |
+| `hosprep_inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadulthosprep` | Influenza | Facility count | Number of hospitals reporting percentage of adult inpatient beds occupied by influenza patients. |
+| `hosprep_inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedspedhosprep` | Influenza | Facility count | Number of hospitals reporting percentage of pediatric inpatient beds occupied by influenza patients. |
+| `hosprep_icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadulthosprep` | Influenza | Facility count | Number of hospitals reporting percentage of adult ICU beds occupied by influenza patients. |
+| `hosprep_icu_beds_flu_ped_pct_ew` | `pctconffluicubedspedhosprep` | Influenza | Facility count | Number of hospitals reporting percentage of pediatric ICU beds occupied by influenza patients. |
+| `hosprep_inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadulthosprep` | RSV | Facility count | Number of hospitals reporting percentage of adult inpatient beds occupied by RSV patients. |
+| `hosprep_inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedspedhosprep` | RSV | Facility count | Number of hospitals reporting percentage of pediatric inpatient beds occupied by RSV patients. |
+| `hosprep_icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadulthosprep` | RSV | Facility count | Number of hospitals reporting percentage of adult ICU beds occupied by RSV patients. |
+| `hosprep_icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedspedhosprep` | RSV | Facility count | Number of hospitals reporting percentage of pediatric ICU beds occupied by RSV patients. |
+| `hosprep_covid_inpatients_icu_pct_ew` | `pctconfc19hosppatsicuhosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of COVID-19 inpatients in the ICU. |
+| `hosprep_covid_inpatients_adult_icu_pct_ew` | `pctconfc19hosppatsicuadulthosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of adult COVID-19 inpatients in the ICU. |
+| `hosprep_covid_inpatients_ped_icu_pct_ew` | `pctconfc19hosppatsicupedhosprep` | COVID-19 | Facility count | Number of hospitals reporting percentage of pediatric COVID-19 inpatients in the ICU. |
+| `hosprep_flu_inpatients_icu_pct_ew` | `pctconffluhosppatsicuhosprep` | Influenza | Facility count | Number of hospitals reporting percentage of influenza inpatients in the ICU. |
+| `hosprep_flu_inpatients_adult_icu_pct_ew` | `pctconffluhosppatsicuadulthosprep` | Influenza | Facility count | Number of hospitals reporting percentage of adult influenza inpatients in the ICU. |
+| `hosprep_flu_inpatients_ped_icu_pct_ew` | `pctconffluhosppatsicupedhosprep` | Influenza | Facility count | Number of hospitals reporting percentage of pediatric influenza inpatients in the ICU. |
+| `hosprep_rsv_inpatients_icu_pct_ew` | `pctconfrsvhosppatsicuhosprep` | RSV | Facility count | Number of hospitals reporting percentage of RSV inpatients in the ICU. |
+| `hosprep_rsv_inpatients_adult_icu_pct_ew` | `pctconfrsvhosppatsicuadulthosprep` | RSV | Facility count | Number of hospitals reporting percentage of adult RSV inpatients in the ICU. |
+| `hosprep_rsv_inpatients_ped_icu_pct_ew` | `pctconfrsvhosppatsicupedhosprep` | RSV | Facility count | Number of hospitals reporting percentage of pediatric RSV inpatients in the ICU. |
 
 </details>
 
@@ -381,58 +383,58 @@ Facility reporting compliance metrics covering reporting hospital counts, jurisd
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `hosprep_pct_inpatient_beds_ew` | `numinptbedsperchosprep` | — | Percentage | % Hospitals Reporting Inpatient Beds |
-| `hosprep_pct_inpatient_beds_occupied_ew` | `numinptbedsoccperchosprep` | — | Percentage | % Hospitals Reporting Inpatient Beds Occupied |
-| `hosprep_pct_icu_beds_ew` | `numicubedsperchosprep` | — | Percentage | % Hospitals Reporting ICU Beds |
-| `hosprep_pct_icu_beds_occupied_ew` | `numicubedsoccperchosprep` | — | Percentage | % Hospitals Reporting ICU Beds Occupied |
-| `hosprep_pct_covid_inpatients_ew` | `totalconfc19hosppatsperc` | COVID-19 | Percentage | % Hospitals Reporting COVID-19 Inpatients |
-| `hosprep_pct_flu_inpatients_ew` | `totalconffluhosppatsperc` | Influenza | Percentage | % Hospitals Reporting Influenza Inpatients |
-| `hosprep_pct_rsv_inpatients_ew` | `totalconfrsvhosppatsperc` | RSV | Percentage | % Hospitals Reporting RSV Inpatients |
-| `hosprep_pct_covid_icu_patients_ew` | `totalconfc19icupatsperchosprep` | COVID-19 | Percentage | % Hospitals Reporting COVID-19 ICU Patients |
-| `hosprep_pct_flu_icu_patients_ew` | `totalconffluicupatsperchosprep` | Influenza | Percentage | % Hospitals Reporting Influenza ICU Patients |
-| `hosprep_pct_rsv_icu_patients_ew` | `totalconfrsvicupatsperchosprep` | RSV | Percentage | % Hospitals Reporting RSV ICU Patients |
-| `hosprep_pct_confirmed_admissions_covid_ped_ew` | `totalconfc19newadmpedper` | COVID-19 | Percentage | % Hospitals Reporting Pediatric COVID-19 Admissions |
-| `hosprep_pct_confirmed_admissions_covid_adult_ew` | `totalconfc19newadmadultp` | COVID-19 | Percentage | % Hospitals Reporting Adult COVID-19 Admissions |
-| `hosprep_pct_confirmed_admissions_covid_ew` | `totalconfc19newadmperchosprep` | COVID-19 | Percentage | % Hospitals Reporting COVID-19 Admissions |
-| `hosprep_pct_confirmed_admissions_flu_ped_ew` | `totalconfflunewadmpedper` | Influenza | Percentage | % Hospitals Reporting Pediatric Influenza Admissions |
-| `hosprep_pct_confirmed_admissions_flu_adult_ew` | `totalconfflunewadmadultp` | Influenza | Percentage | % Hospitals Reporting Adult Influenza Admissions |
-| `hosprep_pct_confirmed_admissions_flu_ew` | `totalconfflunewadmperchosprep` | Influenza | Percentage | % Hospitals Reporting Influenza Admissions |
-| `hosprep_pct_confirmed_admissions_rsv_ped_ew` | `totalconfrsvnewadmpedper` | RSV | Percentage | % Hospitals Reporting Pediatric RSV Admissions |
-| `hosprep_pct_confirmed_admissions_rsv_adult_ew` | `totalconfrsvnewadmadultp` | RSV | Percentage | % Hospitals Reporting Adult RSV Admissions |
-| `hosprep_pct_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmperchosprep` | RSV | Percentage | % Hospitals Reporting RSV Admissions |
-| `hosprep_pct_inpatient_beds_occupied_pct_ew` | `pctinptbedsoccperchosprep` | — | Percentage | % Hospitals Reporting % Inpatient Beds Occupied |
-| `hosprep_pct_icu_beds_occupied_pct_ew` | `pcticubedsoccperchosprep` | — | Percentage | % Hospitals Reporting % ICU Beds Occupied |
-| `hosprep_pct_inpatient_beds_covid_pct_ew` | `pctconfc19inptbedsperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % Inpatient Beds Occ. by COVID-19 |
-| `hosprep_pct_inpatient_beds_flu_pct_ew` | `pctconffluinptbedsperchosprep` | Influenza | Percentage | % Hospitals Reporting % Inpatient Beds Occ. by Influenza |
-| `hosprep_pct_inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbedsperchosprep` | RSV | Percentage | % Hospitals Reporting % Inpatient Beds Occ. by RSV |
-| `hosprep_pct_icu_beds_covid_pct_ew` | `pctconfc19icubedsperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % ICU Beds Occ. by COVID-19 |
-| `hosprep_pct_icu_beds_flu_pct_ew` | `pctconffluicubedsperchosprep` | Influenza | Percentage | % Hospitals Reporting % ICU Beds Occ. by Influenza |
-| `hosprep_pct_icu_beds_rsv_pct_ew` | `pctconfrsvicubedsperchosprep` | RSV | Percentage | % Hospitals Reporting % ICU Beds Occ. by RSV |
-| `hosprep_pct_inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadultperchosprep` | — | Percentage | % Hospitals Reporting % Adult Inpatient Beds Occupied |
-| `hosprep_pct_inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccpedperchosprep` | — | Percentage | % Hospitals Reporting % Pediatric Inpatient Beds Occupied |
-| `hosprep_pct_icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadultperchosprep` | — | Percentage | % Hospitals Reporting % Adult ICU Beds Occupied |
-| `hosprep_pct_icu_beds_occupied_ped_pct_ew` | `pcticubedsoccpedperchosprep` | — | Percentage | % Hospitals Reporting % Pediatric ICU Beds Occupied |
-| `hosprep_pct_inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadultperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % Adult Inpatient Beds Occ. by COVID-19 |
-| `hosprep_pct_inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedspedperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % Pediatric Inpatient Beds Occ. by COVID-19 |
-| `hosprep_pct_icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadultperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % Adult ICU Beds Occ. by COVID-19 |
-| `hosprep_pct_icu_beds_covid_ped_pct_ew` | `pctconfc19icubedspedperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % Pediatric ICU Beds Occ. by COVID-19 |
-| `hosprep_pct_inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadultperchosprep` | Influenza | Percentage | % Hospitals Reporting % Adult Inpatient Beds Occ. by Influenza |
-| `hosprep_pct_inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedspedperchosprep` | Influenza | Percentage | % Hospitals Reporting % Pediatric Inpatient Beds Occ. by Influenza |
-| `hosprep_pct_icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadultperchosprep` | Influenza | Percentage | % Hospitals Reporting % Adult ICU Beds Occ. by Influenza |
-| `hosprep_pct_icu_beds_flu_ped_pct_ew` | `pctconffluicubedspedperchosprep` | Influenza | Percentage | % Hospitals Reporting % Pediatric ICU Beds Occ. by Influenza |
-| `hosprep_pct_inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadultperchosprep` | RSV | Percentage | % Hospitals Reporting % Adult Inpatient Beds Occ. by RSV |
-| `hosprep_pct_inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedspedperchosprep` | RSV | Percentage | % Hospitals Reporting % Pediatric Inpatient Beds Occ. by RSV |
-| `hosprep_pct_icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadultperchosprep` | RSV | Percentage | % Hospitals Reporting % Adult ICU Beds Occ. by RSV |
-| `hosprep_pct_icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedspedperchosprep` | RSV | Percentage | % Hospitals Reporting % Pediatric ICU Beds Occ. by RSV |
-| `hosprep_pct_covid_inpatients_icu_pct_ew` | `pctconfc19hosppatsicuperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % COVID-19 Inpatients in ICU |
-| `hosprep_pct_covid_inpatients_adult_icu_pct_ew` | `pctconfc19hosppatsicuadultperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % Adult COVID-19 Inpatients in ICU |
-| `hosprep_pct_covid_inpatients_ped_icu_pct_ew` | `pctconfc19hosppatsicupedperchosprep` | COVID-19 | Percentage | % Hospitals Reporting % Pediatric COVID-19 Inpatients in ICU |
-| `hosprep_pct_flu_inpatients_icu_pct_ew` | `pctconffluhosppatsicuperchosprep` | Influenza | Percentage | % Hospitals Reporting % Influenza Inpatients in ICU |
-| `hosprep_pct_flu_inpatients_adult_icu_pct_ew` | `pctconffluhosppatsicuadultperchosprep` | Influenza | Percentage | % Hospitals Reporting % Adult Influenza Inpatients in ICU |
-| `hosprep_pct_flu_inpatients_ped_icu_pct_ew` | `pctconffluhosppatsicupedperchosprep` | Influenza | Percentage | % Hospitals Reporting % Pediatric Influenza Inpatients in ICU |
-| `hosprep_pct_rsv_inpatients_icu_pct_ew` | `pctconfrsvhosppatsicuperchosprep` | RSV | Percentage | % Hospitals Reporting % RSV Inpatients in ICU |
-| `hosprep_pct_rsv_inpatients_adult_icu_pct_ew` | `pctconfrsvhosppatsicuadultperchosprep` | RSV | Percentage | % Hospitals Reporting % Adult RSV Inpatients in ICU |
-| `hosprep_pct_rsv_inpatients_ped_icu_pct_ew` | `pctconfrsvhosppatsicupedperchosprep` | RSV | Percentage | % Hospitals Reporting % Pediatric RSV Inpatients in ICU |
+| `hosprep_pct_inpatient_beds_ew` | `numinptbedsperchosprep` | — | Percentage | Percentage of hospitals reporting inpatient bed capacity. |
+| `hosprep_pct_inpatient_beds_occupied_ew` | `numinptbedsoccperchosprep` | — | Percentage | Percentage of hospitals reporting occupied inpatient beds. |
+| `hosprep_pct_icu_beds_ew` | `numicubedsperchosprep` | — | Percentage | Percentage of hospitals reporting ICU bed capacity. |
+| `hosprep_pct_icu_beds_occupied_ew` | `numicubedsoccperchosprep` | — | Percentage | Percentage of hospitals reporting occupied ICU beds. |
+| `hosprep_pct_covid_inpatients_ew` | `totalconfc19hosppatsperc` | COVID-19 | Percentage | Percentage of hospitals reporting total COVID-19 inpatients. |
+| `hosprep_pct_flu_inpatients_ew` | `totalconffluhosppatsperc` | Influenza | Percentage | Percentage of hospitals reporting total influenza inpatients. |
+| `hosprep_pct_rsv_inpatients_ew` | `totalconfrsvhosppatsperc` | RSV | Percentage | Percentage of hospitals reporting total RSV inpatients. |
+| `hosprep_pct_covid_icu_patients_ew` | `totalconfc19icupatsperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting COVID-19 ICU patients. |
+| `hosprep_pct_flu_icu_patients_ew` | `totalconffluicupatsperchosprep` | Influenza | Percentage | Percentage of hospitals reporting influenza ICU patients. |
+| `hosprep_pct_rsv_icu_patients_ew` | `totalconfrsvicupatsperchosprep` | RSV | Percentage | Percentage of hospitals reporting RSV ICU patients. |
+| `hosprep_pct_confirmed_admissions_covid_ped_ew` | `totalconfc19newadmpedper` | COVID-19 | Percentage | Percentage of hospitals reporting pediatric COVID-19 admissions. |
+| `hosprep_pct_confirmed_admissions_covid_adult_ew` | `totalconfc19newadmadultp` | COVID-19 | Percentage | Percentage of hospitals reporting adult COVID-19 admissions. |
+| `hosprep_pct_confirmed_admissions_covid_ew` | `totalconfc19newadmperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting total COVID-19 admissions. |
+| `hosprep_pct_confirmed_admissions_flu_ped_ew` | `totalconfflunewadmpedper` | Influenza | Percentage | Percentage of hospitals reporting pediatric influenza admissions. |
+| `hosprep_pct_confirmed_admissions_flu_adult_ew` | `totalconfflunewadmadultp` | Influenza | Percentage | Percentage of hospitals reporting adult influenza admissions. |
+| `hosprep_pct_confirmed_admissions_flu_ew` | `totalconfflunewadmperchosprep` | Influenza | Percentage | Percentage of hospitals reporting total influenza admissions. |
+| `hosprep_pct_confirmed_admissions_rsv_ped_ew` | `totalconfrsvnewadmpedper` | RSV | Percentage | Percentage of hospitals reporting pediatric RSV admissions. |
+| `hosprep_pct_confirmed_admissions_rsv_adult_ew` | `totalconfrsvnewadmadultp` | RSV | Percentage | Percentage of hospitals reporting adult RSV admissions. |
+| `hosprep_pct_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmperchosprep` | RSV | Percentage | Percentage of hospitals reporting total RSV admissions. |
+| `hosprep_pct_inpatient_beds_occupied_pct_ew` | `pctinptbedsoccperchosprep` | — | Percentage | Percentage of hospitals reporting inpatient bed occupancy percentage. |
+| `hosprep_pct_icu_beds_occupied_pct_ew` | `pcticubedsoccperchosprep` | — | Percentage | Percentage of hospitals reporting ICU bed occupancy percentage. |
+| `hosprep_pct_inpatient_beds_covid_pct_ew` | `pctconfc19inptbedsperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of inpatient beds occupied by COVID-19 patients. |
+| `hosprep_pct_inpatient_beds_flu_pct_ew` | `pctconffluinptbedsperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of inpatient beds occupied by influenza patients. |
+| `hosprep_pct_inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbedsperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of inpatient beds occupied by RSV patients. |
+| `hosprep_pct_icu_beds_covid_pct_ew` | `pctconfc19icubedsperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of ICU beds occupied by COVID-19 patients. |
+| `hosprep_pct_icu_beds_flu_pct_ew` | `pctconffluicubedsperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of ICU beds occupied by influenza patients. |
+| `hosprep_pct_icu_beds_rsv_pct_ew` | `pctconfrsvicubedsperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of ICU beds occupied by RSV patients. |
+| `hosprep_pct_inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadultperchosprep` | — | Percentage | Percentage of hospitals reporting adult inpatient bed occupancy percentage. |
+| `hosprep_pct_inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccpedperchosprep` | — | Percentage | Percentage of hospitals reporting pediatric inpatient bed occupancy percentage. |
+| `hosprep_pct_icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadultperchosprep` | — | Percentage | Percentage of hospitals reporting adult ICU bed occupancy percentage. |
+| `hosprep_pct_icu_beds_occupied_ped_pct_ew` | `pcticubedsoccpedperchosprep` | — | Percentage | Percentage of hospitals reporting pediatric ICU bed occupancy percentage. |
+| `hosprep_pct_inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadultperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of adult inpatient beds occupied by COVID-19 patients. |
+| `hosprep_pct_inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedspedperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of pediatric inpatient beds occupied by COVID-19 patients. |
+| `hosprep_pct_icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadultperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of adult ICU beds occupied by COVID-19 patients. |
+| `hosprep_pct_icu_beds_covid_ped_pct_ew` | `pctconfc19icubedspedperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of pediatric ICU beds occupied by COVID-19 patients. |
+| `hosprep_pct_inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadultperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of adult inpatient beds occupied by influenza patients. |
+| `hosprep_pct_inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedspedhosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of pediatric inpatient beds occupied by influenza patients. |
+| `hosprep_pct_icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadultperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of adult ICU beds occupied by influenza patients. |
+| `hosprep_pct_icu_beds_flu_ped_pct_ew` | `pctconffluicubedspedperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of pediatric ICU beds occupied by influenza patients. |
+| `hosprep_pct_inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadultperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of adult inpatient beds occupied by RSV patients. |
+| `hosprep_pct_inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedspedhosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of pediatric inpatient beds occupied by RSV patients. |
+| `hosprep_pct_icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadultperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of adult ICU beds occupied by RSV patients. |
+| `hosprep_pct_icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedspedperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of pediatric ICU beds occupied by RSV patients. |
+| `hosprep_pct_covid_inpatients_icu_pct_ew` | `pctconfc19hosppatsicuperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of COVID-19 inpatients in the ICU. |
+| `hosprep_pct_covid_inpatients_adult_icu_pct_ew` | `pctconfc19hosppatsicuadultperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of adult COVID-19 inpatients in the ICU. |
+| `hosprep_pct_covid_inpatients_ped_icu_pct_ew` | `pctconfc19hosppatsicupedperchosprep` | COVID-19 | Percentage | Percentage of hospitals reporting percentage of pediatric COVID-19 inpatients in the ICU. |
+| `hosprep_pct_flu_inpatients_icu_pct_ew` | `pctconffluhosppatsicuperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of influenza inpatients in the ICU. |
+| `hosprep_pct_flu_inpatients_adult_icu_pct_ew` | `pctconffluhosppatsicuadultperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of adult influenza inpatients in the ICU. |
+| `hosprep_pct_flu_inpatients_ped_icu_pct_ew` | `pctconffluhosppatsicupedperchosprep` | Influenza | Percentage | Percentage of hospitals reporting percentage of pediatric influenza inpatients in the ICU. |
+| `hosprep_pct_rsv_inpatients_icu_pct_ew` | `pctconfrsvhosppatsicuperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of RSV inpatients in the ICU. |
+| `hosprep_pct_rsv_inpatients_adult_icu_pct_ew` | `pctconfrsvhosppatsicuadultperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of adult RSV inpatients in the ICU. |
+| `hosprep_pct_rsv_inpatients_ped_icu_pct_ew` | `pctconfrsvhosppatsicupedperchosprep` | RSV | Percentage | Percentage of hospitals reporting percentage of pediatric RSV inpatients in the ICU. |
 
 </details>
 
@@ -441,58 +443,58 @@ Facility reporting compliance metrics covering reporting hospital counts, jurisd
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `abs_chg_hosprep_pct_inpatient_beds_ew` | `numinptbedsperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting Inpatient Beds from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_occupied_ew` | `numinptbedsoccperchospre` | — | Percentage points change | Abs. Change in % Hospitals Reporting Inpatient Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_ew` | `numicubedsperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting ICU Beds from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_occupied_ew` | `numicubedsoccperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting ICU Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_covid_inpatients_ew` | `totalconfc19hosppatsperc_1` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting COVID-19 Inpatients from Prior Week |
-| `abs_chg_hosprep_pct_flu_inpatients_ew` | `totalconffluhosppatsperc_1` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting Influenza Inpatients from Prior Week |
-| `abs_chg_hosprep_pct_rsv_inpatients_ew` | `totalconfrsvhosppatsperc_1` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting RSV Inpatients from Prior Week |
-| `abs_chg_hosprep_pct_covid_icu_patients_ew` | `totalconfc19icupatsperch` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting COVID-19 ICU Patients from Prior Week |
-| `abs_chg_hosprep_pct_flu_icu_patients_ew` | `totalconffluicupatsperch` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting Influenza ICU Patients from Prior Week |
-| `abs_chg_hosprep_pct_rsv_icu_patients_ew` | `totalconfrsvicupatsperch` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting RSV ICU Patients from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_covid_ped_ew` | `totalconfc19newadmpedper_1` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting Pediatric COVID-19 Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_covid_adult_ew` | `totalconfc19newadmadultp_1` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting Adult COVID-19 Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_covid_ew` | `totalconfc19newadmpercho` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting COVID-19 Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_flu_ped_ew` | `totalconfflunewadmpedper_1` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting Pediatric Influenza Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_flu_adult_ew` | `totalconfflunewadmadultp_1` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting Adult Influenza Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_flu_ew` | `totalconfflunewadmpercho` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting Influenza Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_rsv_ped_ew` | `totalconfrsvnewadmpedper_1` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting Pediatric RSV Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_rsv_adult_ew` | `totalconfrsvnewadmadultp_1` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting Adult RSV Admissions from Prior Week |
-| `abs_chg_hosprep_pct_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmpercho` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting RSV Admissions from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_occupied_pct_ew` | `pctinptbedsoccperchospre` | — | Percentage points change | Abs. Change in % Hospitals Reporting % Inpatient Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_occupied_pct_ew` | `pcticubedsoccperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting % ICU Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_covid_pct_ew` | `pctconfc19inptbedspercho` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % Inpatient Beds Occ. by COVID-19 from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_flu_pct_ew` | `pctconffluinptbedspercho` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Inpatient Beds Occ. by Influenza from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbedspercho` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % Inpatient Beds Occ. by RSV from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_covid_pct_ew` | `pctconfc19icubedsperchos` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % ICU Beds Occ. by COVID-19 from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_flu_pct_ew` | `pctconffluicubedsperchos` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % ICU Beds Occ. by Influenza from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_rsv_pct_ew` | `pctconfrsvicubedsperchos` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % ICU Beds Occ. by RSV from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadultperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting % Adult Inpatient Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccpedperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric Inpatient Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadultperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting % Adult ICU Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_occupied_ped_pct_ew` | `pcticubedsoccpedperchosprepabschg` | — | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric ICU Beds Occupied from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadultperchosprepabschg` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % Adult Inpatient Beds Occ. by COVID-19 from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedspedperchosprepabschg` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric Inpatient Beds Occ. by COVID-19 from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadultperchosprepabschg` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % Adult ICU Beds Occ. by COVID-19 from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_covid_ped_pct_ew` | `pctconfc19icubedspedperchosprepabschg` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric ICU Beds Occ. by COVID-19 from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadultperchosprepabschg` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Adult Inpatient Beds Occ. by Influenza from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedspedperchosprepabschg` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric Inpatient Beds Occ. by Influenza from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadultperchosprepabschg` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Adult ICU Beds Occ. by Influenza from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_flu_ped_pct_ew` | `pctconffluicubedspedperchosprepabschg` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric ICU Beds Occ. by Influenza from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadultperchosprepabschg` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % Adult Inpatient Beds Occ. by RSV from Prior Week |
-| `abs_chg_hosprep_pct_inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedspedperchosprepabschg` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric Inpatient Beds Occ. by RSV from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadultperchosprepabschg` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % Adult ICU Beds Occ. by RSV from Prior Week |
-| `abs_chg_hosprep_pct_icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedspedperchosprepabschg` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric ICU Beds Occ. by RSV from Prior Week |
-| `abs_chg_hosprep_pct_covid_inpatients_icu_pct_ew` | `pctconfc19hosppatsicuperchosprepabschg` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % COVID-19 Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_covid_inpatients_adult_icu_pct_ew` | `pctconfc19hosppatsicuadultperchosprepabschg` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % Adult COVID-19 Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_covid_inpatients_ped_icu_pct_ew` | `pctconfc19hosppatsicupedperchosprepabschg` | COVID-19 | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric COVID-19 Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_flu_inpatients_icu_pct_ew` | `pctconffluhosppatsicuperchosprepabschg` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Influenza Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_flu_inpatients_adult_icu_pct_ew` | `pctconffluhosppatsicuadultperchosprepabschg` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Adult Influenza Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_flu_inpatients_ped_icu_pct_ew` | `pctconffluhosppatsicupedperchosprepabschg` | Influenza | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric Influenza Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_rsv_inpatients_icu_pct_ew` | `pctconfrsvhosppatsicuperchosprepabschg` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % RSV Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_rsv_inpatients_adult_icu_pct_ew` | `pctconfrsvhosppatsicuadultperchosprepabschg` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % Adult RSV Inpatients in ICU from Prior Week |
-| `abs_chg_hosprep_pct_rsv_inpatients_ped_icu_pct_ew` | `pctconfrsvhosppatsicupedperchosprepabschg` | RSV | Percentage points change | Abs. Change in % Hospitals Reporting % Pediatric RSV Inpatients in ICU from Prior Week |
+| `abs_chg_hosprep_pct_inpatient_beds_ew` | `numinptbedsperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting inpatient bed capacity from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_occupied_ew` | `numinptbedsoccperchospre` | — | Percentage points change | Absolute change in percentage of hospitals reporting occupied inpatient beds from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_ew` | `numicubedsperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting ICU bed capacity from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_occupied_ew` | `numicubedsoccperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting occupied ICU beds from prior week. |
+| `abs_chg_hosprep_pct_covid_inpatients_ew` | `totalconfc19hosppatsperc_1` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting total COVID-19 inpatients from prior week. |
+| `abs_chg_hosprep_pct_flu_inpatients_ew` | `totalconffluhosppatsperc_1` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting total influenza inpatients from prior week. |
+| `abs_chg_hosprep_pct_rsv_inpatients_ew` | `totalconfrsvhosppatsperc_1` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting total RSV inpatients from prior week. |
+| `abs_chg_hosprep_pct_covid_icu_patients_ew` | `totalconfc19icupatsperch` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting COVID-19 ICU patients from prior week. |
+| `abs_chg_hosprep_pct_flu_icu_patients_ew` | `totalconffluicupatsperch` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting influenza ICU patients from prior week. |
+| `abs_chg_hosprep_pct_rsv_icu_patients_ew` | `totalconfrsvicupatsperch` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting RSV ICU patients from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_covid_ped_ew` | `totalconfc19newadmpedper_1` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting pediatric COVID-19 admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_covid_adult_ew` | `totalconfc19newadmadultp_1` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting adult COVID-19 admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_covid_ew` | `totalconfc19newadmpercho` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting total COVID-19 admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_flu_ped_ew` | `totalconfflunewadmpedper_1` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting pediatric influenza admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_flu_adult_ew` | `totalconfflunewadmadultp_1` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting adult influenza admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_flu_ew` | `totalconfflunewadmpercho` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting total influenza admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_rsv_ped_ew` | `totalconfrsvnewadmpedper_1` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting pediatric RSV admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_rsv_adult_ew` | `totalconfrsvnewadmadultp_1` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting adult RSV admissions from prior week. |
+| `abs_chg_hosprep_pct_confirmed_admissions_rsv_ew` | `totalconfrsvnewadmpercho` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting total RSV admissions from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_occupied_pct_ew` | `pctinptbedsoccperchospre` | — | Percentage points change | Absolute change in percentage of hospitals reporting inpatient bed occupancy percentage from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_occupied_pct_ew` | `pcticubedsoccperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting ICU bed occupancy percentage from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_covid_pct_ew` | `pctconfc19inptbedspercho` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of inpatient beds occupied by COVID-19 patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_flu_pct_ew` | `pctconffluinptbedspercho` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of inpatient beds occupied by influenza patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_rsv_pct_ew` | `pctconfrsvinptbedspercho` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of inpatient beds occupied by RSV patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_covid_pct_ew` | `pctconfc19icubedsperchos` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of ICU beds occupied by COVID-19 patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_flu_pct_ew` | `pctconffluicubedsperchos` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of ICU beds occupied by influenza patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_rsv_pct_ew` | `pctconfrsvicubedsperchos` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of ICU beds occupied by RSV patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_occupied_adult_pct_ew` | `pctinptbedsoccadultperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting adult inpatient bed occupancy percentage from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_occupied_ped_pct_ew` | `pctinptbedsoccpedperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting pediatric inpatient bed occupancy percentage from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_occupied_adult_pct_ew` | `pcticubedsoccadultperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting adult ICU bed occupancy percentage from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_occupied_ped_pct_ew` | `pcticubedsoccpedperchosprepabschg` | — | Percentage points change | Absolute change in percentage of hospitals reporting pediatric ICU bed occupancy percentage from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_covid_adult_pct_ew` | `pctconfc19inptbedsadultperchosprepabschg` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult inpatient beds occupied by COVID-19 patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_covid_ped_pct_ew` | `pctconfc19inptbedspedperchosprepabschg` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric inpatient beds occupied by COVID-19 patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_covid_adult_pct_ew` | `pctconfc19icubedsadultperchosprepabschg` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult ICU beds occupied by COVID-19 patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_covid_ped_pct_ew` | `pctconfc19icubedspedperchosprepabschg` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric ICU beds occupied by COVID-19 patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_flu_adult_pct_ew` | `pctconffluinptbedsadultperchosprepabschg` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult inpatient beds occupied by influenza patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_flu_ped_pct_ew` | `pctconffluinptbedspedperchosprepabschg` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric inpatient beds occupied by influenza patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_flu_adult_pct_ew` | `pctconffluicubedsadultperchosprepabschg` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult ICU beds occupied by influenza patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_flu_ped_pct_ew` | `pctconffluicubedspedperchosprepabschg` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric ICU beds occupied by influenza patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_rsv_adult_pct_ew` | `pctconfrsvinptbedsadultperchosprepabschg` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult inpatient beds occupied by RSV patients from prior week. |
+| `abs_chg_hosprep_pct_inpatient_beds_rsv_ped_pct_ew` | `pctconfrsvinptbedspedperchosprepabschg` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric inpatient beds occupied by RSV patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_rsv_adult_pct_ew` | `pctconfrsvicubedsadultperchosprepabschg` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult ICU beds occupied by RSV patients from prior week. |
+| `abs_chg_hosprep_pct_icu_beds_rsv_ped_pct_ew` | `pctconfrsvicubedspedperchosprepabschg` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric ICU beds occupied by RSV patients from prior week. |
+| `abs_chg_hosprep_pct_covid_inpatients_icu_pct_ew` | `pctconfc19hosppatsicuperchosprepabschg` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of COVID-19 inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_covid_inpatients_adult_icu_pct_ew` | `pctconfc19hosppatsicuadultperchosprepabschg` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult COVID-19 inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_covid_inpatients_ped_icu_pct_ew` | `pctconfc19hosppatsicupedperchosprepabschg` | COVID-19 | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric COVID-19 inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_flu_inpatients_icu_pct_ew` | `pctconffluhosppatsicuperchosprepabschg` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of influenza inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_flu_inpatients_adult_icu_pct_ew` | `pctconffluhosppatsicuadultperchosprepabschg` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult influenza inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_flu_inpatients_ped_icu_pct_ew` | `pctconffluhosppatsicupedperchosprepabschg` | Influenza | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric influenza inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_rsv_inpatients_icu_pct_ew` | `pctconfrsvhosppatsicuperchosprepabschg` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of RSV inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_rsv_inpatients_adult_icu_pct_ew` | `pctconfrsvhosppatsicuadultperchosprepabschg` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of adult RSV inpatients in the ICU from prior week. |
+| `abs_chg_hosprep_pct_rsv_inpatients_ped_icu_pct_ew` | `pctconfrsvicubedspedperchosprepabschg` | RSV | Percentage points change | Absolute change in percentage of hospitals reporting percentage of pediatric RSV inpatients in the ICU from prior week. |
 
 </details>
 
@@ -501,12 +503,12 @@ Facility reporting compliance metrics covering reporting hospital counts, jurisd
 
 | Indicator Name | CDC Field Name | Pathogen or Disease | Metric Type | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `flag_hosprep_covid_admissions_above80pct_ew` | `totalconfc19newadmperchosprepabove80pct` | COVID-19 | Binary flag (0/1) | % Hospitals Reporting Total New COVID-19 Admissions Above 80% |
-| `flag_hosprep_covid_admissions_above90pct_ew` | `totalconfc19newadmperchosprepabove90pct` | COVID-19 | Binary flag (0/1) | % Hospitals Reporting Total New COVID-19 Admissions Above 90% |
-| `flag_hosprep_flu_admissions_above80pct_ew` | `totalconfflunewadmperchosprepabove80pct` | Influenza | Binary flag (0/1) | % Hospitals Reporting Total New Influenza Admissions Above 80% |
-| `flag_hosprep_flu_admissions_above90pct_ew` | `totalconfflunewadmperchosprepabove90pct` | Influenza | Binary flag (0/1) | % Hospitals Reporting Total New Influenza Admissions Above 90% |
-| `flag_hosprep_rsv_admissions_above80pct_ew` | `totalconfrsvnewadmperchosprepabove80pct` | RSV | Binary flag (0/1) | % Hospitals Reporting Total New RSV Admissions Above 80% |
-| `flag_hosprep_rsv_admissions_above90pct_ew` | `totalconfrsvnewadmperchosprepabove90pct` | RSV | Binary flag (0/1) | % Hospitals Reporting Total New RSV Admissions Above 90% |
+| `flag_hosprep_covid_admissions_above80pct_ew` | `totalconfc19newadmperchosprepabove80pct` | COVID-19 | Binary flag (0/1) | Flag indicating whether percentage of hospitals reporting total new COVID-19 admissions is at or above 80%. |
+| `flag_hosprep_covid_admissions_above90pct_ew` | `totalconfc19newadmperchosprepabove90pct` | COVID-19 | Binary flag (0/1) | Flag indicating whether percentage of hospitals reporting total new COVID-19 admissions is at or above 90%. |
+| `flag_hosprep_flu_admissions_above80pct_ew` | `totalconfflunewadmperchosprepabove80pct` | Influenza | Binary flag (0/1) | Flag indicating whether percentage of hospitals reporting total new influenza admissions is at or above 80%. |
+| `flag_hosprep_flu_admissions_above90pct_ew` | `totalconfflunewadmperchosprepabove90pct` | Influenza | Binary flag (0/1) | Flag indicating whether percentage of hospitals reporting total new influenza admissions is at or above 90%. |
+| `flag_hosprep_rsv_admissions_above80pct_ew` | `totalconfrsvnewadmperchosprepabove80pct` | RSV | Binary flag (0/1) | Flag indicating whether percentage of hospitals reporting total new RSV admissions is at or above 80%. |
+| `flag_hosprep_rsv_admissions_above90pct_ew` | `totalconfrsvnewadmperchosprepabove90pct` | RSV | Binary flag (0/1) | Flag indicating whether percentage of hospitals reporting total new RSV admissions is at or above 90%. |
 
 </details>
 
@@ -537,14 +539,14 @@ The CDC publishes a preliminary weekly file about 4 days after the reference wee
 
 ### Geographic Handling
 
-The source file carries values for states (`state`), HHS regions (`hhs`), and the nation (`nation`), which Delphi reads directly from the upstream CDC file.
+The source file carries values for states (`state`), HHS regions (`hhs`), and the nation (`nation`), which Delphi reads directly from the upstream CDC file (`fill_method = 'source'`).
 
-Census divisions (`census_division`) and census regions (`census_region`) are derived from state values:
+Census divisions (`census_division`) and census regions (`census_region`) are derived by aggregating state-level values:
 - Count metrics are summed directly across member states based on the [U.S. Census Bureau regions and divisions](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf).
-- Rate and percentage metrics are aggregated using population-weighted averages based on 2020 U.S. Census state populations.
-- Week-over-week percentage change signals are omitted from census division and census region roll-ups.
+- Percentage metrics are aggregated using population-weighted averages based on 2020 U.S. Census state populations.
+- Week-over-week percentage change signals (`_chg_pct_`) are omitted from census division and census region roll-ups.
 
-Values are ingested directly or aggregated without imputation, so `fill_method` is always `source`.
+When aggregating state values to census divisions and regions, missing member states are treated as zero rather than imputed, so derived Census roll-ups are stamped with `fill_method = 'zero'`.
 
 ---
 
@@ -566,8 +568,7 @@ The V4 `nhsn` source published admission counts for nation, HHS regions, and sta
 | `hosprep_confirmed_admissions_covid_ew_prelim` | `hosprep_confirmed_admissions_covid_ew` | Folded into revision history via `report_time` |
 | `hosprep_confirmed_admissions_flu_ew_prelim` | `hosprep_confirmed_admissions_flu_ew` | Folded into revision history via `report_time` |
 | `hosprep_confirmed_admissions_rsv_ew_prelim` | `hosprep_confirmed_admissions_rsv_ew` | Folded into revision history via `report_time` |
-| *(not available)* | *(313 additional signals)* | New in V5 |
-
+| *(not available)* | *(313 additional signals)* | New in V5. To see the full list of new signals, see [Indicator Families](#indicator-families). |
 What changed in V5:
 
 - **New Signals.** V5 expands the signal catalog from 6 basic admission counts to 319 comprehensive indicators.
@@ -586,7 +587,7 @@ What changed in V5:
 | `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level (`state`, `hhs`, `census_division`, `census_region`, `nation`). |
 | `geo_value` | Primary Key | string | Unique code for the location (e.g., `ca` for California, `us` for national). |
-| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation, always `source` for this source. |
+| `fill_method` | Primary Key | string | Data origin or imputation method: `source` for directly ingested levels (`state`, `hhs`, `nation`), `zero` for derived roll-ups (`census_division`, `census_region`). |
 | `reference_time` | Primary Key | date | The date or surveillance period represented by the observation, labeled by Saturday week-ending date (`YYYY-MM-DD`). |
 | `value` | Value Column | float | The recorded measurement. |
 
@@ -601,7 +602,7 @@ Unobserved values reflect facility non-reporting and changes in reporting mandat
 - Reference dates before December 1, 2020 predate routine data quality review procedures, such as automated exclusion of invalid values and systematic error correction. Data from this early period may contain anomalies.
 - Reference dates through April 30, 2024 reflect a federal reporting mandate instituted by the Department of Health and Human Services.
 - Reference dates between May 1, 2024 and October 31, 2024 fall into a voluntary reporting interval following the expiration of the original federal mandate. Facility participation dropped significantly during these months, meaning reported admissions undercount total admissions.
-- Reference dates beginning November 1, 2024 reflect the current federal reporting mandate established under updated CMS conditions of participation.
+- Reference dates beginning November 1, 2024 reflect the current federal reporting mandate established under updated Centers for Medicare & Medicaid Services (CMS) conditions of participation.
 
 Missing hospital reports are not imputed. In census division and region roll-ups, missing states are omitted from the sum.
 
