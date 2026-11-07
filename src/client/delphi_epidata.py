@@ -742,10 +742,7 @@ class Epidata:
                 responses = await asyncio.gather(*tasks)
                 return responses
 
-        loop = asyncio.get_event_loop()
-        future = asyncio.ensure_future(async_make_calls(param_list))
-        responses = loop.run_until_complete(future)
-        return responses
+        return asyncio.run(async_make_calls(param_list))
 
 
 
