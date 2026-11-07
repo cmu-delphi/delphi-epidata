@@ -153,7 +153,7 @@ def handle():
         # final query using most recent issues
         condition = f"x.max_publication_date = {q.alias}.publication_date AND x.collection_week = {q.alias}.collection_week AND x.hospital_pk = {q.alias}.hospital_pk"
         q.subquery = f"JOIN (SELECT max(publication_date) max_publication_date, collection_week, hospital_pk FROM {q.table} WHERE {q.conditions_clause} GROUP BY collection_week, hospital_pk) x ON {condition}"
-        q.condition = []  # since used for join
+        q.conditions = []  # since used for join
 
     # send query
     return execute_query(str(q), q.params, fields_string, fields_int, fields_float)
