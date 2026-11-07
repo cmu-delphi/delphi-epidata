@@ -74,7 +74,7 @@ if __name__ == "__main__":
             )
             # queue the 'New FluView Available' flow
             cur.execute("CALL automation.RunStep(36)")
-    elif issue2 < issue2:
+    elif issue2 < issue1:
         raise Exception("most recent issue is older than the last known issue")
 
     # cleanup
