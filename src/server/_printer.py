@@ -183,13 +183,13 @@ class CSVPrinter(APrinter):
     a printer class writing in a CSV file
     """
 
-    _stream = StringIO()
     _writer: DictWriter
     _filename: Optional[str]
 
     def __init__(self, filename: Optional[str] = "epidata"):
         super(CSVPrinter, self).__init__()
         self._filename = filename
+        self._stream = StringIO()
 
     def make_response(self, gen, headers=None):
         if headers is None:
