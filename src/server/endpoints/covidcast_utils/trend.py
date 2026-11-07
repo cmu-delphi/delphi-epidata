@@ -46,10 +46,10 @@ def compute_trend(geo_type: str, geo_value: str, signal_source: str, signal_sign
             t.value = value
         if time == basis_time:
             t.basis_value = value
-        if t.min_value is None or t.min_value > value:
+        if value is not None and (t.min_value is None or t.min_value > value):
             t.min_date = time
             t.min_value = value
-        if t.max_value is None or t.max_value < value:
+        if value is not None and (t.max_value is None or t.max_value < value):
             t.max_date = time
             t.max_value = value
 
@@ -74,10 +74,10 @@ def compute_trends(geo_type: str, geo_value: str, signal_source: str, signal_sig
     # find all needed rows
     for time, value in rows:
         lookup[time] = value
-        if min_value is None or min_value > value:
+        if value is not None and (min_value is None or min_value > value):
             min_date = time
             min_value = value
-        if max_value is None or max_value < value:
+        if value is not None and (max_value is None or max_value < value):
             max_date = time
             max_value = value
 
