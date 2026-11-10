@@ -1,7 +1,7 @@
 ---
 title: Inactive Sources
 parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast V4)
+grand_parent: COVIDcast V4 Main endpoint
 nav_order: 99
 has_children: true
 ---

@@ -1,10 +1,10 @@
 ---
 title: Data Licensing
-parent: Main Endpoint (COVIDcast V4)
+parent: COVIDcast V4 Main endpoint
 nav_order: 2
 ---
 
-# Licensing for the Main Endpoint
+# Licensing for the COVIDcast V4 endpoint
 
 When you use data from Delphi's Epidata API, we ask that you attribute
 the source and follow the terms of the data's licensing agreement. The API

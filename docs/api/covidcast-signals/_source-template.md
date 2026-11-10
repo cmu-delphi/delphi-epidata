@@ -1,7 +1,7 @@
 ---
 title: SOURCE NAME
 parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast V4)
+grand_parent: COVIDcast V4 Main endpoint
 ---
 
 # SOURCE NAME

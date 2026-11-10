@@ -1,6 +1,6 @@
 ---
 title: Data Sources and Signals
-parent: Main Endpoint (COVIDcast V4)
+parent: COVIDcast V4 Main endpoint
 nav_order: 3
 has_children: true
 

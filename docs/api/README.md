@@ -12,7 +12,7 @@ nav_order: 4
 This is the home of [Delphi](https://delphi.cmu.edu/)'s epidemiological data
 API for tracking infectious diseases such as influenza, dengue,
 and norovirus. Note that additional data, including most COVID-19 signals, is
-available in the [main Epidata API (formerly known as COVIDcast)](covidcast.md).
+available in the [COVIDcast V4 Main endpoint](covidcast.md).
 
 ## Table of Contents
 {: .no_toc .text-delta}

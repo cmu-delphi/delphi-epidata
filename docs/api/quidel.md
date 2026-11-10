@@ -43,7 +43,7 @@ $$Value = \frac{\text{Total Test Records}}{\text{Number of Unique Devices}}$$
 {: .important }
 > This metric reflects the average testing volume per device, not the positivity rate.
 
-For further details on data processing, lag, and limitations, please refer to the [main endpoint documentation regarding Quidel data](covidcast-signals/quidel.md).
+For further details on data processing, lag, and limitations, please refer to the [COVIDcast V4 endpoint documentation regarding Quidel data](covidcast-signals/quidel.md).
 
 ## The API
 

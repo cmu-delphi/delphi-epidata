@@ -1,6 +1,6 @@
 ---
 title: Geographic Coding
-parent: Main Endpoint (COVIDcast V4)
+parent: COVIDcast V4 Main endpoint
 nav_order: 90
 ---
 

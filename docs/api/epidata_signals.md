@@ -10,7 +10,7 @@ has_children: true
 
 Delphi's Epidata endpoints include the following data sources.
 Most of these sources are updated weekly.
-Unlike [the main endpoint](covidcast.md), the format of different Epidata endpoints varies.
+Unlike the [COVIDcast V4 endpoint](covidcast.md), the format of different Epidata endpoints varies.
 The API for retrieving data from these sources is described in the
 [API clients documentation](client_libraries.md).
 
