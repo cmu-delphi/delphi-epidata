@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: HHS Hospitalizations from NHSN
 ---
@@ -13,9 +13,9 @@ title: HHS Hospitalizations from NHSN
 | **Data Source** | U.S. Department of Health & Human Services |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - no longer updated since 2024-04-30 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2019-12-31 |
+| **Temporal Scope End** | Paused (2024-04-26) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Changelog

@@ -1,8 +1,7 @@
 ---
 title: Quidel
-parent: Data Sources and Signals
-grand_parent: COVIDcast V4 Main endpoint
-nav_order: 1
+parent: Paused Sources
+grand_parent: Data Sources and Signals
 ---
 
 > **Heads up:** The legacy v4 Epidata API is being phased out. Check the [V5 Sources](../v5_signals.md#v5-sources) table or query [`/epidata/v5/metadata/`](../v5_meta.md) directly (more up to date) for whether this source is available in V5 yet. See the [V4 to V5 Migration Guide](../v5_migration.md) for full details.
@@ -17,8 +16,8 @@ nav_order: 1
 | **Data Source** | QuidelOrtho Corp. |
 | **Geographic Levels** | **COVID-19 Tests:** National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA)<br>**Flu Tests:** State, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | **COVID-19 Tests:** Daily<br>**Flu Tests:** Inactive |
 | **Temporal Scope Start** | **COVID-19 Tests:** 2020-05-26<br>**Flu Tests:** 2020-01-31 |
+| **Temporal Scope End** | **COVID-19 Tests:** Paused (internal-only; V4 retired 2026-09-22)<br>**Flu Tests:** Paused (2020-05-01) |
 | **Date of last data revision:** | **COVID-19 Tests:** October 22, 2020<br>**Flu Tests:** Never (see [data revision docs](#changelog-covid-19-tests)) |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
@@ -37,9 +36,9 @@ nav_order: 1
 | Attribute | Details |
 | :--- | :--- |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Reporting Cadence** | Daily |
 | **Date of last data revision:** | October 22, 2020 (see [data revision docs](#changelog-covid-19-tests)) |
 | **Temporal Scope Start** | 2020-05-26 |
+| **Temporal Scope End** | Paused (internal-only; V4 retired 2026-09-22) |
 
 ### Changelog COVID-19 Tests
 
@@ -189,16 +188,16 @@ not enough samples can be filled in from the parent state for smoothed signals s
 no data is reported for that area on that day; an API query for all reported geographic areas on
 that day will not include it.
 
-## Quidel Flu Tests (inactive)
+## Quidel Flu Tests (paused)
 
-These signals are inactive. They were updated until May 19, 2020.
+These signals are paused. They were updated until May 19, 2020.
 
 | Attribute | Details |
 | :--- | :--- |
 | **Geographic Levels** | State, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020-05-01 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog-flu-tests)) |
 | **Temporal Scope Start** | 2020-01-31 |
+| **Temporal Scope End** | Paused (2020-05-01) |
 
 ### Changelog Flu Tests
 

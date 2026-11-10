@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: Indicator Combination
 ---
@@ -13,9 +13,9 @@ title: Indicator Combination
 | **Data Source** | Delphi |
 | **Geographic Levels** | Varies |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - no longer updated since 2021-03-16 |
 | **Date of last data revision:** | Varies |
 | **Temporal Scope Start** | 2020-04-06 |
+| **Temporal Scope End** | Paused (2021-11-12; varies by signal) |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 This source provides signals which are combinations of the other sources,

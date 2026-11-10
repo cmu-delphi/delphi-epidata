@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: Youtube Survey
 ---
@@ -15,10 +15,10 @@ title: Youtube Survey
 | **Data Source** | Google/Delphi |
 | **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated after June 22nd, 2020 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
 | **Temporal Scope Start** | April 21st, 2020 |
+| **Temporal Scope End** | Paused (2020-06-22) |
 
 ## Changelog
 

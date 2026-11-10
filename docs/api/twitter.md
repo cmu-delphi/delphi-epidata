@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Twitter Stream
 ---
@@ -14,8 +14,8 @@ title: Twitter Stream
 | **Data Source** | [HealthTweets](http://www.healthtweets.org/) |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 | **Temporal Granularity** | Daily and Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w31 (2020-12-07)|
 | **Temporal Scope Start** | 2011w48 (2011-11-27) |
+| **Temporal Scope End** | Paused (2020-12-07) |
 
 <!-- | **License** |  | -->
 

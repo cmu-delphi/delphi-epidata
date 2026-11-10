@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: NIDSS Dengue
 ---
@@ -14,8 +14,8 @@ title: NIDSS Dengue
 | **Data Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/SingleDisease.aspx?dc=1&dt=4&disease=061&position=1)|
 | **Geographic Levels** | Taiwan [hexchotomy regions](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) and [cities/counties](https://en.wikipedia.org/wiki/List_of_administrative_divisions_of_Taiwan) (see [Geographic Codes](geographic_codes.md#nidss)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
 | **Temporal Scope Start** | 2003w01 |
+| **Temporal Scope End** | Paused (2018-03-10, 2018w10) |
 | **License** | [Open Access](https://data.gov.tw/license) |
 
 ## Overview

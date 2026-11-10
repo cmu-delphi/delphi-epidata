@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Quidel
 ---
@@ -14,8 +14,8 @@ title: Quidel
 | **Data Source** | QuidelOrtho Corp. influenza testing data |
 | **Geographic Levels** | Department of Health & Human Services (HHS) Regions (see [Geographic Codes](geographic_codes.md#hhs-regions)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w15|
 | **Temporal Scope Start** | 2015w35 |
+| **Temporal Scope End** | Paused (2020-04-11, 2020w15) |
 | **License** | Permission by QuidelOrtho |
 
 ## Overview

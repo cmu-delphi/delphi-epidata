@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: NoroSTAT
 ---
@@ -12,11 +12,11 @@ title: NoroSTAT
 | :--- | :--- |
 | **Source Name** | `norostat` |
 | **Data Source** | [CDC NoroSTAT](https://www.cdc.gov/norovirus/php/reporting/norostat-data.html) metadata endpoint (requires authentication) |
-| **Dataset Type** | Surveillance (Inactive) |
+| **Dataset Type** | Surveillance (Paused) |
 | **Geographic Levels** | Only a specific list of full state names are permitted. See the `locations` output of the [meta_norostat](norostat_meta.md#norostat-metadata-1) endpoint for the allowed values. |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w30. |
 | **Temporal Scope Start** | 2012w31 |
+| **Temporal Scope End** | Paused (2020-07-25, 2020w30) |
 | **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview

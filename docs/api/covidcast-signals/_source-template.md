@@ -15,6 +15,7 @@ grand_parent: COVIDcast V4 Main endpoint
 | **Temporal Granularity** | day (see [date format docs](../covidcast_times.md)) |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | DATE RELEASED TO API |
+| **Temporal Scope End** | Ongoing, Paused (YYYY-MM-DD), or Migrated to V5 (YYYY-MM-DD) |
 | **License** | [LICENSE NAME](../covidcast_licensing.md#APPLICABLE-SECTION) |
 
 A brief description of what this source measures.

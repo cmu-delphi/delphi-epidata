@@ -1,6 +1,6 @@
 ---
 title: Collaboration and Survey Revision
-parent: <i>inactive</i> COVID-19 Trends and Impact Survey
+parent: <i>paused</i> COVID-19 Trends and Impact Survey
 nav_order: 1
 nav_exclude: true
 ---

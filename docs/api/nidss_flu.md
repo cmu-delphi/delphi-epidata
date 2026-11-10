@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: NIDSS Flu
 ---
@@ -14,8 +14,8 @@ title: NIDSS Flu
 | **Source** | [Taiwan CDC](http://nidss.cdc.gov.tw/en/CDCWNH01.aspx?dc=wnh) |
 | **Geographic Levels** | Taiwan [hexchotomy regions](https://en.wikipedia.org/wiki/Regions_of_Taiwan#Hexchotomy) (see [Geographic Codes](geographic_codes.html#taiwan-regions)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2018w10 |
 | **Temporal Scope Start** | 2008w14 |
+| **Temporal Scope End** | Paused (2018-03-10, 2018w10) |
 | **License** | [Open Access](https://data.gov.tw/license) |
 
 ## Overview

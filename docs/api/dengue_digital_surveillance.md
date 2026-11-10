@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Dengue Digital Surveillance
 permalink: api/dengue_sensors.html
@@ -15,8 +15,8 @@ permalink: api/dengue_sensors.html
 | **Data Source** | Various digital data streams |
 | **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.md#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w32|
 | **Temporal Scope Start** | 2014w04 |
+| **Temporal Scope End** | Paused (2020-08-08, 2020w32) |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 

@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Delphi Forecasts
 ---
@@ -14,8 +14,8 @@ title: Delphi Forecasts
 | **Data Source** | [Delphi](https://delphi.cmu.edu/) |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Systems available** | `af`, `eb`, `ec`, `sp`, `st` (see [details below](#forecasting-systems)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w19 |
 | **Temporal Scope Start** | Varies by system (earliest 2014w41) |
+| **Temporal Scope End** | Paused (2020-05-09, 2020w19) |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 ## Overview

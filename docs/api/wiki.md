@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Wikipedia Access
 ---
@@ -15,8 +15,8 @@ title: Wikipedia Access
 | **Geographic Levels** | Not applicable (article-based) |
 | **Temporal Granularity** | Hourly, Daily, and Weekly (Epiweek) |
 | **Available Articles** | [54 health-related articles](#available-articles) |
-| **Reporting Cadence** | Inactive - No longer updated since 2021w11|
 | **Temporal Scope Start** | 2007w50 (December 9th, 2007) |
+| **Temporal Scope End** | Paused (2021-03-19, 2021w11) |
 | **License** | [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/) |
 
 

@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: KCDC ILI
 ---
@@ -14,8 +14,8 @@ title: KCDC ILI
 | **Data Source** | [Korea Disease Control and Prevention Agency (KCDC) ILI surveillance](https://www.kdca.go.kr/) |
 | **Geographic Levels** | ROK (Republic of Korea) (see [Geographic Codes](geographic_codes.md#republic-of-korea)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w44 |
 | **Temporal Scope Start** | 2004w36 |
+| **Temporal Scope End** | Paused (2020-10-31, 2020w44) |
 | **License** | [KCDC Copyright policy](https://www.kdca.go.kr/kdca/3509/subview..do) |
 
 ## Overview

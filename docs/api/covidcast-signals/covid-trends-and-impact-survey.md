@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: COVID-19 Trends and Impact Survey
 permalink: api/covidcast-signals/fb-survey.html
@@ -14,9 +14,9 @@ permalink: api/covidcast-signals/fb-survey.html
 | **Data Source** | [COVID-19 Trends and Impact Survey (CTIS)](../../symptom-survey/) |
 | **Geographic Levels** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2022-06-25 |
 | **Date of last data revision:** | June 3, 2020 (see [data revision docs](../covidcast_changelog.md#fb-survey)) |
 | **Temporal Scope Start** | Varies by indicator - 2020-2021 |
+| **Temporal Scope End** | Paused (2022-06-25; 2022-06-27 for smoothed signals) |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Changelog
