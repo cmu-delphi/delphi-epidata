@@ -17,7 +17,7 @@ nav_order: 12
 | **Reporting Cadence** | Weekly (Fridays) |
 | **Temporal Scope Start** | 2015-10-10 (2015w40) |
 | **Temporal Scope End** | Ongoing |
-| **Extra Key Columns** | None |
+| **Extra Key Columns** | `age_group` (always `all` for this source) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 > This source reproduces and expands the public health laboratory component of legacy V3 [`fluview_clinical`](../fluview_clinical.md). Subtype counts are organized under dedicated signal names, including Avian Influenza A(H5). See [Relationship to V3](#relationship-to-v3).
@@ -131,6 +131,7 @@ What changed in V5:
 | `report_time` | Primary Key | date | The date Delphi ingested the CDC weekly file (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level (`state`, `census_division`, `hhs`, `nation`). |
 | `geo_value` | Primary Key | string | Location code. |
+| `age_group` | Primary Key | string | Age group category. Always `all` for this source. |
 | `fill_method` | Primary Key | string | `source` for directly ingested rows. `nyc_plus_ny_minus_nyc` for reconstructed statewide NY. |
 | `reference_time` | Primary Key | date | Saturday week-ending date of the surveillance week (`YYYY-MM-DD`). |
 | `value` | Value Column | float | Laboratory specimen count. |
