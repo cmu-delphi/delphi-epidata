@@ -37,7 +37,7 @@ The `/epidata/v5/snapshot/` endpoint requires specific geographic boundaries to 
 | `signal` | Required | The signal name. |
 | `geo_type` | Required | The geographic resolution level (e.g., `state`, `county`). |
 | `snapshot_date` | Optional | The release date (`YYYY-MM-DD`) of the snapshot. If omitted, the latest available release is returned. |
-| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
+| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `ave`, or `zero`). Defaults to `source`. |
 | `extra_keys` | Optional | Column filters for sources with extra dimensions (e.g., `age_group:18-49`). |
 | `limit` | Optional | Maximum number of rows to return. Defaults to no limit. Pass `-1` to disable the limit (return all matching rows). |
 | `columns` | Optional | A comma-separated list of columns to retrieve. See [Column Selection](#column-selection) for details. |
@@ -61,7 +61,7 @@ The `/epidata/v5/archive/` endpoint streams version history. Unlike the snapshot
 | `source` | Required | The ID of the data source. |
 | `signal` | Required | The signal name. |
 | `geo_type` | Optional | The geographic resolution level. |
-| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
+| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `ave`, or `zero`). Defaults to `source`. |
 | `extra_keys` | Optional | Column filters for sources with extra dimensions (e.g., `age_group:18-49`). |
 | `report_time_query` | Optional | A release date filter using comparison operators, such as `=2024-12-07` (exact date), `<2025-10-16` (before date), or `>2025-10-16` (after date). Omitting this parameter scans the entire history. |
 | `limit` | Optional | Maximum number of rows to return. Defaults to no limit. Pass `-1` to disable the limit (return all matching rows). |
@@ -123,7 +123,7 @@ Retrieves the total number of observations matching the query parameters.
 | `source` | Required | The ID of the data source. |
 | `signal` | Required | The signal name. |
 | `geo_type` | Optional | Geographic resolution level. |
-| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). Defaults to `source`. |
+| `fill_method` | Optional | Imputation method used during geographic aggregation (`source`, `ave`, or `zero`). Defaults to `source`. |
 | `extra_keys` | Optional | Column filters for extra dimensions (e.g., `age_group:18-49`). |
 | `report_time_query` | Optional | A release date filter using operators (e.g., `=2024-12-07`). |
 
@@ -131,12 +131,12 @@ Retrieves the total number of observations matching the query parameters.
 
 | Endpoint | Required Parameters | Optional Parameters | Description |
 | :--- | :--- | :--- | :--- |
-| `/epidata/v5/metadata/geo_signals/` | `geo_type`, `geo_value` | None | Lists active signals for a location. |
+| `/epidata/v5/metadata/geo_signals/` | None | `source`, `geo_type`, `geo_value` | Lists signals and coverage for a location or across sources. |
 | `/epidata/v5/metadata/report_times/` | `source` | None | Lists all publication/update dates. |
 | `/epidata/v5/metadata/reference_times/` | `source` | None | Lists all reference/observation dates for a source. |
 | `/epidata/v5/metadata/extra_key_values/` | `source` | None | Lists valid values for extra dimensions. |
 | `/epidata/v5/metadata/aux_schema/` | None | `source` | Retrieves database schema for auxiliary tables. |
-| `/epidata/v5/metadata/api_version_hash/` | None | None | Returns the Git commit hash of the API server. |
+| `/epidata/v5/metadata/latest_update/` | `source` | `tz` | Returns timestamp when the newest ingestion run completed. |
 
 <!-- TODO: document detailed request and response payloads for metadata endpoints -->
 <!-- For detailed request and response payloads, see the [V5 Metadata Discovery Endpoints](v5_meta.md) documentation. -->
@@ -175,7 +175,7 @@ The standard columns returned by the API for `/archive/` and `/snapshot/` endpoi
 | `report_time` | Primary Key | date / datetime | The publication, release, or ingestion timestamp or date (`YYYY-MM-DD` or timestamp). |
 | `geo_type` | Primary Key | string | Geographic level (e.g., `county`, `state`). |
 | `geo_value` | Primary Key | string | Unique code for the location (e.g., FIPS, state abbreviation). |
-| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
+| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `ave`, or `zero`). |
 | `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`). |
 | `value` | Value Column | float | The recorded measurement (e.g., count, percentage, rate, or statistical estimate). |
 | `[extra_key]` | Extra Key | string / integer | Source-specific stratification dimensions (e.g., `age_group` in Epic Cosmos, or `nwss_source` and `pcr_target` in NWSS). |
@@ -198,8 +198,8 @@ When requesting data aggregated to higher geographic levels (e.g., aggregating c
 | Fill Method | Description |
 | :--- | :--- |
 | `source` (Default) | No imputation is performed. The data is returned as reported directly by the source. |
-| `fill_zero` | Missing sub-geographic values are treated as zero during geographic aggregation. |
-| `fill_ave` | Missing sub-geographic values are filled with the population-weighted average of non-missing sibling geographies before aggregating. |
+| `zero` | Missing sub-geographic values are treated as zero during geographic aggregation. |
+| `ave` | Missing sub-geographic values are filled with the population-weighted average of non-missing sibling geographies before aggregating. |
 
 > **Note:** The availability and behavior of these fill methods may vary depending on the data source and specific indicators. Refer to the documentation for the specific data source.
 {: .note}

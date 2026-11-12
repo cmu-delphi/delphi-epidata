@@ -29,13 +29,13 @@ Most `covidcast` query parameters carry over to V5 with the same name, but some 
 | `data_source` | not exposed (identified by the endpoint URL, e.g. `/fluview/`) | `source` | Identifies the source dataset in V5 (replaces V4 `data_source` and endpoint names). |
 | `signal` | none | `signal` | Identifies the specific signal name within the source. |
 | `geo_type` | not exposed (`fluview` supports only `regions`) | `geo_type` | Specifies geographic resolution (e.g., `state`, `county`). |
-| `geo_value` | `regions` for `fluview` | none | Removed in V5. Both `/snapshot/` and `/archive/` return all locations for the requested `geo_type`. Filter locations client-side. |
-| `time_type` | not exposed (`fluview` is always `epiweeks`) | none | Removed in V5. All V5 endpoints use standard calendar dates (`reference_time`). |
-| `time_values` | `epiweeks` for `fluview` | none | Removed in V5 queries. Fetch the full signal and filter by `reference_time` client-side. |
+| `geo_value` | `regions` for `fluview` | `geo_value` | Optional in V5. Accepts a single code or comma-separated list (e.g., `pa` or `pa,ny`). Omitting it returns all locations. |
+| `time_type` | not exposed (`fluview` is always `epiweeks`) | none | Removed in V5. Temporal granularity (daily vs weekly) is defined by the signal itself rather than a query parameter. |
+| `time_values` | `epiweeks` for `fluview` | `reference_times` | Optional in V5. Accepts comparison operators or date ranges (e.g., `2024-01-01:2024-03-31`). Omitting it returns all dates. |
 | `as_of` | none (`fluview` has no `as_of`) | `snapshot_date` | In V5, used only in `/snapshot/` to fetch data known as of a past date. Omit to return the latest data. |
-| `issues` | `issues` (where supported) | `report_time_query` | In V5, used only in `/archive/`. Accepts a single date or comparison filter (e.g. `<2025-10-16>`). |
+| `issues` | `issues` (where supported) | `report_time_query` | In V5, used in `/archive/`, `/aux_data/`, and `/metadata/counts/`. Accepts comparisons (e.g., `<2025-10-16`) or ranges. |
 | `lag` | `lag` (where supported) | none | Removed in V5. Compute client-side as `report_time - reference_time`. |
-| none | none | `fill_method` | New in V5. Selects the imputation method when aggregating sub-geographies (`source`, `fill_ave`, or `fill_zero`). See [Imputation](v5_api_queries.md#imputation-fill-methods). |
+| none | none | `fill_method` | New in V5. Selects the imputation method when aggregating sub-geographies (`source`, `ave`, or `zero`). See [Imputation](v5_api_queries.md#imputation-fill-methods). |
 | none | none | `extra_keys` | New in V5. Filters on source-specific dimensions (such as `age_group:18-49`). |
 
 ## Response field changes
@@ -50,12 +50,12 @@ Response fields follow a similar pattern. In the table below, `fluview` serves a
 | not returned (implicit from query) | not returned (implicit from endpoint) | `geo_type` | Explicitly included in V5 responses to identify geographic resolution. |
 | `geo_value` | `region` for `fluview` | `geo_value` | Standardized location identifier across all V5 responses. |
 | `time_value` | `epiweek` for `fluview` | `reference_time` | Standardized date in `YYYY-MM-DD` format representing the observation period. |
-| `issue` | `issue` (where returned) | `report_time` | Standardized date in `YYYY-MM-DD` format representing when the data point was published (returned in `/archive/`). |
+| `issue` | `issue` (where returned) | `report_time` | Standardized ISO 8601 UTC timestamp (`YYYY-MM-DDTHH:MM:SSZ`) representing when the data point was published (returned in `/archive/`). |
 | `lag` | `lag` (where returned) | dropped | Omitted in V5 responses. Calculate client-side as `report_time - reference_time`. |
 | `direction` | none | dropped | Deprecated in V4 and removed in V5. |
 | `stderr`, `sample_size` | none | `ci_lower`, `ci_upper` | Expresses uncertainty as explicit confidence interval bounds on `value` when provided by the data source. |
 | `missing_value`, `missing_stderr`, `missing_sample_size` | none | dropped | Replaced in V5 by `fill_method` variants and standard null values in `value`. |
-| none | none | `fill_method` | Indicates which null-handling imputation method was applied (`source`, `fill_ave`, or `fill_zero`). |
+| none | none | `fill_method` | Indicates which null-handling imputation method was applied (`source`, `ave`, or `zero`). |
 
 Some sources also include extra columns, such as `age_group` for pophive and `nwss_source`, `sample_index`, and `pcr_target` for nwss.
 
@@ -75,7 +75,7 @@ V5:
 https://delphi.cmu.edu/epidata/v5/snapshot/?source=nhsn&signal=confirmed_admissions_covid_ew&geo_type=state&snapshot_date=2024-12-07
 ```
 
-The V5 query omits `geo_value=*` because it always returns all locations for the requested `geo_type`. You can filter down to specific locations client-side after downloading.
+The V5 query omits `geo_value` because omitting it returns all locations for the requested `geo_type`. You can pass `geo_value` (e.g. `geo_value=pa`) to filter to specific locations directly or filter client-side after downloading.
 
 ## Revision history queries
 
