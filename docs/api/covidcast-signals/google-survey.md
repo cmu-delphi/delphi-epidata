@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: Google Symptom Surveys
 ---
@@ -13,9 +13,9 @@ title: Google Symptom Surveys
 | **Data Source** | [Google-run symptom surveys](https://9to5google.com/2020/03/23/google-coronavirus-survey/), in collaboration with Delphi |
 | **Geographic Levels** | National, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020-05-14 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-04-11 |
+| **Temporal Scope End** | Paused (2020-05-14) |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Changelog

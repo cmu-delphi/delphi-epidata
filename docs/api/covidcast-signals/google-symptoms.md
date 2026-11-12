@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: Google Symptom Search Trends
 ---
@@ -13,9 +13,9 @@ title: Google Symptom Search Trends
 | **Data Source** | Google |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated after November 16th, 2025 (see [Symptom sets](#symptom-sets) for details) |
 | **Date of last data revision:** | March 14th, 2025 (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | February 13th, 2020, with some variation depending on geographic area|
+| **Temporal Scope End** | Paused (2025-10-29) |
 | **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
 ## Changelog

@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Digital Surveillance Sensors
 permalink: api/sensors.html
@@ -14,8 +14,8 @@ permalink: api/sensors.html
 | **Data Source** | Various digital data streams |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
 | **Temporal Scope Start** | 2010w40 |
+| **Temporal Scope End** | Paused (2022-09-10, 2022w36) |
 | **License** | [CC BY](https://creativecommons.org/licenses/by/4.0/) |
 
 ## Overview

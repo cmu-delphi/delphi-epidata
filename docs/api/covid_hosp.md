@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeseries
 ---
@@ -14,8 +14,8 @@ title: COVID-19 Reported Patient Impact and Hospital Capacity by State Timeserie
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh) |
 | **Geographic Levels** | US States plus DC, PR, and VI (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) |
 | **Temporal Granularity** | Daily |
-| **Reporting Cadence** | Inactive - No longer updated since 2024-04-27 |
 | **Temporal Scope Start** | 2020-01-01 |
+| **Temporal Scope End** | Paused (2024-04-27) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview

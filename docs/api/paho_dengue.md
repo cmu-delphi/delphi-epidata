@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: PAHO Dengue
 ---
@@ -14,8 +14,8 @@ title: PAHO Dengue
 | **Data Source** | [Pan American Health Organization (PAHO) Dengue surveillance](https://www.paho.org/en/arbo-portal/dengue-data-and-analysis) |
 | **Geographic Levels** | Countries and territories in the Americas (see [Geographic Codes](geographic_codes.md#countries-and-territories-in-the-americas)) <br> *Note: Data availability varies by country.* |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w31 |
 | **Temporal Scope Start** | 2014w01 |
+| **Temporal Scope End** | Paused (2020-07-25, 2020w30) |
 | **License** | This was scraped from a publicly-accessible website, but no explicit license terms were found. |
 
 ## Overview

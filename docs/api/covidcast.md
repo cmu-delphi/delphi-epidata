@@ -1,10 +1,10 @@
 ---
-title: Main Endpoint (COVIDcast V4)
+title: COVIDcast V4 Main endpoint
 has_children: true
 nav_order: 3
 ---
 
-# Main Epidata API (COVIDcast V4)
+# COVIDcast V4 Main endpoint
 
 > **This endpoint (`/epidata/covidcast/`) is part of the legacy V4 API, which is being phased out.** The legacy V4 API includes this endpoint. See the [V4 to V5 Migration Guide](v5_migration.md) for guidance on migrating your queries to the [Delphi V5 API](v5.md).
 {: .warning }
@@ -102,8 +102,7 @@ represents one provider of data, such as a medical testing provider or a symptom
 survey, and each signal represents one quantity computed from data provided by
 that source. Our sources provide detailed data about infectious disease related topics,
 including confirmed cases, symptom-related search queries, hospitalizations,
-outpatient doctor's visits, and other sources. Many of these are publicly
-available *only* through the main Epidata API.
+outpatient doctor's visits, and other sources.
 
 Update cadence varies by source, reflecting what is most relevant for each
 pathogen and context. You can use the

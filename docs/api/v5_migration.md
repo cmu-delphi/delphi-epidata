@@ -6,7 +6,7 @@ nav_order: 4
 
 # V3/V4 to V5 Migration Guide
 
-The legacy Epidata APIs, including the [V4 main endpoint (COVIDcast)](covidcast.md) and [V3 other endpoints](README.md), are transitioning to the [V5 API](v5.md). This transition is occurring source by source. All V3 and V4 sources will continue to operate until the migration is complete (tentatively scheduled for October 2026), and endpoints that are no longer updated will remain accessible on V3/V4. For new integrations, start directly on V5 and fall back to legacy endpoints only for sources that are not yet supported.
+The legacy Epidata APIs, including the [COVIDcast V4 endpoint](covidcast.md) and [V3 other endpoints](README.md), are transitioning to the [V5 API](v5.md). This transition is occurring source by source. All V3 and V4 sources will continue to operate until the migration is complete (tentatively scheduled for October 2026), and endpoints that are no longer updated will remain accessible on V3/V4. For new integrations, start directly on V5 and fall back to legacy endpoints only for sources that are not yet supported.
 
 ## Endpoint mapping
 

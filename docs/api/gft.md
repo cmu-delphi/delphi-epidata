@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Google Flu Trends
 ---
@@ -14,8 +14,8 @@ title: Google Flu Trends
 | **Data Source** | [Google Flu Trends Estimates](https://www.google.com/publicdata/explore?ds=z3bsqef7ki44ac_) ([context](https://en.wikipedia.org/wiki/Google_Flu_Trends)) |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)), Selected US Cities (see [Selected US Cities](geographic_codes.md#selected-us-cities)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2015w32 |
 | **Temporal Scope Start** | 2003w40 |
+| **Temporal Scope End** | Paused (2015-08-15, 2015w32) |
 | **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
 

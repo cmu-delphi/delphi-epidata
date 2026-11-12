@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: CDC Webpage Visits
 ---
@@ -14,8 +14,8 @@ title: CDC Webpage Visits
 | **Data Source** | US Centers for Disease Control (CDC) site statistics |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w03 (2020-01-12) |
 | **Temporal Scope Start** | 2013w02 (2013-01-06) |
+| **Temporal Scope End** | Paused (2020-01-12, 2020w03) |
 | **License** | Permission by CDC flu division |
 
 ## Overview

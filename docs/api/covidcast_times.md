@@ -1,6 +1,6 @@
 ---
 title: Date Coding and Revisions
-parent: Main Endpoint (COVIDcast V4)
+parent: COVIDcast V4 Main endpoint
 nav_order: 91
 ---
 

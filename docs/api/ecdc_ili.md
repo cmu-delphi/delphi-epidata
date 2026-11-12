@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: ECDC ILI
 ---
@@ -14,8 +14,8 @@ title: ECDC ILI
 | **Data Source** | [European Centre for Disease Prevention and Control (ECDC)](https://www.ecdc.europa.eu/en/home)  |
 | **Geographic Levels** | European countries (see [Geographic Codes](geographic_codes.md#european-countries)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Inactive - No longer updated since 2020w12 |
 | **Temporal Scope Start** | 2018w40 |
+| **Temporal Scope End** | Paused (2020-03-21, 2020w12) |
 | **License** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) (with [attribution to ECDC](https://www.ecdc.europa.eu/en/copyright)) |
 
 

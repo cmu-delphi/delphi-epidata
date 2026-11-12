@@ -19,7 +19,7 @@ nav_order: 3
 | **Geographic Levels** | Specific catchment areas (Network, State, or County-level catchments). See [Geographic Codes](geographic_codes.html#flusurv-locations) for full list |
 | **Temporal Granularity** | Weekly (Epiweek) |
 | **Temporal Scope Start** | 2003w40 |
-| **Reporting Cadence** | Weekly |
+| **Temporal Scope End** | Migrated to V5 (2026-10-03, 2026w39) |
 | **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 

@@ -1,7 +1,7 @@
 ---
 title: NCHS Mortality Data
 parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast V4)
+grand_parent: COVIDcast V4 Main endpoint
 nav_order: 1
 ---
 
@@ -17,9 +17,9 @@ nav_order: 1
 | **Data Source** | [National Center for Health Statistics (NCHS)](https://www.cdc.gov/nchs/nvss/vsrr/COVID19/index.htm) |
 | **Geographic Levels** | State (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Weekly (see [date format docs](../covidcast_times.md))|
-| **Reporting Cadence** | Weekly |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020w05 with some variation by geography |
+| **Temporal Scope End** | Migrated to V5 (2026-09-12, 2026w36) |
 | **License** | [NCHS Data Use Agreement](https://www.cdc.gov/nchs/data_access/restrictions.htm) |
 
 ## Changelog

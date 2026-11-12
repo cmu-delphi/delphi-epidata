@@ -1,7 +1,7 @@
 ---
 title: Doctor Visits
 parent: Data Sources and Signals
-grand_parent: Main Endpoint (COVIDcast V4)
+grand_parent: COVIDcast V4 Main endpoint
 nav_order: 1
 ---
 
@@ -17,9 +17,9 @@ nav_order: 1
 | **Data Source** | Health system partners |
 | **Geographic Levels** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Daily |
 | **Date of last data revision:** | November 9, 2020 (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-02-01 |
+| **Temporal Scope End** | Migrated to V5 (2026-09-17) |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 ## Changelog

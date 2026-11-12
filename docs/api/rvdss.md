@@ -15,8 +15,8 @@ nav_order: 4
 | **Data Source** | [Respiratory Virus Detection Surveillance System (RVDSS)](https://health-infobase.canada.ca/respiratory-virus-surveillance/about.html) from the Public Health Agency of Canada |
 | **Geographic Levels** | Nation, region, province, individual laboratories (see [Geographic Codes](geographic_codes.md#canada)) |
 | **Temporal Granularity** | Weekly (Epiweek) (see [date formats docs](date_formats.md)) |
-| **Reporting Cadence** | Weekly, typically the Thursday or Friday after the end of an epiweek |
 | **Temporal Scope Start** | Epiweek 36 2013 (2013-09-07) |
+| **Temporal Scope End** | Migrated to V5 (2024-08-24, 2024w34) |
 | **License** | [Open Government Licence - Canada](#source-and-licensing) |
 
 ## Overview

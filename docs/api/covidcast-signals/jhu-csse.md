@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: JHU Cases and Deaths
 ---
@@ -13,9 +13,9 @@ title: JHU Cases and Deaths
 | **Data Source** | JHU CSSE |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2023-03-09 |
 | **Date of last data revision:** | October 7, 2020 (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-01-22, with some variation by geographic area |
+| **Temporal Scope End** | Paused (2023-03-09) |
 | **License** | [CC BY](#source-and-licensing) |
 
 ## Changelog

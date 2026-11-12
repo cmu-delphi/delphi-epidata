@@ -1,6 +1,6 @@
 ---
 title: API Clients
-parent: Main Endpoint (COVIDcast V4)
+parent: COVIDcast V4 Main endpoint
 nav_order: 1
 nav_exclude: true
 redirect_to: client_libraries.html
@@ -10,7 +10,7 @@ redirect_to: client_libraries.html
 <meta http-equiv="refresh" content="0;url=client_libraries.html">
 [Redirecting to Client Libraries...](client_libraries.html)
 
-# Main Endpoint API Clients
+# COVIDcast V4 Main endpoint API Clients
 
 To access COVIDcast data, we recommend using the following client libraries:
 

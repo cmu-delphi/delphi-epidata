@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: Data Strategy and Execution Workgroup Community Profile Report
 ---
@@ -13,9 +13,9 @@ title: Data Strategy and Execution Workgroup Community Profile Report
 | **Data Source** | [Community Profile Report (CPR)](https://healthdata.gov/Health/COVID-19-Community-Profile-Report/gqxm-d9w9) |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2023-02-22 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | Varies by indicator - 2020-2021 |
+| **Temporal Scope End** | Paused (2023-02-22) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Changelog

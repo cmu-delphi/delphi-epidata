@@ -15,9 +15,9 @@ It is built and maintained by the Carnegie Mellon University [Delphi research
 group](https://delphi.cmu.edu/). The Epidata API includes:
 
 * The [Delphi V5 API](api/v5.md), serving real-time, high-resolution signals for public health surveillance.
-* The legacy V4 API, comprising the [main COVIDcast endpoint](api/covidcast.md) and [other historical disease endpoints](api/README.md) (e.g., FluView, Dengue).
+* The legacy V4 API, comprising the [COVIDcast V4 Main endpoint](api/covidcast.md) and [other historical disease endpoints](api/README.md) (e.g., FluView, Dengue).
 
-A [full-featured R client](api/client_libraries.md) is available for quick access to all data. While we continue developing a full-featured Python client, the [legacy Python client](api/client_libraries.md#python) remains available. The main endpoint can also be accessed with a [dedicated COVIDcast client](api/covidcast_clients.md).
+A [full-featured R client](api/client_libraries.md) is available for quick access to all data. While we continue developing a full-featured Python client, the [legacy Python client](api/client_libraries.md#python) remains available. The COVIDcast V4 Main endpoint can also be accessed with a [dedicated COVIDcast client](api/covidcast_clients.md).
 
 Anyone may access the Epidata API anonymously without providing any personal
 data. Anonymous API access is currently rate-limited and restricted to public

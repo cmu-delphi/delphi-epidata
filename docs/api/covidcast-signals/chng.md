@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: Change Healthcare
 ---
@@ -13,9 +13,9 @@ title: Change Healthcare
 | **Data Source** | Change Healthcare |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2024-02-19 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-02-01 |
+| **Temporal Scope End** | Paused (2024-02-14) |
 | **License** | [CC BY-NC](../covidcast_licensing.md#creative-commons-attribution-noncommercial) |
 
 ## Changelog

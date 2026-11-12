@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: Google Health Trends
 ---
@@ -14,8 +14,8 @@ title: Google Health Trends
 | **Data Source** | Google Health Trends |
 | **Geographic Levels** | National, State (see [Geographic Codes](geographic_codes.md#us-states-and-territories)) |
 | **Temporal Granularity** | Weekly (Epiweek) | 
-| **Reporting Cadence** | Inactive - No longer updated since 2022w36 |
 | **Temporal Scope Start** | 1993w01 |
+| **Temporal Scope End** | Paused (2022-09-10, 2022w36) |
 | **License** | [Google Terms of Service](https://policies.google.com/terms) |
 
 ## Overview

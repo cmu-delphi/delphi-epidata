@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: SafeGraph
 ---
@@ -14,6 +14,7 @@ title: SafeGraph
 | **Geographic Levels** | State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md))|
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
 | **Temporal Scope Start** | January 1st, 2019 |
+| **Temporal Scope End** | Paused (2022-05-01; 2021-04-16 for Social Distancing Metrics) |
 | **License** | [CC BY](../covidcast_licensing.md#creative-commons-attribution) |
 
 This data source uses data reported by [SafeGraph](https://www.safegraph.com/)
@@ -31,7 +32,7 @@ surface signals from two such datasets.
 
 | Attribute | Details |
 | **Date of last data revision:** | November 3rd, 2020 (see [data revision docs](#changelog-social-distancing-metrics)) |
-| **Reporting Cadence** | Inactive - No longer updated after April 19th, 2021. |
+| **Temporal Scope End** | Paused (2021-04-16) |
 
 ### Changelog (Social Distancing Metrics)
 
@@ -100,7 +101,7 @@ additional day for SafeGraph's data to be ingested into the COVIDcast API.
 
 | Attribute | Details |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog-weekly-patterns)) |
-| **Reporting Cadence** | Inactive - No longer updated after May 5th, 2022 |
+| **Temporal Scope End** | Paused (2022-05-01) |
 
 ### Changelog (Weekly Patterns)
 

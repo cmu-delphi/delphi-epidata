@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: (COVIDcast) Google Health Trends
 ---
@@ -13,9 +13,9 @@ title: (COVIDcast) Google Health Trends
 | **Data Source** | Google Health Trends |
 | **Geographic Levels** | State, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA), Designated Marketing Area (DMA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2021-03-04 |
 | **Date of last data revision:** | Never (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-02-01 |
+| **Temporal Scope End** | Paused (2021-03-04) |
 | **License** | [Google Terms of Service](https://policies.google.com/terms)|
 
 ## Changelog

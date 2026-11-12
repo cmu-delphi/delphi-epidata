@@ -1,6 +1,6 @@
 ---
 title: Survey Modules & Randomization
-parent: <i>inactive</i> COVID-19 Trends and Impact Survey
+parent: <i>paused</i> COVID-19 Trends and Impact Survey
 nav_order: 7
 ---
 

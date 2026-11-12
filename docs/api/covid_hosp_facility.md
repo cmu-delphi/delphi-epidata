@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources (Other)
+parent: Paused Sources (Other)
 grand_parent: Data Sources and Signals
 title: COVID-19 Reported Patient Impact and Hospital Capacity by Facility
 ---
@@ -14,8 +14,8 @@ title: COVID-19 Reported Patient Impact and Hospital Capacity by Facility
 | **Data Source** | [US Department of Health & Human Services](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) |
 | **Geographic Levels** | Healthcare Facility (see [HealthData.gov](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u) or [Facility Lookup](covid_hosp_facility_lookup.md)) |
 | **Temporal Granularity** | Weekly (Friday -- Thursday) |
-| **Reporting Cadence** | Inactive - No longer updated since 2024w08 |
 | **Temporal Scope Start** | 2020-07-31 |
+| **Temporal Scope End** | Paused (2024-02-24, 2024w08) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
 ## Overview

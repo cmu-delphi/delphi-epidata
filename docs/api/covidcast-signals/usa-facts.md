@@ -1,5 +1,5 @@
 ---
-parent: Inactive Sources
+parent: Paused Sources
 grand_parent: Data Sources and Signals
 title: USAFacts Cases and Deaths
 ---
@@ -13,9 +13,9 @@ title: USAFacts Cases and Deaths
 | **Data Source** | [USAFacts](https://usafacts.org/)	 |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, State, County, Hospital Referral Region (HRR), Metropolitan Statistical Area (MSA) (see [geography coding docs](../covidcast_geography.md)) |
 | **Temporal Granularity** | Daily (see [date format docs](../covidcast_times.md)) |
-| **Reporting Cadence** | Inactive - No longer updated since 2023-01-02 |
 | **Date of last data revision:** | November 3, 2020 (see [data revision docs](#changelog)) |
 | **Temporal Scope Start** | 2020-01-25 |
+| **Temporal Scope End** | Paused (2023-01-02) |
 | **License** | [CC BY](#source-and-licensing) |
 
 ## Changelog

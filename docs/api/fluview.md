@@ -18,8 +18,8 @@ nav_order: 1
 | **Data Source** | [United States Centers for Disease Control and Prevention (CDC)](http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html) |
 | **Geographic Levels** | National, Department of Health & Human Services (HHS) Regions, Census Divisions, State (see [Geographic Codes](geographic_codes.md#us-regions-and-states)), Cities (see [FluView Cities](geographic_codes.md#fluview-cities)) |
 | **Temporal Granularity** | Weekly (Epiweek) |
-| **Reporting Cadence** | Weekly (typically Fridays) |
 | **Temporal Scope Start** | 1997w40 |
+| **Temporal Scope End** | Migrated to V5 (2026-10-31, 2026w43) |
 | **License** | [Publicly Accessible US Government](https://www.usa.gov/government-works) |
 
 ## Overview

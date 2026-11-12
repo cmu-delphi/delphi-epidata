@@ -1,5 +1,5 @@
 ---
-title: <i>inactive</i> COVID-19 Trends and Impact Survey
+title: <i>paused</i> COVID-19 Trends and Impact Survey
 nav_order: 5
 ---
 
@@ -17,7 +17,7 @@ Data collection [ceased on June 25, 2022](end-of-survey.md).
 
 This survey was also known unofficially as the Facebook Survey.
 
-More survey details are also available [on the COVID-19 Trends and Impact Survey 2020-2022 (inactive) page](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html) under the COVIDcast Main Endpoint's Data Source and Signals section of this API documentation site. 
+More survey details are also available [on the COVID-19 Trends and Impact Survey 2020-2022 page](https://cmu-delphi.github.io/delphi-epidata/api/covidcast-signals/fb-survey.html) under the COVIDcast V4 Main endpoint's Data Source and Signals section of this API documentation site. 
 
 The survey dataset is now archived via ICPSR:
 
