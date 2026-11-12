@@ -20,8 +20,8 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 | [`claims_outpatient`](v5-signals/claims_outpatient.md) | [`doctor-visits`](covidcast-signals/doctor-visits.md) | census_division, census_region, county, hhs, hrr, msa, nation, state | — |
 | [`flusurv`](v5-signals/flusurv.md) | [`flusurv`](flusurv.md) | misc, msa, nation, state | — |
 | [`fluview_ilinet`](v5-signals/fluview_ilinet.md) | [`fluview`](fluview.md) | census_division, hhs, nation, state | `age_group` |
-| [`fluview_resp_lab_clinical`](v5-signals/fluview_resp_lab_clinical.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | — |
-| [`fluview_resp_lab_ph`](v5-signals/fluview_resp_lab_ph.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | — |
+| [`fluview_resp_lab_clinical`](v5-signals/fluview_resp_lab_clinical.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | `age_group` |
+| [`fluview_resp_lab_ph`](v5-signals/fluview_resp_lab_ph.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | `age_group` |
 | [`nchs_mortality`](v5-signals/nchs_mortality.md) | [`nchs-mortality`](covidcast-signals/nchs-mortality.md) | nation, state | — |
 | [`nhsn`](v5-signals/nhsn.md) | [`nhsn`](covidcast-signals/nhsn.md) | census_division, census_region, hhs, nation, state | — |
 | `nickel_beta` *(Beta)* | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
