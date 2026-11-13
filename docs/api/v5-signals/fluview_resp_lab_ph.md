@@ -15,7 +15,7 @@ nav_order: 12
 | **Geographic Levels** | `state`, `census_division`, `hhs`, `nation` |
 | **Temporal Granularity** | Weekly for `nation`, `hhs`, `census_division` (week ending Saturday). Seasonal for `state` (anchored to week 40) |
 | **Reporting Cadence** | Weekly (Fridays) |
-| **Temporal Scope Start** | 2015-10-10 (2015w40) |
+| **Temporal Scope Start** | 2016-10-08 (2016w40) |
 | **Temporal Scope End** | Ongoing |
 | **Extra Key Columns** | `age_group` (always `all` for this source) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
@@ -87,13 +87,16 @@ Observations cover 7-day epidemiological weeks defined by the CDC's Morbidity an
 
 All four geographic levels (`nation`, `hhs`, `census_division`, `state`) are computed natively by the CDC and ingested directly without regional aggregation (`fill_method = 'source'`).
 
-At the `state` level, the CDC reports New York as two separate jurisdictions: New York City (`nyc`) and New York State excluding NYC (`ny_minus_nyc`). Because all indicators in this source are additive specimen counts, Delphi reconstructs a combined statewide `ny` record (`fill_method = 'nyc_plus_ny_minus_nyc'`) when both are reported for a given period.
+At the `state` level, CDC reports New York State excluding New York City as `ny_minus_nyc` (matching CDC's "New York" reporting entity). Because all indicators in this source are additive specimen counts, Delphi reconstructs a combined statewide `ny` record (`fill_method = 'nyc_plus_ny_minus_nyc'`) when both New York City (`nyc`) and New York State excluding NYC (`ny_minus_nyc`) are available for a given period.
 
 Raw counts are summed directly:
 
 $$
 C_{\text{NY}, t} = C_{\text{NYC}, t} + C_{\text{NY-NYC}, t}
 $$
+
+> Statewide `ny` is published only when both `nyc` and `ny_minus_nyc` report valid data. Because CDC suppresses NYC laboratory data (`X`), `nyc` and reconstructed `ny` rows have never been published in this source as of November 2026.
+{: .note }
 
 ---
 
