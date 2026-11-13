@@ -15,12 +15,12 @@ nav_order: 11
 | **Geographic Levels** | `state`, `census_division`, `hhs`, `nation` |
 | **Temporal Granularity** | Week, ending Saturday |
 | **Reporting Cadence** | Weekly (Fridays) |
-| **Temporal Scope Start** | 2015-10-10 (2015w40) |
+| **Temporal Scope Start** | 2016-10-08 (2016w40) |
 | **Temporal Scope End** | Ongoing |
 | **Extra Key Columns** | `age_group` (always `all` for this source) |
 | **License** | [Public Domain US Government](https://www.usa.gov/government-works) |
 
-> This source reproduces the legacy V3 [`fluview_clinical`](../fluview_clinical.md) endpoint. Signal names follow standard V5 conventions, statewide New York is pooled from NYC and non-NYC components, and public health lab data is now separated into [`fluview_resp_lab_ph`](fluview_resp_lab_ph.md). See [Relationship to V3](#relationship-to-v3).
+> This source reproduces the legacy V3 [`fluview_clinical`](../fluview_clinical.md) endpoint. Signal names follow standard V5 conventions, and public health lab data is now separated into [`fluview_resp_lab_ph`](fluview_resp_lab_ph.md). See [Relationship to V3](#relationship-to-v3).
 {: .note }
 
 ## Table of contents
@@ -81,7 +81,7 @@ Observations cover 7-day epidemiological weeks defined by the CDC's Morbidity an
 
 All four geographic levels (`nation`, `hhs`, `census_division`, `state`) are computed natively by the CDC and ingested directly without regional aggregation (`fill_method = 'source'`).
 
-At the `state` level, the CDC reports New York as two separate jurisdictions: New York City (`nyc`) and New York State excluding NYC (`ny_minus_nyc`). When both are reported for a given week, Delphi reconstructs a combined statewide `ny` record (`fill_method = 'nyc_plus_ny_minus_nyc'`).
+At the `state` level, CDC reports New York State excluding New York City as `ny_minus_nyc` (matching CDC's "New York" reporting entity). When both New York City (`nyc`) and New York State excluding NYC (`ny_minus_nyc`) are available for a given week, Delphi reconstructs a combined statewide `ny` record (`fill_method = 'nyc_plus_ny_minus_nyc'`).
 
 Raw counts are summed directly:
 
@@ -98,6 +98,9 @@ $$
 $$
 
 Type-specific positivity percentages (`pct_positive_a`, `pct_positive_b`) are recomputed analogously using their respective summed counts.
+
+> Statewide `ny` is published only when both `nyc` and `ny_minus_nyc` report valid data. Because CDC suppresses NYC laboratory data (`X`), `nyc` and reconstructed `ny` rows have never been published in this source as of November 2026.
+{: .note }
 
 ---
 
