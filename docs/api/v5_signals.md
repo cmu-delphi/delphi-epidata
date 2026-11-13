@@ -24,7 +24,6 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 | [`fluview_resp_lab_ph`](v5-signals/fluview_resp_lab_ph.md) | [`fluview_clinical`](fluview_clinical.md) | census_division, hhs, nation, state | `age_group` |
 | [`nchs_mortality`](v5-signals/nchs_mortality.md) | [`nchs-mortality`](covidcast-signals/nchs-mortality.md) | nation, state | — |
 | [`nhsn`](v5-signals/nhsn.md) | [`nhsn`](covidcast-signals/nhsn.md) | census_division, census_region, hhs, nation, state | — |
-| `nickel_beta` *(Beta)* | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
 | [`nrevss`](v5-signals/nrevss.md) | New in V5 | state, hhs, census_division, census_region, nation | — |
 | [`nssp`](v5-signals/nssp.md) | [`nssp`](covidcast-signals/nssp.md) | census_division, census_region, county, hhs, hrr, hsa_nci, msa, nation, state | — |
 | [`nwss`](v5-signals/nwss.md) | New in V5 | sewershed | `nwss_source`, `sample_index` |
@@ -33,6 +32,10 @@ Sources available in V5, and the legacy equivalent each one replaces. Legacy sou
 | [`vha_respiratory_cases`](v5-signals/vha_respiratory.md) | New in V5 | census_division, census_region, hhs, msa, nation, state, vha_catchment | — |
 | [`vha_respiratory_vaccinations`](v5-signals/vha_respiratory.md) | New in V5 | census_division, census_region, hhs, nation, state | — |
 {: #v5-sources-table}
+
+<!--
+| `nickel_beta` *(Beta)* | New in V5 | census_division, census_region, county, hrr, msa, nation, state | `age_group` |
+-->
 
 <span id="v5-sources-table-status">V5 sources available as of September 2026.</span>
 
