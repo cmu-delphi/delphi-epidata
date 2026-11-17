@@ -537,14 +537,14 @@ The CDC publishes a preliminary weekly file about 4 days after the reference wee
 
 ### Geographic Handling
 
-The source file carries values for states (`state`), HHS regions (`hhs`), and the nation (`nation`), which Delphi reads directly from the upstream CDC file.
+The source file natively provides data for states (`state`), HHS regions (`hhs`), and the nation (`nation`), which are ingested directly without modification (`fill_method = 'source'`).
 
-Census divisions (`census_division`) and census regions (`census_region`) are derived from state values:
-- Count metrics are summed directly across member states based on the [U.S. Census Bureau regions and divisions](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf).
+Census divisions (`census_division`) and census regions (`census_region`) are derived by aggregating state-level values:
+- Count metrics are summed across member states based on the [U.S. Census Bureau regions and divisions](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf).
 - Rate and percentage metrics are aggregated using population-weighted averages based on 2020 U.S. Census state populations.
 - Week-over-week percentage change signals are omitted from census division and census region roll-ups.
 
-Values are ingested directly or aggregated without imputation, so `fill_method` is always `source`.
+When aggregating state values to census divisions and regions, non-reporting states are treated as zero rather than imputed. Consequently, rows for derived census geographies carry `fill_method = 'zero'`.
 
 ---
 
@@ -586,7 +586,7 @@ What changed in V5:
 | `report_time` | Primary Key | date | The publication or release date (`YYYY-MM-DD`). |
 | `geo_type` | Primary Key | string | Geographic level (`state`, `hhs`, `census_division`, `census_region`, `nation`). |
 | `geo_value` | Primary Key | string | Unique code for the location (e.g., `ca` for California, `us` for national). |
-| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation, always `source` for this source. |
+| `fill_method` | Primary Key | string | `source` for directly ingested geographic levels (`state`, `hhs`, `nation`); `zero` for derived census roll-ups (`census_division`, `census_region`). |
 | `reference_time` | Primary Key | date | The date or surveillance period represented by the observation, labeled by Saturday week-ending date (`YYYY-MM-DD`). |
 | `value` | Value Column | float | The recorded measurement. |
 
