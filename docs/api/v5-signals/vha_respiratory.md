@@ -149,7 +149,9 @@ VHA healthcare facility catchment areas do not align with state lines. Medical c
 
 - `source`: Native reported grain (`vha_catchment` for cases, `state` for vaccinations) without spatial imputation.
 - `ave`: Derived geographic roll-ups where missing child locations take the enrollee-weighted average of reporting locations.
-- Cumulative totals for higher-level geographies are withheld if any underlying location is entirely missing from that day's source file.
+
+> As of November 2026, flu and RSV cumulative case counts have not been released for all catchment locations, so national totals have not been published so far. This may change for prior reference dates if past versions receive revisions covering all catchments, or for future reference dates if complete catchment reporting is achieved.
+{: .note }
 
 ---
 
