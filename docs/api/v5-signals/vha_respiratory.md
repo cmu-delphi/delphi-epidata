@@ -147,9 +147,8 @@ VHA healthcare facility catchment areas do not align with state lines. Medical c
 
 #### Imputation and `fill_method`
 
-- `source`: Native reported grain (`vha_catchment` for cases, `state` for vaccinations) without spatial imputation.
-- `ave`: Derived geographic roll-ups where missing child locations take the enrollee-weighted average of reporting locations.
-- Cumulative totals for higher-level geographies are withheld if any underlying location is entirely missing from that day's source file.
+- `source`: Native reported grain (`vha_catchment` for cases, `state` for vaccinations) and all derived cumulative count totals. Cumulative counts are direct sums and are never imputed. Higher-level totals are published only when every underlying child location reports for that date.
+- `ave`: Derived geographic roll-ups for rate signals (`*_cases_per_100k_7dav` and `*_vaccines_*_cumulative_per_100k`). Missing child locations take the enrollee-weighted average of reporting locations, so rate metrics are not withheld when some child locations are missing.
 
 ---
 
@@ -186,6 +185,7 @@ Higher-level cumulative totals (state, MSA, HHS region, Census division, Census 
 - Enrolled veterans are predominantly older and male compared to the general population, so rates may not reflect broader community transmission.
 - Lab-confirmed cases reflect the date of laboratory confirmation rather than symptom onset. Daily snapshot differences capture administrative reporting cadence rather than true disease incidence.
 - Cumulative counts can decrease due to upstream revisions or transitions to censored status (`< 11`). Cumulative signals publish these raw values directly. Dips that do not recover the following day can produce negative 7-day average case rates with omitted confidence intervals.
+- As of November 2026, no national-level aggregation for cumulative flu and RSV cases has been available due to regular missingness in child catchment locations upstream. National totals may become available for past reference dates if retrospective revisions supply all catchments, or for future dates if complete reporting is achieved.
 - As of October 2026, seasonal vaccine counts did not reset to zero on October 1 and continue accumulating across seasons.
 - A delay in the portal's case reset around October 1 can cause a brief spike followed by a drop in early October rates.
 
