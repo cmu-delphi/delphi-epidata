@@ -154,7 +154,7 @@ def extract(first_week=None, last_week=None, test_mode=False):
 
     # connect
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     cur = cnx.cursor()
 
     # weeks to update

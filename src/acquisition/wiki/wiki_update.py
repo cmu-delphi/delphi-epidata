@@ -90,7 +90,7 @@ def get_manifest(year, month, optional=False):
 def run():
     # connect to the database
     u, p = secrets.db.epi
-    cnx = mysql.connector.connect(user=u, password=p, database="epidata")
+    cnx = mysql.connector.connect(user=u, password=p, database="epidata", host=secrets.db.host)
     cur = cnx.cursor()
 
     # get the most recent job in wiki_raw
