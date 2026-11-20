@@ -154,12 +154,12 @@ def diags():
 
     try:
         serving_host = socket.gethostbyname_ex(socket.gethostname())
-    except e:
+    except Exception as e:
         serving_host = e
 
     try:
         db_host = db.execute('SELECT @@hostname AS hn').fetchone()['hn']
-    except e:
+    except Exception as e:
         db_host = e
 
     log_info_with_request("diagnostics", headers=request.headers, serving_host=serving_host, database_host=db_host)
