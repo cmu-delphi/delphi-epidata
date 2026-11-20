@@ -1,5 +1,6 @@
 from csv import DictWriter
 from io import StringIO
+import re
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 from flask import Response, jsonify, stream_with_context
@@ -9,6 +10,24 @@ import orjson
 from ._config import MAX_RESULTS, MAX_COMPATIBILITY_RESULTS
 from ._common import is_compatibility_mode, log_info_with_request
 from delphi_utils import get_structured_logger
+
+
+# only these characters may appear in a download filename; everything else is
+# replaced so a user-controlled name cannot break out of the quoted
+# Content-Disposition filename parameter (no quotes, semicolons, whitespace,
+# or CR/LF -- see #1805)
+_UNSAFE_FILENAME_CHARS = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+def sanitize_download_filename(filename: str) -> str:
+    """
+    Reduce a filename to a conservative allowlist ([A-Za-z0-9._-]) so it is
+    safe to embed in a Content-Disposition header. Leading/trailing dots are
+    stripped (no hidden/dot-only names); a fully-stripped name falls back to
+    the default "epidata".
+    """
+    cleaned = _UNSAFE_FILENAME_CHARS.sub("_", filename).strip("._")
+    return cleaned or "epidata"
 
 
 def print_non_standard(format: str, data):
@@ -195,7 +214,8 @@ class CSVPrinter(APrinter):
         if headers is None:
             headers = {}
         if self._filename:
-            headers["Content-Disposition"] = f"attachment; filename={self._filename}.csv"
+            filename = sanitize_download_filename(self._filename)
+            headers["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
         return Response(gen, mimetype="text/csv; charset=utf8", headers=headers)
 
     def _begin(self):
