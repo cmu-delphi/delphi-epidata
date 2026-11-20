@@ -162,7 +162,12 @@ However, we restrict locations from being reported when we consider them to be t
 For example, a signal for a given location with a confidence interval of 0-100% isn't useful and will not be reported.
 
 Because of this, as of Oct 7 2026, we only report 258 counties, 151 HRRs, 136 MSAs, and 43 states.
+These tend to be the most populous locations at a given geographic resolution.
 All locations are reported for higher geographic types (census division, census region, nation).
+
+Observations with fewer than 5 days of data across the trailing 7-day window are suppressed due to data sparsity and omitted from publication.
+Unobserved dates or geographies without reporting claims produce no records.
+Both suppressed and unobserved values are omitted entirely from query responses rather than reported as `NULL`.
 
 ---
 
