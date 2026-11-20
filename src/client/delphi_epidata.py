@@ -22,6 +22,35 @@ __version__ = "4.1.44"
 
 _HEADERS = {"user-agent": "delphi_epidata/" + __version__ + " (Python)"}
 
+#: Placeholder written to debug logs in place of credentials, so that
+#: `Epidata.debug = True` never leaks the API key into stderr.
+REDACTED_CREDENTIAL = "<redacted>"
+
+#: Request parameter names that carry credentials and must never be logged.
+_CREDENTIAL_PARAM_NAMES = ("auth", "api_key")
+
+
+def _redact_params(params):
+    """Return a copy of `params` with credential values redacted.
+
+    Debug logging must never leak credentials, so call sites that log the
+    request parameters pass them through here first. The caller's dict is
+    never modified, so redaction is log-only and the real credentials are
+    still sent on the wire.
+    """
+    if not params:
+        return params
+    redacted = dict(params)
+    for name in _CREDENTIAL_PARAM_NAMES:
+        if name in redacted:
+            redacted[name] = REDACTED_CREDENTIAL
+    return redacted
+
+
+def _redact_auth(auth):
+    """Return a debug-log-safe representation of `Epidata.auth`."""
+    return REDACTED_CREDENTIAL if auth is not None else None
+
 
 class EpidataException(Exception):
     pass
@@ -94,7 +123,13 @@ class Epidata:
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
         if Epidata.debug:
-            Epidata.log("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
+            Epidata.log(
+                "Sending GET request",
+                url=request_url,
+                params=_redact_params(params),
+                headers=_HEADERS,
+                auth=_redact_auth(Epidata.auth),
+            )
         if Epidata.sandbox:
             resp = requests.Response()
             resp._content = b'true'
@@ -103,7 +138,12 @@ class Epidata:
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if req.status_code == 414:
             if Epidata.debug:
-                Epidata.log("Received 414 response, retrying as POST request", url=request_url, params=params, headers=_HEADERS)
+                Epidata.log(
+                    "Received 414 response, retrying as POST request",
+                    url=request_url,
+                    params=_redact_params(params),
+                    headers=_HEADERS,
+                )
             req = requests.post(request_url, params, auth=Epidata.auth, headers=_HEADERS)
         if Epidata.debug:
             Epidata.log(
