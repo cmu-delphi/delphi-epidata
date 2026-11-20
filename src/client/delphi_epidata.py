@@ -90,14 +90,16 @@ class Epidata:
 
     @staticmethod
     @retry(reraise=True, stop=stop_after_attempt(2))
-    def _request_with_retry(endpoint, params={}):
+    def _request_with_retry(endpoint, params=None):
         """Make request with a retry if an exception is thrown."""
         request_url = f"{Epidata.BASE_URL}/{endpoint}/"
         if Epidata.debug:
             Epidata.log("Sending GET request", url=request_url, params=params, headers=_HEADERS, auth=Epidata.auth)
         if Epidata.sandbox:
+            # Return a well-formed fake envelope so offline callers can use the
+            # documented Epidata.check(...) error-handling pattern.
             resp = requests.Response()
-            resp._content = b'true'
+            resp._content = b'{"result": 1, "message": "sandboxed: no request sent", "epidata": []}'
             return resp
         start_time = time.time()
         req = requests.get(request_url, params, auth=Epidata.auth, headers=_HEADERS)
@@ -117,7 +119,7 @@ class Epidata:
         return req
 
     @staticmethod
-    def _request(endpoint, params={}):
+    def _request(endpoint, params=None):
         """Request and parse epidata.
 
         We default to GET since it has better caching and logging
