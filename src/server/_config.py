@@ -46,8 +46,9 @@ it is important that REVERSE_PROXY_DEPTH is set accurately for two reasons...
 
 setting it too high (or to -1) will respect more of the entries in the "X-Forwarded-For" header than are appropriate.
  this can allow remote addresses to be "spoofed" when a client fakes this header, carrying security/identity
- implications.  in dev and testing, it is not particularly dangerous for this variable to be set to -1 (special case
- for an "infinite" depth, where any and all proxy hops will be trusted).
+ implications.  when the chain presented is shorter than the declared depth, no entry is trustworthy, so the
+ connecting peer address is used instead (fail closed).  in dev and testing, it is not particularly dangerous for
+ this variable to be set to -1 (special case for an "infinite" depth, where any and all proxy hops will be trusted).
 
 setting it too low can hinder logging accuracy -- that can cause an intermediate proxy IP address to be used as the
  "real" client IP address, which could cause requests to be rate-limited inappropriately.
