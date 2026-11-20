@@ -44,8 +44,9 @@ Every V5 source page follows the same order so pages stay predictable:
 9. Missingness & Privacy
 10. Limitations
 11. Lag & Backfill
-12. Changelog                   (optional; only include if there are necessary changes to flag)
-13. Source and Licensing
+12. Analysis                    (optional; exploratory data analysis and validation reports from Delphi Analysis Notebooks)
+13. Changelog                   (optional; only include if there are necessary changes to flag)
+14. Source and Licensing
 ```
 
 Keep a section only when it has something to say. Do not add a Changelog with a placeholder "initial release" entry.
@@ -165,7 +166,11 @@ Interpretation caveats: coverage gaps, market-share bias, coding versus laborato
 
 Typical lag from event to first publication, and whether past values revise or stay fixed.
 
-### 12. Changelog
+### 12. Analysis
+
+Optional. Links to interactive exploratory analyses, validation reports, or benchmark comparisons hosted on [Delphi Analysis Notebooks](https://cmu-delphi.github.io/analysis-notebooks/). Keep it brief: link to the rendered HTML reports and optionally provide an embedded preview (`<iframe loading="lazy">` inside `<details markdown="1">`).
+
+### 13. Changelog
 
 Optional. Include only when there is a real methodology change or a meaningful ingestion-start date to record. Place it in a collapsible block.
 
@@ -180,7 +185,7 @@ Optional. Include only when there is a real methodology change or a meaningful i
 </details>
 ```
 
-### 13. Source and Licensing
+### 14. Source and Licensing
 
 Upstream provider details, dataset origin, licensing terms, and any attribution or citation requirements required by the data contributor.
 
@@ -321,6 +326,22 @@ Sampling limits, representativeness, and reporting delays.
 ## Lag & Backfill
 
 Reporting latency and whether historical values revise.
+
+---
+
+## Analysis
+
+Exploratory analyses and evaluation reports are published on [Delphi Analysis Notebooks](https://cmu-delphi.github.io/analysis-notebooks/<source>/):
+
+- [State Report](https://cmu-delphi.github.io/analysis-notebooks/<source>/<report>.html)
+- [County Report](https://cmu-delphi.github.io/analysis-notebooks/<source>/<report>.html)
+
+<details markdown="1">
+<summary>Preview report</summary>
+
+<iframe src="https://cmu-delphi.github.io/analysis-notebooks/<source>/<report>.html" width="100%" height="600" style="border: 1px solid #e1e4e8; border-radius: 6px;" loading="lazy"></iframe>
+
+</details>
 
 ---
 
