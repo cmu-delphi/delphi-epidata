@@ -211,6 +211,29 @@ That is, we start getting reports about what happened on reference date `t` _on_
 
 ---
 
+## Analysis
+
+Reports evaluating signal behaviour, coverage, and noise are available on [Delphi Analysis Notebooks](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/):
+
+- [State Report](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/sleepcycle_all_state.html)
+- [County Report](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/sleepcycle_all_county.html)
+
+<details markdown="1">
+<summary>Preview State-Level Analysis Report</summary>
+
+<iframe src="https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/sleepcycle_all_state.html" width="100%" height="600" style="border: 1px solid #e1e4e8; border-radius: 6px;" loading="lazy"></iframe>
+
+</details>
+
+<details markdown="1">
+<summary>Preview County-Level Analysis Report</summary>
+
+<iframe src="https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/sleepcycle_all_county.html" width="100%" height="600" style="border: 1px solid #e1e4e8; border-radius: 6px;" loading="lazy"></iframe>
+
+</details>
+
+---
+
 ## Source and Licensing
 
 De-identified digital surveillance contributed by Sleep Cycle.
