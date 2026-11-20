@@ -589,7 +589,7 @@ class Epidata:
         }
 
         if isinstance(geo_value, (list, tuple)):
-            params["geo_values"] = ",".join(geo_value)
+            params["geo_values"] = ",".join(str(v) for v in geo_value)
         else:
             params["geo_value"] = geo_value
         if as_of is not None:
@@ -700,7 +700,7 @@ class Epidata:
         }
 
         if isinstance(geo_value, (list, tuple)):
-            params["geo_values"] = ",".join(geo_value)
+            params["geo_values"] = ",".join(str(v) for v in geo_value)
         else:
             params["geo_values"] = geo_value
         if as_of is not None:
