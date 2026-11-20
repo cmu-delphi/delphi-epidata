@@ -74,6 +74,19 @@ def filter_strings(
     return filter_values(field, values, param_key, params)
 
 
+def filter_strings_not_in(
+    field: str,
+    values: Optional[Sequence[str]],
+    param_key: str,
+    params: Dict[str, Any],
+) -> str:
+    # builds a SQL expression that excludes the given string values (ex: role-restricted sources)
+    if not values:
+        return "TRUE"
+    conditions = [to_condition(field, v, f"{param_key}_{i}", params) for i, v in enumerate(values)]
+    return f"NOT ({' OR '.join(conditions)})"
+
+
 def filter_integers(
     field: str,
     values: Optional[Sequence[IntRange]],
@@ -392,6 +405,16 @@ class QueryBuilder:
     ) -> "QueryBuilder":
         fq_field = f"{self.alias}.{field}" if "." not in field else field
         self.conditions.append(filter_strings(fq_field, values, param_key or field, self.params))
+        return self
+
+    def where_strings_not_in(
+        self,
+        field: str,
+        values: Optional[Sequence[str]],
+        param_key: Optional[str] = None,
+    ) -> "QueryBuilder":
+        fq_field = f"{self.alias}.{field}" if "." not in field else field
+        self.conditions.append(filter_strings_not_in(fq_field, values, param_key or field, self.params))
         return self
 
     def _fq_field(self, field: str) -> str:
