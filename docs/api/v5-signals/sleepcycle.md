@@ -6,26 +6,27 @@ nav_order: 10
 ---
 
 # Sleep Cycle Nocturnal Coughs
+
 {: .no_toc}
 
-| Attribute | Details |
-| :--- | :--- |
-| **Source Name** | `sleepcycle` |
-| **Data Source** | Nocturnal cough rates from the [Sleep Cycle](https://sleepcycle.com) sleep-tracking app |
-| **Geographic Levels** | `county`, `hrr`, `msa`, `state`, `hhs`, `census_division`, `census_region`, `nation` |
-| **Temporal Granularity** | Daily |
-| **Reporting Cadence** | Daily |
-| **Temporal Scope Start** | 2023-01-07 |
-| **Temporal Scope End** | Ongoing |
-| **Extra Key Columns** | None |
-| **License** | [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) |
-
+| Attribute                | Details                                                                                 |
+| :----------------------- | :-------------------------------------------------------------------------------------- |
+| **Source Name**          | `sleepcycle`                                                                            |
+| **Data Source**          | Nocturnal cough rates from the [Sleep Cycle](https://sleepcycle.com) sleep-tracking app |
+| **Geographic Levels**    | `county`, `hrr`, `msa`, `state`, `hhs`, `census_division`, `census_region`, `nation`    |
+| **Temporal Granularity** | Daily                                                                                   |
+| **Reporting Cadence**    | Daily                                                                                   |
+| **Temporal Scope Start** | 2023-01-07                                                                              |
+| **Temporal Scope End**   | Ongoing                                                                                 |
+| **Extra Key Columns**    | None                                                                                    |
+| **License**              | [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)                         |
 
 ## Table of contents
+
 {: .no_toc .text-delta}
 
 1. TOC
-{:toc}
+   {:toc}
 
 ---
 
@@ -40,10 +41,10 @@ This source is noised at the `epsilon = 1` level per user-day under [differentia
 
 ## Indicators (Signals)
 
-| Indicator Name | Pathogen or Disease | Metric Type | Description |
-| :--- | :--- | :--- | :--- |
-| `pct_cough_2_plus_7dav` | N/A | Percentage, 7-day window | Percent of users who coughed 2 or more times an hour (on average) while sleeping. |
-| `pct_cough_10_plus_7dav` | N/A | Percentage, 7-day window | Percent of users who coughed 10 or more times an hour (on average) while sleeping. |
+| Indicator Name           | Pathogen or Disease | Metric Type              | Description                                                                        |
+| :----------------------- | :------------------ | :----------------------- | :--------------------------------------------------------------------------------- |
+| `pct_cough_2_plus_7dav`  | N/A                 | Percentage, 7-day window | Percent of users who coughed 2 or more times an hour (on average) while sleeping.  |
+| `pct_cough_10_plus_7dav` | N/A                 | Percentage, 7-day window | Percent of users who coughed 10 or more times an hour (on average) while sleeping. |
 
 ---
 
@@ -115,9 +116,9 @@ Observations cover single calendar days.
 Each value reflects nocturnal cough events recorded during sleep sessions attributed to that date.
 
 - `reference_time` is the observation date (`YYYY-MM-DD`).
-For 7-day smoothed indicators (`_7dav`), `reference_time` marks the final date of the trailing 7-day window.
+  For 7-day smoothed indicators (`_7dav`), `reference_time` marks the final date of the trailing 7-day window.
 - `report_time` is the ingestion timestamp in UTC.
-Sleep Cycle refreshes data upstream approximately every four hours (six times per day). 
+  Sleep Cycle refreshes data upstream approximately every four hours (six times per day).
 
 ### Geographic Handling
 
@@ -141,17 +142,17 @@ See the [Missingness & Privacy section](#missingness--privacy) for more informat
 
 ### Columns
 
-| Column | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description |
-| :--- | :--- | :--- | :--- |
-| `signal` | Primary Key | string | The name of the requested indicator. |
-| `report_time` | Primary Key | datetime | Ingestion timestamp in UTC (`YYYY-MM-DD HH:MM:SS`). |
-| `geo_type` | Primary Key | string | Geographic level (e.g., `county`, `state`). |
-| `geo_value` | Primary Key | string | Unique code for the location (e.g., FIPS, state abbreviation). |
-| `fill_method` | Primary Key | string | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
-| `reference_time` | Primary Key | date | The date or surveillance period represented by the observation (`YYYY-MM-DD`). |
-| `value` | Value Column | float | The recorded measurement (e.g., count, percentage, rate, or statistical estimate). |
-| `ci_lower` | Value Column | float | Lower bound of the 90% confidence interval. |
-| `ci_upper` | Value Column | float | Upper bound of the 90% confidence interval. |
+| Column           | [Key Type](../v5_api_queries.md#key-types-and-column-roles) | Data Type | Description                                                                                  |
+| :--------------- | :---------------------------------------------------------- | :-------- | :------------------------------------------------------------------------------------------- |
+| `signal`         | Primary Key                                                 | string    | The name of the requested indicator.                                                         |
+| `report_time`    | Primary Key                                                 | datetime  | Ingestion timestamp in UTC (`YYYY-MM-DD HH:MM:SS`).                                          |
+| `geo_type`       | Primary Key                                                 | string    | Geographic level (e.g., `county`, `state`).                                                  |
+| `geo_value`      | Primary Key                                                 | string    | Unique code for the location (e.g., FIPS, state abbreviation).                               |
+| `fill_method`    | Primary Key                                                 | string    | Imputation method used during geographic aggregation (`source`, `fill_ave`, or `fill_zero`). |
+| `reference_time` | Primary Key                                                 | date      | The date or surveillance period represented by the observation (`YYYY-MM-DD`).               |
+| `value`          | Value Column                                                | float     | The recorded measurement (e.g., count, percentage, rate, or statistical estimate).           |
+| `ci_lower`       | Value Column                                                | float     | Lower bound of the 90% confidence interval.                                                  |
+| `ci_upper`       | Value Column                                                | float     | Upper bound of the 90% confidence interval.                                                  |
 
 ---
 
@@ -207,7 +208,32 @@ Data is updated 6 times a day, and revisions within the first few updates are la
 
 Data is reported with less than 1 day of lag.
 That is, we start getting reports about what happened on reference date `t` _on_ date `t`.
-*Note*: This means that early versions of a value are based on _partial_ information.
+_Note_: This means that early versions of a value are based on _partial_ information.
+
+---
+
+## Analysis
+
+Reports evaluating signal behavior, coverage, noise, and correlation with reference indicators are available on [Delphi Analysis Notebooks](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/):
+
+- [State Report](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/sleepcycle_all_state.html)
+- [County Report](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/sleepcycle_all_county.html)
+- [Cough 2+/night vs reference indicators](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/corr_sleepcycle_cough_2_plus_state.html)
+- [Cough 10+/night vs reference indicators](https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/corr_sleepcycle_cough_10_plus_state.html)
+
+<details markdown="1">
+<summary>Preview State Exploratory Report</summary>
+
+<iframe src="https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/sleepcycle_all_state.html" width="100%" height="600" style="border: 1px solid #e1e4e8; border-radius: 6px;" loading="lazy"></iframe>
+
+</details>
+
+<details markdown="1">
+<summary>Preview State Correlation Report (Cough 10+/night)</summary>
+
+<iframe src="https://cmu-delphi.github.io/analysis-notebooks/sleepcycle/corr_sleepcycle_cough_10_plus_state.html" width="100%" height="600" style="border: 1px solid #e1e4e8; border-radius: 6px;" loading="lazy"></iframe>
+
+</details>
 
 ---
 
